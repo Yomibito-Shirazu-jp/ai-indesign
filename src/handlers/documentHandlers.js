@@ -121,6 +121,11 @@ export class DocumentHandlers {
 
         const code = `
             const doc = app.documents.add();
+            // Save current units, switch to points so numeric values are unambiguous
+            const savedH = doc.viewPreferences.horizontalMeasurementUnits;
+            const savedV = doc.viewPreferences.verticalMeasurementUnits;
+            doc.viewPreferences.horizontalMeasurementUnits = 2054188905; // POINTS
+            doc.viewPreferences.verticalMeasurementUnits   = 2054188905; // POINTS
             doc.documentPreferences.pageWidth  = ${wPt};
             doc.documentPreferences.pageHeight = ${hPt};
             doc.documentPreferences.facingPages = ${facingPages};
@@ -133,6 +138,9 @@ export class DocumentHandlers {
             page.marginPreferences.bottom = ${mBPt};
             page.marginPreferences.left   = ${mLPt};
             page.marginPreferences.right  = ${mRPt};
+            // Restore original units
+            doc.viewPreferences.horizontalMeasurementUnits = savedH;
+            doc.viewPreferences.verticalMeasurementUnits   = savedV;
             app.activeDocument = doc;
             return { success: true, name: doc.name, widthPt: ${wPt}, heightPt: ${hPt} };
         `;
