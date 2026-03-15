@@ -1,7 +1,7 @@
 {
   "manifestVersion": 5,
-  "id": "com.ads.indesign-bridge",
-  "name": "InDesign Bridge",
+  "id": "com.yomibitoshirazujp.ai-indesign",
+  "name": "AI in Design",
   "version": "1.0.0",
   "main": "index.html",
   "host": {
@@ -17,7 +17,7 @@
   ],
   "requiredPermissions": {
     "network": {
-      "domains": "all"
+      "domains": ["ws://127.0.0.1:3001", "http://127.0.0.1:3000"]
     },
     "allowCodeGenerationFromStrings": true
   }
