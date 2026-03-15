@@ -1,7 +1,7 @@
 {
   "manifestVersion": 5,
   "id": "com.yomibitoshirazujp.ai-indesign",
-  "name": "AI in Design",
+  "name": "Ai-inDesign",
   "version": "1.0.0",
   "main": "index.html",
   "host": {
