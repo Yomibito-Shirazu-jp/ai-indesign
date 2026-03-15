@@ -1,6 +1,7 @@
 const { WebSocketServer } = require('ws');
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
+const path = require('path');
 
 const WS_PORT = 3001;
 const HTTP_PORT = 3000;
@@ -8,6 +9,9 @@ const TIMEOUT_MS = 30000;
 
 const app = express();
 app.use(express.json());
+
+// 接続サポート用UIを配信
+app.use(express.static(path.join(__dirname, 'public')));
 
 let pluginSocket = null;
 const pending = new Map(); // id -> { resolve, reject, timer }

@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI in Design - 接続サポートツール</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --text-color: #334155;
+            --accent-color: #2563eb;
+            --success-color: #10b981;
+            --error-color: #ef4444;
+            --card-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            color: #0f172a;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: #64748b;
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+            color: #0f172a;
+        }
+
+        .status-box {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f1f5f9;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .status-box.connected {
+            background-color: #ecfdf5;
+            border: 1px solid #a7f3d0;
+        }
+
+        .status-box.disconnected {
+            background-color: #fef2f2;
+            border: 1px solid #fecaca;
+        }
+
+        .status-indicator {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background-color: #94a3b8;
+            margin-right: 15px;
+        }
+
+        .connected .status-indicator {
+            background-color: var(--success-color);
+            box-shadow: 0 0 10px var(--success-color);
+        }
+
+        .disconnected .status-indicator {
+            background-color: var(--error-color);
+        }
+
+        .status-text {
+            flex-grow: 1;
+            font-size: 1.1em;
+            font-weight: 500;
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 1em;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+        }
+
+        button:disabled {
+            background-color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .info-section {
+            background-color: #eff6ff;
+            border-left: 4px solid var(--accent-color);
+            padding: 20px;
+            border-radius: 0 8px 8px 0;
+            margin-bottom: 20px;
+        }
+
+        .info-section h3 {
+            margin-top: 0;
+            color: #1e3a8a;
+        }
+
+        .terminal {
+            background-color: #1e293b;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9em;
+            margin-top: 20px;
+            overflow-x: auto;
+            min-height: 100px;
+            white-space: pre-wrap;
+        }
+
+        .free-tier-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .free-tier-list li {
+            background: #fff;
+            margin-bottom: 10px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            border-left: 4px solid var(--accent-color);
+        }
+
+        .free-tier-list strong {
+            display: block;
+            color: #0f172a;
+            margin-bottom: 5px;
+            font-size: 1.1em;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>AI in Design 接続サポート</h1>
+        <p>InDesignとブリッジサーバーの通信状況を確認するためのツールです。AI未契約でも利用できます。</p>
+    </div>
+
+    <!-- ステータス確認 -->
+    <div class="card">
+        <h2>1. InDesign通信ステータス</h2>
+        <div id="statusBox" class="status-box">
+            <div class="status-indicator"></div>
+            <div id="statusText" class="status-text">サーバーと通信中...</div>
+            <button id="refreshBtn">更新</button>
+        </div>
+        
+        <p><strong>うまく接続できない場合：</strong></p>
+        <ol>
+            <li>InDesignを起動してください。</li>
+            <li>UXP Developer Tool を利用して、「AI in Design」プラグイン（<code>plugin/manifest.json</code>）をロードしてください。</li>
+            <li>「Load」をクリックし、パネルを表示させた状態で「更新」ボタンを押してください。</li>
+        </ol>
+
+        <div style="margin-top: 30px;">
+            <h3>▶ InDesign動作テスト (AI不要)</h3>
+            <p>下記のボタンを押すと、InDesign側でアラートダイアログが表示されます。<br>これが成功すれば、システムとInDesignの通信は<strong>完全に正常</strong>です！</p>
+            <button id="testExecuteBtn" disabled>InDesignにテスト通信を送信</button>
+            <div id="terminal" class="terminal">// 実行結果がここに表示されます...</div>
+        </div>
+    </div>
+
+    <!-- AI契約がないユーザー向け -->
+    <div class="card">
+        <h2>2. AI有料契約をしていない方へ (無料の利用方法)</h2>
+        <div class="info-section">
+            <p><strong>「Claude Proなどの有料AIを契約していないと使えないの？」</strong><br>
+            いいえ、安心してください！<b>無料のツールやサービス</b>を組み合わせることで、完全無料でAI in Designを利用（またはテスト）することが可能です。</p>
+        </div>
+
+        <p>以下のいずれかの方法を利用すれば、有償のAIサブスクリプションがなくても動作させることができます。</p>
+
+        <ul class="free-tier-list">
+            <li>
+                <strong>方法 A: 【一番おすすめ】VS Code + Roo Code (Cline) + 無料API</strong>
+                無料で使えるエディタ「VS Code」に、「Roo Code (旧Cline)」という無料拡張機能を入れます。<br>
+                Gemini 1.5 Pro/2.0 API（無料枠あり）などをAPIキーで連携し、MCPサーバーとして「AI in Design」を設定すれば、チャット形式でInDesignを操作できます。
+            </li>
+            <li>
+                <strong>方法 B: Cursorエディタ (無料体験)</strong>
+                人気のAIエディタ「Cursor」（基本無料）をダウンロードします。CursorのMCP設定画面から、このシステムの `npm start` を登録するだけで、エディタ内のチャットからそのままInDesignに指示が出せます。
+            </li>
+            <li>
+                <strong>方法 C: Ollama + Chatbox (完全ローカル・無料)</strong>
+                Ollamaなどを利用してPC内で無料AI（Llama3やQwenなど）を動かし、「Chatbox」などのMCP対応GUIアプリに連携させます。完全にオフライン＆無料で操作が可能です。
+            </li>
+        </ul>
+        <p>※ 「Claude Desktop」にこだわらなくても、近年様々な無料の「MCP対応クライアント」が登場しています。<br>
+        <strong>「MCP クライアント 無料」</strong>などで検索し、ご自身にあったツールをお選びください。</p>
+    </div>
+</div>
+
+<script>
+    const statusBox = document.getElementById('statusBox');
+    const statusText = document.getElementById('statusText');
+    const refreshBtn = document.getElementById('refreshBtn');
+    const testExecuteBtn = document.getElementById('testExecuteBtn');
+    const terminal = document.getElementById('terminal');
+
+    function logToTerminal(msg) {
+        const time = new Date().toLocaleTimeString();
+        terminal.innerText += `\n[${time}] ${msg}`;
+        terminal.scrollTop = terminal.scrollHeight;
+    }
+
+    async function checkStatus() {
+        try {
+            const res = await fetch('/status');
+            const data = await res.json();
+            
+            statusBox.className = 'status-box ' + (data.connected ? 'connected' : 'disconnected');
+            statusText.innerText = data.connected ? '✅ InDesignと接続されています' : '❌ InDesignと未接続です';
+            testExecuteBtn.disabled = !data.connected;
+
+            if (data.connected && terminal.innerText.includes('// 実行結果がここに表示されます')) {
+                logToTerminal('通信確立済み。テスト送信が可能です。');
+            }
+        } catch (e) {
+            statusBox.className = 'status-box disconnected';
+            statusText.innerText = '⚠️ Node.js サーバーが起動していません。npm startを実行してください。';
+            testExecuteBtn.disabled = true;
+            console.error(e);
+        }
+    }
+
+    async function runTestExecute() {
+        testExecuteBtn.disabled = true;
+        logToTerminal('InDesignにテストコードを送信中...');
+        try {
+            const res = await fetch('/execute', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    // 単純なInDesignへのJSXコマンド: ダイアログを出して、アプリのバージョンを返す
+                    code: "alert('【サーバー通信成功】 AI in Designと正しくつながっています！'); app.version;"
+                })
+            });
+            const data = await res.json();
+            
+            if (data.error) {
+                logToTerminal('エラー: ' + data.error);
+            } else {
+                logToTerminal('成功！ InDesignのバージョン: ' + data.result);
+                logToTerminal('これでMCP連携の準備は完了です。');
+            }
+        } catch (e) {
+            logToTerminal('通信エラー: ' + e.message);
+        }
+        testExecuteBtn.disabled = false;
+        checkStatus();
+    }
+
+    refreshBtn.addEventListener('click', checkStatus);
+    testExecuteBtn.addEventListener('click', runTestExecute);
+
+    // Initial check
+    checkStatus();
+    setInterval(checkStatus, 3000);
+</script>
+
+</body>
+</html>
