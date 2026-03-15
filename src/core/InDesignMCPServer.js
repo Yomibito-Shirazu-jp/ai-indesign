@@ -26,6 +26,7 @@ import {
     TextFlowHandlers,
     RevisionHandlers,
     ProofreadingHandlers,
+    RuleHandlers,
 } from '../handlers/index.js';
 import { formatResponse, formatErrorResponse } from '../utils/stringUtils.js';
 import { operationLogger } from './operationLogger.js';
@@ -313,6 +314,13 @@ export class InDesignMCPServer {
             case 'check_hyoki_yure': return await ProofreadingHandlers.checkHyokiYure(args);
             case 'check_sensitive_terms': return await ProofreadingHandlers.checkSensitiveTerms(args);
             case 'proofread_all': return await ProofreadingHandlers.proofreadAll(args);
+
+            // ルールエンジン (Rule Engine)
+            case 'get_customer_rules': return await RuleHandlers.getCustomerRules(args);
+            case 'save_customer_rules': return await RuleHandlers.saveCustomerRules(args);
+            case 'add_notation_rule': return await RuleHandlers.addNotationRule(args);
+            case 'list_customers': return await RuleHandlers.listCustomers();
+            case 'learn_rules_from_diff': return await RuleHandlers.learnRulesFromDiff(args);
 
             default:
                 return formatErrorResponse(`Tool '${name}' not found or not implemented. Use 'help' to see available tools.`, "Tool Call");

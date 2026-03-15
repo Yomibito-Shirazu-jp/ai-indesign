@@ -34,7 +34,7 @@ export { PreflightHandlers } from './preflightHandlers.js';
 export { TextFlowHandlers } from './textFlowHandlers.js';
 export { RevisionHandlers } from './revisionHandlers.js';
 export { ProofreadingHandlers } from './proofreadingHandlers.js';
-
+export { RuleHandlers } from './ruleHandlers.js';
 /**
  * Handler Categories Overview:
  * 

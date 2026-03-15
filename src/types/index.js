@@ -22,6 +22,7 @@ import { preflightTools } from './toolDefinitionsPreflight.js';
 import { textFlowTools } from './toolDefinitionsTextFlow.js';
 import { proofreadingTools } from './toolDefinitionsProofreading.js';
 import { revisionTools, interpretationTools } from './toolDefinitionsRevision.js';
+import { ruleTools } from './toolDefinitionsRule.js';
 
 // Combine all tool definitions into a single array
 export const allToolDefinitions = [
@@ -43,6 +44,7 @@ export const allToolDefinitions = [
     ...revisionTools,
     ...interpretationTools,
     ...proofreadingTools,
+    ...ruleTools,
 ];
 
 // Export individual modules for specific use cases
@@ -64,3 +66,4 @@ export { preflightTools } from './toolDefinitionsPreflight.js';
 export { textFlowTools } from './toolDefinitionsTextFlow.js';
 export { revisionTools, interpretationTools } from './toolDefinitionsRevision.js';
 export { proofreadingTools } from './toolDefinitionsProofreading.js'; 
+export { ruleTools } from './toolDefinitionsRule.js';
