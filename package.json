@@ -25,7 +25,7 @@
     "document-creation",
     "layout-automation"
   ],
-  "author": "lucdesign",
+  "author": "Yomibito-Shirazu-jp",
   "license": "MIT",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.27.1"
@@ -35,10 +35,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/lucdesign/indesign-mcp-server.git"
+    "url": "git+https://github.com/Yomibito-Shirazu-jp/ai-indesign.git"
   },
   "bugs": {
-    "url": "https://github.com/lucdesign/indesign-mcp-server/issues"
+    "url": "https://github.com/Yomibito-Shirazu-jp/ai-indesign/issues"
   },
-  "homepage": "https://github.com/lucdesign/indesign-mcp-server#readme"
+  "homepage": "https://github.com/Yomibito-Shirazu-jp/ai-indesign#readme"
 }

@@ -1,217 +1,216 @@
-# InDesign UXP MCP Server
+# AI in Design（旧称: indesign-uxp-server）
 
-> **Forked from** [zachshallbetter/indesign-mcp-server](https://github.com/zachshallbetter/indesign-mcp-server) — rewritten to use Adobe's UXP plugin platform instead of AppleScript.
+## ひとことで言うと、何これ？
+**「あなたに代わって、InDesign（やイラレ・フォトショ）を勝手に操作してくれる、見えない優秀なAIアシスタントを作り出す魔法の仕組み」**です。
 
-A Model Context Protocol (MCP) server that gives AI assistants direct, native control over Adobe InDesign via a UXP plugin bridge. ~130 tools covering the full InDesign feature set — documents, pages, text, graphics, styles, master spreads, books, and export.
-
----
-
-## Why UXP vs AppleScript
-
-This server is a ground-up rewrite of the AppleScript-based [indesign-mcp-server](https://github.com/zachshallbetter/indesign-mcp-server). The execution model is fundamentally different.
-
-| | AppleScript (original) | UXP (this fork) |
-|---|---|---|
-| **Platform** | macOS only | macOS + Windows |
-| **Execution path** | Node → temp JSX file → AppleScript → InDesign | Node → HTTP → WebSocket → InDesign plugin |
-| **Speed** | Slow — 3 hops, disk write per call | Fast — direct in-process call |
-| **Reliability** | Flaky — breaks if InDesign loses focus or system dialogs appear | Stable — not affected by focus or system state |
-| **Return values** | Strings only (last evaluated expression) | Full structured JSON objects |
-| **JS version** | ExtendScript (ES3 — no `const`, arrow functions, or `async/await`) | Modern JS (ES2015+ — `async/await`, destructuring, arrow functions) |
-| **Error messages** | Cryptic AppleScript/OSA errors | Structured JSON with clear error strings |
-| **String handling** | Manual `escapeJsxString()` for every value | `JSON.stringify()` throughout — safe and simple |
-| **Enums** | Magic strings like `'PDF_TYPE'` | Typed enums via `require('indesign').ExportFormat.pdfType` |
-| **Async support** | Not supported — synchronous only | Native `await` (e.g. `await doc.filePath`) |
-| **Permissions** | macOS Automation + Accessibility in System Settings | None beyond InDesign plugin install |
-| **Future-proofing** | ❌ Adobe is deprecating ExtendScript/CEP | ✅ UXP is Adobe's official modern platform |
-
-**The short version**: The AppleScript version puppets InDesign from the outside via macOS automation, writing temp files and hoping nothing interrupts the chain. This version runs _inside_ InDesign as a first-class plugin — faster, more reliable, cross-platform, and built on the platform Adobe is investing in going forward.
+いつもあなたが手作業でやっていた「文字の流し込み」や「画像の配置」「PDF書き出し」「校正チェック」などを、これからはAI（Claude Desktopなど）にチャットで「〇〇やっておいて！」とお願いするだけで、ソフトが自動でカチャカチャと動き出して作業を終わらせてくれます。
 
 ---
 
-## How It Works
+## はじめに
+**「日本の美しい文字組みを、もっと簡単に、もっと安全に」**
 
-```
-Claude / MCP Client
-       │
-       ▼
-  MCP Server (Node.js)
-       │  POST /execute
-       ▼
-  Bridge HTTP Server (port 3000)
-       │  WebSocket
-       ▼
-  UXP Plugin (inside InDesign)
-       │  runs as async IIFE with `app` in scope
-       ▼
-  InDesign DOM
-```
+これは、**創業98年の印刷会社**が現場のノウハウを詰め込んで作った、Adobe InDesign（インデザイン）専用のAI連携ツールです。
 
-The UXP plugin maintains a persistent WebSocket connection to the bridge. When a tool is called, the handler sends a JS code string to the bridge, which forwards it to the plugin. The plugin runs it as `new Function('app', 'return (async () => { CODE })()')` and returns the result as JSON.
+InDesignは世界中で使われている素晴らしいソフトですが、長年「日本語の対応（特に縦書き）」がおろそかにされてきた歴史があります。現場のデザイナーや印刷会社は、文字化けや綴じ方向の間違い、古い印刷機でのエラーなどにずっと悩まされてきました。
+
+私たちはその現状を変えるため、**「InDesignの日本語対応へのアンチテーゼ」**として、プロの印刷屋だからこそ作れる「絶対に失敗しない、最も美しい縦書きPDF」をAIにお願いするだけで作れるシステムを開発しました。
+
+ITやプログラムの専門知識がなくても、話題のAI（ClaudeやChatGPTなど）に「〇〇をやって」と日本語でお願いするだけで、面倒な印刷データの作成やチェックを自動でやってくれます。
 
 ---
 
-## Prerequisites
+## なにができるの？（主な機能）
 
-- Adobe InDesign 2024+ (UXP plugin support required)
-- Node.js 18+
-- macOS or Windows
+難しい操作はすべてAIとこのツールが裏側でやってくれます。以下のような「印刷現場あるある」の悩みを解決します。
 
----
+### 1. 日本語に特化した「プロの校正」
+- **表記ゆれの発見**: 同じ文書の中で「引っ越し」と「引越」が混ざっているようなバラつきを自動で見つけます。
+- **要注意ワードのチェック**: 印刷出版に適さない言葉や、間違いやすい常用漢字のミスを教えてくれます。
 
-## Setup
+### 2. 「縦書き」の失敗をなくす独自の機能
+- **綴じ方向の自動修正**: 縦書きの本なのに、設定が「左綴じ（洋書と同じ）」になっているミスを自動で察知し、「右綴じ」に直します。
+- **危険な文字だけを安全に**: 縦書きにすると古い印刷機で文字が横を向いたり化けたりしやすい「ー（伸ばし棒）」や「（）カッコ」などの一部の記号だけを、安全な図形（アウトライン）に自動変換します。
+- **黒文字を綺麗に印刷**: 小さい黒文字が印刷時にブレないように、自動で「スミベタ（K100%）＋オーバープリント」という印刷業界の必須設定を行います。
 
-### 1. Install the UXP Plugin
-
-Load the plugin via the UXP Developer Tool or InDesign's plugin manager:
-
-```
-plugin/
-├── index.js        # Plugin entry point + WebSocket client
-└── manifest.json   # Plugin manifest
-```
-
-### 2. Start the Bridge
-
-```bash
-# Kill any existing bridge processes
-lsof -ti:3001 | xargs kill 2>/dev/null
-lsof -ti:3000 | xargs kill 2>/dev/null
-
-# Start the bridge
-cd bridge && node server.js
-```
-
-### 3. Connect the Plugin
-
-In InDesign: **Window → Plugins → InDesign Bridge**
-
-The panel should show: `Connected to bridge ✓`
-
-### 4. Start the MCP Server
-
-```bash
-npm install
-npm start
-```
-
-### 5. Configure Claude
-
-Add to `~/.claude.json` (or your MCP client config):
-
-```json
-{
-  "mcpServers": {
-    "indesign": {
-      "command": "node",
-      "args": ["/path/to/indesign-uxp-server/src/index.js"]
-    }
-  }
-}
-```
+### 3. 古い印刷所でも安心の「安全PDF」書き出し
+- 印刷所に入稿する際、最新のPDFデータ（PDF/X-4など）を受け付けてくれない古い環境でも安心な、一番トラブルが起きにくい「PDF/X-1a」形式で一発書き出しができます。
+- 出力前に、塗り足し（裁ち落とし）が足りているか、画像の解像度が荒くないか、リンク切れがないかの最終チェックも行います。
 
 ---
 
-## Testing
+## 誰でも自由に、無料で使えます（ライセンスについて）
 
-```bash
-# Quick sanity check (4 core tools)
-node tests/test-uxp-handlers.js
+このツールは**「MITライセンス」**という、世界で一番自由でわかりやすいルールで公開されています。
 
-# Full suite (27 tests across all handler categories)
-node tests/test-all-handlers.js
-```
-
-Current status: **27/27 passing** across all handler categories.
+- **仕事で使ってもOK（商用利用可能）**: 個人の方でも、デザイン会社や印刷会社でも、無料で自由にお仕事に使っていただけます。
+- **改造してもOK**: 自社のルールに合わせて中身を書き換えたり、カスタマイズしても構いません。
+- **⚠️ ひとつだけご注意**:
+  無料で自由にお使いいただけますが、「このツールを使ったことで起きた印刷ミスや損害」について、開発者は責任を負うことができません。AIが作ったデータやチェック結果は、**必ず最後にご自身の目で確認（校正）**してから印刷所へ入稿してください。
 
 ---
 
-## Tools
+## どうやって使うの？
 
-### Documents
-`create_document` `open_document` `save_document` `close_document` `get_document_info` `get_document_preferences` `set_document_preferences` `get_document_elements` `get_document_styles` `get_document_colors` `get_document_layers` `get_document_stories` `get_document_hyperlinks` `create_document_hyperlink` `get_document_sections` `create_document_section` `get_document_grid_settings` `set_document_grid_settings` `get_document_layout_preferences` `set_document_layout_preferences` `get_document_xml_structure` `export_document_xml` `preflight_document` `validate_document` `cleanup_document` `data_merge` `save_document_to_cloud` `open_cloud_document` `view_document`
+ご利用には以下の準備が必要です。
+1. **パソコン**（ちょっとしたプログラムを動かす設定が必要です）
+2. **Adobe InDesign** と **Adobe UXP Developer Tool**
+   - ツールを動かすための「小窓（Bridgeプラグイン）」をInDesign内に入れます。
+   - Adobeが提供している `Adobe UXP Developer Tool` という公式アプリを使い、本ツールのフォルダ内にある `manifest.json` というファイルを **「Load and Watch（読み込んで監視）」** するだけでOKです。
+3. **AIアプリ**（Claude Desktopアプリなどを使用します）
 
-### Pages & Spreads
-`add_page` `delete_page` `duplicate_page` `move_page` `get_page_info` `set_page_properties` `adjust_page_layout` `resize_page` `reframe_page` `navigate_to_page` `select_page` `zoom_to_page` `set_page_background` `create_page_guides` `place_file_on_page` `place_xml_on_page` `get_page_content_summary` `snapshot_page_layout` `delete_page_layout_snapshot` `delete_all_page_layout_snapshots` `list_spreads` `get_spread_info` `duplicate_spread` `move_spread` `delete_spread` `set_spread_properties` `create_spread_guides` `place_file_on_spread` `place_xml_on_spread` `select_spread` `get_spread_content_summary`
+AIのチャット画面で、例えば以下のように話しかけてみてください。
 
-### Text & Tables
-`create_text_frame` `edit_text_frame` `create_table` `populate_table` `find_replace_text` `find_text_in_document`
+- 「この原稿をInDesignに流し込んで、縦書きでレイアウトして」
+- 「文章におかしな表記ゆれがないかチェックして」
+- 「印刷所に入稿するための一番安全なPDFを書き出して」
 
-### Styles & Colors
-`create_paragraph_style` `apply_paragraph_style` `create_character_style` `list_styles` `create_color_swatch` `list_color_swatches` `apply_color` `create_object_style` `list_object_styles` `apply_object_style`
-
-### Graphics & Shapes
-`place_image` `get_image_info` `create_rectangle` `create_ellipse` `create_polygon`
-
-### Layers
-`create_layer` `set_active_layer` `list_layers` `organize_document_layers`
-
-### Page Items
-`get_page_item_info` `select_page_item` `move_page_item` `resize_page_item` `set_page_item_properties` `duplicate_page_item` `delete_page_item` `list_page_items`
-
-### Groups
-`create_group` `create_group_from_items` `ungroup` `get_group_info` `add_item_to_group` `remove_item_from_group` `list_groups` `set_group_properties`
-
-### Master Spreads
-`create_master_spread` `list_master_spreads` `delete_master_spread` `duplicate_master_spread` `apply_master_spread` `get_master_spread_info` `create_master_text_frame` `create_master_rectangle` `create_master_guides` `detach_master_items` `remove_master_override`
-
-### Export & Output
-`export_pdf` `export_images` `export_epub` `package_document`
-
-### Books
-`create_book` `open_book` `list_books` `add_document_to_book` `synchronize_book` `repaginate_book` `export_book` `package_book` `preflight_book` `print_book` `get_book_info` `set_book_properties` `update_all_cross_references` `update_all_numbers` `update_chapter_and_paragraph_numbers`
-
-### Utility
-`execute_indesign_code` `get_session_info` `clear_session` `help`
+AIがあなたの優秀なDTPオペレーターとして、InDesignを魔法のように操作してくれます。
 
 ---
 
-## Architecture
+## なにができるの？（アプリ別の機能一覧）
 
-```
-src/
-├── core/
-│   ├── InDesignMCPServer.js    # MCP server, tool registration
-│   ├── scriptExecutor.js       # executeViaUXP() — POSTs to bridge
-│   └── sessionManager.js       # Page dimension tracking, smart positioning
-├── handlers/
-│   ├── documentHandlers.js
-│   ├── pageHandlers.js
-│   ├── textHandlers.js
-│   ├── styleHandlers.js
-│   ├── graphicsHandlers.js
-│   ├── masterSpreadHandlers.js
-│   ├── pageItemHandlers.js
-│   ├── groupHandlers.js
-│   ├── bookHandlers.js
-│   ├── exportHandlers.js
-│   └── utilityHandlers.js
-├── types/                      # MCP tool schema definitions
-└── utils/stringUtils.js
+「AIとかよくわからない」「最近のAdobeソフトは機能が多すぎて浦島太郎状態…」という方でも大丈夫です！
+チャット画面で**「〇〇をやって」と日本語でお願いするだけ**で、AIが以下の作業を全自動で代行してくれます。
 
-bridge/
-└── server.js                   # HTTP (port 3000) + WebSocket (port 3001) bridge
+### 📕 InDesign（インデザイン）でできること
+**〜面倒な冊子作りや、ルールの厳しい入稿作業をすべてお任せ〜**
 
-plugin/
-├── index.js                    # UXP plugin — runs code inside InDesign
-└── manifest.json
-
-tests/
-├── test-uxp-handlers.js        # 4 core handler tests
-└── test-all-handlers.js        # 27-test comprehensive suite
-```
-
-### Key UXP API Notes
-
-- InDesign collections require `.item(n)` — bracket access `[n]` returns undefined
-- `doc.filePath` is async — always `await` it in UXP code
-- `exportFile(format, path)` — format arg is **first** (same as ExtendScript)
-- Enums via `require('indesign')`: `ExportFormat.pdfType`, `ColorModel.process`, etc.
-- Path strings work directly for `place()` and `exportFile()` — no UXP storage API needed
-- Code runs as `async IIFE` — use `return` to return values, `await` works natively
+- **ドキュメントの操作**: 新規作成、保存、マスターページの適用
+- **テキスト・縦組み処理**: 原稿の自動流し込み、見出しのスタイル付け、縦組みへの自動変換、ルビ（ふりがな）振り
+- **プロ仕様の自動校正**: 表記ゆれ（例：引越と引っ越しの混在）の発見、要注意ワードの検知
+- **画像・図形処理**: 画像の自動配置とトリミング（枠にピッタリ合わせる処理）
+- **【重要】印刷ミスの防止**: 
+  - 綴じ方向の自動補正（縦組みなのに左綴じになっているミスを防止）
+  - スミベタ（黒100%文字）への自動オーバープリント処理
+  - 古い印刷機（RIP）で化けやすい縦書き記号「ー（伸ばし棒）」などの自動アウトライン化
+- **安全なPDF書き出し**: 塗り足し（3mm）や画像解像度の最終チェックをした上で、最新の「PDF/X-4」や、古い印刷所でも絶対に失敗しない「PDF/X-1a」形式で書き出します。
 
 ---
 
-## License
+### 🟧 Illustrator（イラストレーター）でできること
+**〜ロゴやイラスト、チラシなどの「ベクターデータ」の面倒な作業を効率化〜**
 
-MIT
+- **図形・イラストの作成**: 「星マークを描いて」「指定したサイズで四角を順番に並べて」といった図形の自動作成
+- **文字とテキスト処理**: テキストの配置、フォントの変更、文字のアウトライン化（入稿データ作成時）
+- **整理整頓（レイヤー管理）**: ごちゃごちゃになったレイヤーの名前を一括で整理したり、不要なデータを一瞬で掃除
+- **一括書き出し**: 「背景を透明にしてPNGで保存して」「Web用にSVGで書き出して」といった毎日の面倒な保存作業を自動化
+
+---
+
+### 🟦 Photoshop（フォトショップ）でできること
+**〜写真の補正やWeb用画像のバッチ処理を一瞬で終わらせる〜**
+
+- **面倒なリサイズとトリミング**: 「ブログ用に横幅1000pxに一括で縮小して」「画像の真ん中で正方形に切り抜いて」といった定番の実務作業
+- **レイヤーと画像の自動調整**: 「明るさを少し上げて」「このレイヤーだけ白黒にして」「背景と合成して」といった補正や調整
+- **多様なフォーマット書き出し**: 「めちゃくちゃ軽いJPEGにして」「最新のWebP形式で保存して」など、用途に合わせた最適な画像書き出し
+- **スマートオブジェクト操作**: 画質を落とさずに編集できるスマートオブジェクトの作成や管理
+
+---
+
+## 🚫 逆に、AIに【できないこと】は？（注意事項）
+
+魔法のように見えるAIですが、現時点では「完璧」ではありません。以下の点は、最終的に人間（あなた）の目と手が必要です。
+
+1. **ゼロからの「芸術的なデザイン」や「センスの良い装飾」**
+   「かわいい感じにして」「かっこいいチラシを作って」という曖昧なお願いから、プロ顔負けの複雑でアートなデザインをゼロから作るのはまだ苦手です（素材の配置や文字流し込みなどの「作業」が得意です）。
+
+2. **内容の「完璧な正しさ」の保証**
+   AIはたまに嘘をついたり、勝手に文字を解釈して間違えること（ハルシネーション）があります。流し込んだ文章の最終的な「誤字脱字」や「デザインの崩れ」がないかは、**必ず人間の目で最後の校正（チェック）**をしてください。
+
+3. **InDesignの「すべての機能」の操作**
+   InDesignには星の数ほど機能がありますが、現状このツールが対応しているのは「よく使う基本的な機能（約50種類）」です。徐々にできることは増えていきますが、マニアックな処理はAIから「その機能はまだ使えません」と返ってくることがあります。
+
+---
+
+## 安定して使うためのコツ（バックグラウンド動作について）
+
+InDesignとAIを繋ぐための「接続（コネクション）」を、途切れさせずに裏側（バックグラウンド）で安定して動かすためのポイントです。
+
+1. **InDesignのパネルは「閉じず」に「たたむ」**
+InDesign側に入れる当ツールのパネル（Bridgeプラグイン）は、×ボタンで閉じてしまうとAIとの通信が切れてしまいます。
+作業の邪魔にならないよう、**画面の端（ドック）にアイコンとしてたたんで（最小化して）おいてください**。これだけで常に裏側で通信が維持されます。
+※通信が一時的に切れても、自動で3秒ごとに再接続する安心設計になっています。
+
+2. **サーバー（黒い画面）は自動起動ツールに任せる**
+裏側で動かすプログラム（Node.jsのサーバー）を毎回手動で立ち上げたままにしておくと、うっかり閉じて通信が切れる原因になります。
+パソコンを起動した時に裏側でこっそり自動起動させるツール（例：`PM2` などの無料ツール）を導入すると、黒い画面を開きっぱなしにする必要がなくなり、非常に安定します。
+
+---
+
+## よくある質問
+
+### Q. 「そもそも全部InDesignのプラグイン（拡張機能）の中だけで作れないの？ この黒い画面のシステムって意味あるの？」
+
+**A. 今の最新AI（Claudeなど）をフル活用するためには、どうしてもこの「２段構え」の仕組みが必要なんです。**
+
+InDesignのプラグインというものは、Adobeが作った**「とても狭くて安全な箱の中」**に閉じ込められています。そのため、以下のようなことがプラグイン単体ではできません。
+1. **外のアプリ（Claude Desktopなど）から「〇〇して」と直接命令を受け取れない**。
+2. あなたのパソコンの中のファイル（Word原稿ファイルやエクセルの名簿など）を、InDesignの枠組みを超えて自由に読み解くことができない。
+
+そのため、ClaudeなどのAIが一番得意な**「あなたのパソコンの環境全体を理解して、必要に応じてInDesignを自ら動かす」**という体験（エージェント機能）を実現するためには、
+
+- **外の世界（AI）と会話する役割** ＝ パソコンの裏側で動くシステム（本ツール）
+- **InDesignの中で実際に手を動かす役割** ＝ InDesignの中の小さなプラグイン（小窓）
+
+この２つが連携して動く「橋渡し（ブリッジ）」の仕組みが絶対に必要になります。
+少し設定の手間は増えますが、この仕組みがあるからこそ、AIがあなたに代わってパソコン上の原稿を読み、InDesignを魔法のように操作できるようになっています！
+
+### Q. 「MCP？の仕組みを使って、IllustratorやPhotoshopも動かせるの？」
+
+**A. はい！まったく同じ仕組みで動かすことができます。**
+
+AIと各種アプリを繋ぐ共通規格である「MCP（Model Context Protocol）」を使っており、それぞれのアプリ向けに全く同じ裏側の仕組み（サーバー）とプラグイン構造を用意しています。
+
+- InDesignを動かす 👉 `indesign-uxp-server`（本ツール）
+- Illustratorを動かす 👉 `illustrator-uxp-server`（別で用意）
+- Photoshopを動かす 👉 `photoshop-uxp-server`（別で用意）
+
+たとえば、ClaudeなどのAIアプリにこれら3つのサーバーをすべて登録しておけば、**「Photoshopで写真を明るくして、Illustratorでイラストを描いて、それらをInDesignに配置して縦書きで冊子を作って！」** という夢のような連携作業も、AIにお願いするだけで全自動でこなしてくれるようになります。
+
+### Q. 「MCP？ UXP（MXPじゃないの）？ よく似た横文字が出てきますが、何が違うんですか？」
+
+**A. どちらも「つなぐためのルール（言葉）」のことですが、話りかける相手が違います。**
+
+- **MCP（Model Context Protocol）**: **「AI」と「外部のシステム」**をつなぐための世界共通語です。Claude DesktopなどのAIが、裏側で動いているこのシステムに「〇〇をやって！」と命令するために使います。
+- **UXP（Unified Extensibility Platform）**: **「外部のシステム」と「Adobeのソフト」**をつなぐための、Adobeが作った新しい共通語のことです（MXPではありません😉）。ソフトの中に小窓（プラグイン）を作り、実際にソフトを動かすために使います。
+
+つまり、このツール全体は**「AIが話す言葉（MCP）を受け取って、それをAdobeがわかる言葉（UXP）に翻訳して伝える」**という、AIとAdobeの間のスーパー通訳さんのような働きをしています！
+
+### Q. 「手持ちのモリサワフォントなどのデータを、このツールのフォルダに入れておけば文字化けしなくなりますか？」
+
+**A. まったく意味がありません！むしろライセンス違反になるので絶対にやめてください。**
+
+InDesignは**「お使いのパソコン本体（OS）」**に入っているフォントか、**「作業中のInDesignファイルと同じ場所（Document fontsフォルダ）」**にあるフォントしか認識できません。
+そのため、このシステムの裏側のフォルダに高価な商用フォントデータを直接入れても、InDesignからは見えず、なんのメリットもありません。
+
+AIは「テキストを『新ゴ M』にして」といった**「フォントの名前（文字の命令）」**だけをInDesignに伝えています。
+つまり、このシステム自体に重いフォントデータを持たせる必要はなく、**「このツールを使うあなたのパソコン自体に、いつも通りフォントがインストールされていれば、問題なく動作する」**という仕組みになっています。
+
+（※商用フォントデータをツール内に含めたままネット上に公開したり人に渡してしまうと、フォントメーカーとの重大なライセンス違反になりますので絶対に行わないでください！）
+
+---
+
+## 💻 開発者向け：日本語・縦書き対応のコード構成について
+
+本プロジェクトでは、海外製ツールでは対応しきれない「日本のDTP特有の機能」を実現するために、以下の専用処理ファイル（ハンドラーと定義）を `src` フォルダ内に独自実装しています。機能追加や改修を行いたいエンジニアの方は、以下のファイル群をご参照ください。
+
+| コード（ファイル名） | 搭載されている主な機能 |
+| :--- | :--- |
+| `japaneseTypesettingHandlers`<br>`toolDefinitionsJapanese` | **日本語DTP組版のコア処理**<br>ルビ（ふりがな）の自動振り、禁則処理（行頭に「。」が来ないようにする等）、文字ツメ、和欧文字間隔の調整などを担当。 |
+| `verticalTextHandlers`<br>`toolDefinitionsVertical` | **縦書き（縦組み）特化処理**<br>テキストフレームの縦書き化、縦中横（たてちゅうよこ/2桁数字の横組み等）、連数字、右綴じドキュメントへの自動変換などを担当。 |
+| `proofreadingHandlers`<br>`toolDefinitionsProofreading` | **日本語自動校正システム**<br>「引越」と「引っ越し」などの表記ゆれ検知、常用漢字外のチェック、差別用語や放送禁止用語などの要注意ワードの検知を担当。 |
+| `textFlowHandlers`<br>`toolDefinitionsTextFlow` | **長文の自動流し込み（自動ページ送り）**<br>Word等の長文テキストを流し込む際、文字が溢れたら（オーバーセット）自動で次のページに行を追加して連結していく処理を担当。 |
+| `preflightHandlers`<br>`toolDefinitionsPreflight` | **印刷用プリフライト（入稿前チェック）**<br>商用フォントのエンベッド制限チェック、スミベタ（黒100%文字）の強制オーバープリント化、PDF/X-1aなどの安全な入稿データ作成を担当。 |
+
+※各ファイルは `src/handlers/` および `src/types/` 内に分かれて格納されています。詳細な機能定義は `index.js` にてまとめられています。
+
+---
+
+## 謝辞（Special Thanks）
+
+本プロジェクト（AI in Design / 旧称: indesign-uxp-server）は、元となるInDesign MCPサーバーのベースアーキテクチャを開発された **[theloniuser](https://github.com/theloniuser)** 氏の多大なる貢献の上に成り立っています。
+
+InDesignと最新のAI（MCP）を「UXPプラグイン＋Node.jsサーバー」というブリッジ構成で繋ぐという、極めて革新的で堅牢な仕組みを世界で初めてオープンソースとして公開してくださった同氏に、この場を借りて深く感謝申し上げます。
+この素晴らしいベースシステムがあったからこそ、日本の複雑なDTP環境や縦組みの悩みを解決するための「AI in Design」というプロジェクトへと発展させることができました。本当にありがとうございます！

@@ -27,6 +27,14 @@ export { ExportHandlers } from './exportHandlers.js';
 export { UtilityHandlers } from './utilityHandlers.js';
 export { HelpHandlers } from './helpHandlers.js';
 
+// 日本語DTP拡張
+export { JapaneseTypesettingHandlers } from './japaneseTypesettingHandlers.js';
+export { VerticalTextHandlers } from './verticalTextHandlers.js';
+export { PreflightHandlers } from './preflightHandlers.js';
+export { TextFlowHandlers } from './textFlowHandlers.js';
+export { RevisionHandlers } from './revisionHandlers.js';
+export { ProofreadingHandlers } from './proofreadingHandlers.js';
+
 /**
  * Handler Categories Overview:
  * 
@@ -51,7 +59,15 @@ export { HelpHandlers } from './helpHandlers.js';
  * 🛠️ System Utilities (1 handler)
  * - UtilityHandlers: Code execution, session management
  * 
- * Total: 13 handler classes covering 135+ tools
+ * Total: 19 handler classes covering 170+ tools
+ * 
+ * 🇯🇵 Japanese DTP (6 handlers)
+ * - JapaneseTypesettingHandlers: 和文組版 (禁則, 約物, 字詰め)
+ * - VerticalTextHandlers: 縦書き (変換, 検証, 縦中横)
+ * - PreflightHandlers: 入稿前チェック (フォント, リンク, 解像度)
+ * - TextFlowHandlers: 流し込み (原稿解析, テンプレート)
+ * - RevisionHandlers: 修正運用 (赤字, 差分比較)
+ * - ProofreadingHandlers: 校閲 (常用漢字, 表記揺れ, 不適切表現)
  */
 
 /**

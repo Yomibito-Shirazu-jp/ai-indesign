@@ -1,5 +1,6 @@
 /**
  * Main InDesign MCP Server class
+ * 日本語DTP拡張対応版 (170+ tools)
  */
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
@@ -17,9 +18,20 @@ import {
     PageItemHandlers,
     StyleHandlers,
     TextHandlers,
-    UtilityHandlers
+    UtilityHandlers,
+    // 日本語DTP拡張ハンドラー
+    JapaneseTypesettingHandlers,
+    VerticalTextHandlers,
+    PreflightHandlers,
+    TextFlowHandlers,
+    RevisionHandlers,
+    ProofreadingHandlers,
 } from '../handlers/index.js';
 import { formatResponse, formatErrorResponse } from '../utils/stringUtils.js';
+import { operationLogger } from './operationLogger.js';
+import { safetyManager } from './safetyManager.js';
+import { parseInstruction, parseMultipleInstructions } from '../japanese/instructionParser.js';
+import { ConfirmationMode } from '../japanese/confirmationMode.js';
 
 export class InDesignMCPServer {
     constructor() {
@@ -224,7 +236,84 @@ export class InDesignMCPServer {
             // Help System
             case 'help': return await HelpHandlers.getHelp(args);
 
+            // ═══════════════════════════════════════════
+            // 日本語DTP拡張ツール
+            // ═══════════════════════════════════════════
+
+            // 和文組版 (Japanese Typesetting)
+            case 'apply_japanese_typesetting_preset': return await JapaneseTypesettingHandlers.applyJapaneseTypesettingPreset(args);
+            case 'normalize_japanese_text': return await JapaneseTypesettingHandlers.normalizeJapaneseText(args);
+            case 'fix_kinsoku': return await JapaneseTypesettingHandlers.fixKinsoku(args);
+            case 'adjust_kumihan': return await JapaneseTypesettingHandlers.adjustKumihan(args);
+            case 'adjust_tracking_for_japanese': return await JapaneseTypesettingHandlers.adjustTrackingForJapanese(args);
+            case 'adjust_leading_for_japanese': return await JapaneseTypesettingHandlers.adjustLeadingForJapanese(args);
+            case 'validate_japanese_layout': return await JapaneseTypesettingHandlers.validateJapaneseLayout(args);
+            case 'detect_style_inconsistencies': return await JapaneseTypesettingHandlers.detectStyleInconsistencies(args);
+
+            // 縦書き (Vertical Text)
+            case 'create_vertical_text_frame': return await VerticalTextHandlers.createVerticalTextFrame(args);
+            case 'convert_frame_to_vertical': return await VerticalTextHandlers.convertFrameToVertical(args);
+            case 'validate_vertical_layout': return await VerticalTextHandlers.validateVerticalLayout(args);
+            case 'fix_tatechuyoko': return await VerticalTextHandlers.fixTatechuyoko(args);
+            case 'fix_vertical_punctuation': return await VerticalTextHandlers.fixVerticalPunctuation(args);
+            case 'mix_vertical_and_horizontal_layout': return await VerticalTextHandlers.mixVerticalAndHorizontalLayout(args);
+
+            // 入稿前チェック (Preflight)
+            case 'preflight_check': return await PreflightHandlers.preflightCheck(args);
+            case 'check_fonts': return await PreflightHandlers.checkFonts(args);
+            case 'check_links': return await PreflightHandlers.checkLinks(args);
+            case 'check_image_resolution': return await PreflightHandlers.checkImageResolution(args);
+            case 'check_bleed': return await PreflightHandlers.checkBleed(args);
+            case 'check_overset': return await PreflightHandlers.checkOverset(args);
+            case 'check_color_space': return await PreflightHandlers.checkColorSpace(args);
+            case 'export_print_pdf': return await PreflightHandlers.exportPrintPDF(args);
+            case 'export_review_pdf': return await PreflightHandlers.exportReviewPDF(args);
+
+            // テキスト流し込み (Text Flow)
+            case 'import_text': return await TextFlowHandlers.importText(args);
+            case 'parse_manuscript_structure': return await TextFlowHandlers.parseManuscriptStructure(args);
+            case 'flow_text_to_pages': return await TextFlowHandlers.flowTextToPages(args);
+            case 'apply_document_template': return await TextFlowHandlers.applyDocumentTemplate(args);
+            case 'resolve_overset_text': return await TextFlowHandlers.resolveOversetText(args);
+            case 'list_available_templates': return TextFlowHandlers.listAvailableTemplates();
+
+            // 修正運用 (Revision)
+            case 'apply_redline_changes': return await RevisionHandlers.applyRedlineChanges(args);
+            case 'replace_text_by_instruction': return await RevisionHandlers.replaceTextByInstruction(args);
+            case 'export_change_log': return await RevisionHandlers.exportChangeLog(args);
+            case 'compare_versions': return await RevisionHandlers.compareVersions(args);
+
+            // 日本語自然文解釈 (Interpretation & Logging)
+            case 'parse_instruction': {
+                const ir = parseMultipleInstructions(args.text);
+                return formatResponse(ir, '自然文解釈結果');
+            }
+            case 'confirm_instruction': {
+                if (!this._confirmationMode) this._confirmationMode = new ConfirmationMode();
+                if (args.approve) {
+                    const pending = this._confirmationMode.approve();
+                    return formatResponse({ approved: true, operations: pending }, '操作承認');
+                } else {
+                    this._confirmationMode.reject();
+                    return formatResponse({ approved: false, message: '操作を却下しました' }, '操作却下');
+                }
+            }
+            case 'get_operation_log': {
+                if (args?.failedOnly) return formatResponse(operationLogger.getFailedLogs(args?.limit), '失敗ログ');
+                if (args?.tool) return formatResponse(operationLogger.getLogsByTool(args.tool, args?.limit), 'ツール別ログ');
+                return formatResponse(operationLogger.getRecentLogs(args?.limit), '操作ログ');
+            }
+            case 'export_operation_log':
+                return formatResponse({ logs: operationLogger.exportLogs(), summary: operationLogger.getSummary() }, '操作ログ出力');
+
             // Add more handlers as we create them
+
+            // 校閲 (Proofreading)
+            case 'check_joyo_kanji': return await ProofreadingHandlers.checkJoyoKanji(args);
+            case 'check_hyoki_yure': return await ProofreadingHandlers.checkHyokiYure(args);
+            case 'check_sensitive_terms': return await ProofreadingHandlers.checkSensitiveTerms(args);
+            case 'proofread_all': return await ProofreadingHandlers.proofreadAll(args);
+
             default:
                 return formatErrorResponse(`Tool '${name}' not found or not implemented. Use 'help' to see available tools.`, "Tool Call");
         }
