@@ -235,15 +235,14 @@
         <div class="setting-group">
             <label>AIプロバイダー (任意)</label>
             <select id="ai-provider">
-                <option value="claude">Claude (Anthropic)</option>
-                <option value="openai">ChatGPT (OpenAI)</option>
-                <option value="gemini">Gemini (Google)</option>
-                <option value="external" selected>外部MCPクライアントを使用</option>
+                <option value="gemini" selected>Gemini (Google) — 推奨</option>
+                <option value="external">外部MCPクライアントを使用 (Claude Desktop等)</option>
             </select>
         </div>
-        <div class="setting-group" id="api-key-group" style="display:none;">
-            <label>APIキー</label>
-            <input type="password" id="api-key" placeholder="sk-...">
+        <div class="setting-group" id="api-key-group">
+            <label>Gemini APIキー（<a href="https://aistudio.google.com/apikey" style="color:#FF3366;">無料で取得</a>）</label>
+            <input type="password" id="api-key" placeholder="AIza...">
+            <button id="save-api-key" style="margin-top:6px;background:#FF3366;color:#fff;border:none;padding:6px 12px;border-radius:4px;cursor:pointer;">APIキーを保存</button>
         </div>
         
         <div class="setting-group" style="margin-top: 8px;">

@@ -23,21 +23,30 @@ if (isMCP) {
 
     async function createWindow() {
         mainWindow = new BrowserWindow({
-            width: 800,
-            height: 650,
+            width: 1280,
+            height: 800,
+            minWidth: 960,
+            minHeight: 600,
             titleBarStyle: 'hidden',
             titleBarOverlay: {
-                color: '#1a1a1a',
+                color: '#1e293b',
                 symbolColor: '#fff'
             },
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false
             },
-            backgroundColor: '#1a1a1a'
+            backgroundColor: '#f8fafc'
         });
 
-        await mainWindow.loadFile(path.join(__dirname, 'index.html'));
+        // AutoDTP UIをロード（ビルド済み or 開発サーバー）
+        const uiPath = path.join(__dirname, 'ui', 'index.html');
+        if (fs.existsSync(uiPath)) {
+            await mainWindow.loadFile(uiPath);
+        } else {
+            // 開発時: Vite devサーバーに接続
+            await mainWindow.loadURL('http://localhost:5173');
+        }
     }
 
     app.whenReady().then(() => {
