@@ -53,12 +53,48 @@
 
 ## どうやって使うの？
 
-ご利用には以下の準備が必要です。
-1. **パソコン**（ちょっとしたプログラムを動かす設定が必要です）
-2. **Adobe InDesign** と **Adobe UXP Developer Tool**
-   - ツールを動かすための「小窓（Bridgeプラグイン）」をInDesign内に入れます。
-   - Adobeが提供している `Adobe UXP Developer Tool` という公式アプリを使い、本ツールのフォルダ内にある `manifest.json` というファイルを **「Load and Watch（読み込んで監視）」** するだけでOKです。
-3. **AIアプリ**（Claude Desktopアプリなどを使用します）
+### 🚀 最速セットアップ（AIエディタに1つプロンプトを貼るだけ！）
+
+> **必要なもの:** Node.js、Git、Claude Desktop（または他のAI対応エディタ）
+
+**ステップ 1:** ターミナルで以下を実行
+```bash
+git clone https://github.com/Yomibito-Shirazu-jp/ai-indesign.git
+```
+
+**ステップ 2:** クローンしたフォルダをAIエディタ（Cursor / VS Code + Roo Code / Windsurf等）で開く
+
+**ステップ 3:** AIチャットに以下のプロンプトを貼り付けて実行 👇
+
+```
+Ai-inDesignのセットアップを行ってください。以下の手順を順番に実行してください：
+
+1. Node.js がインストールされているか確認（`node --version`）。なければインストール方法を案内して止まる。
+2. ルートディレクトリで `npm install` を実行
+3. bridge ディレクトリで `npm install` を実行
+4. `node setup.mjs` を実行して Claude Desktop の設定を自動追加
+5. InDesign用プラグイン（CCXファイル）がplugin/フォルダにあるか確認し、あれば「ダブルクリックでインストール」と案内
+6. ブリッジサーバーを起動（bridge ディレクトリで `node server.js`）
+7. 最後に：Claude Desktop を再起動 → InDesignで「ウィンドウ」→「プラグイン」→「Bridge Panel」を開く → http://localhost:3000 で確認
+
+すべて日本語で案内してください。エラーが出たら原因と解決方法を教えてください。
+```
+
+**以上で完了です！** 🎉 AIがすべてのセットアップを自動で実行してくれます。
+
+---
+
+### 📋 手動セットアップ（AIエディタを使わない場合）
+
+1. **パソコン**に [Node.js](https://nodejs.org/ja/)（LTS版推奨）をインストール
+2. `git clone` 後、`AutoDTP_起動.bat` をダブルクリック（全自動でセットアップ＆起動）
+3. ブラウザで http://localhost:3000 が開き、ステータス確認＋チュートリアルが表示されます
+4. **Adobe InDesign** を起動し、メニューの「ウィンドウ」→「プラグイン」→「Bridge Panel」を開く
+5. **Claude Desktop** を再起動すると、MCPサーバーが自動で認識されます
+
+---
+
+### 💬 使ってみよう！
 
 AIのチャット画面で、例えば以下のように話しかけてみてください。
 
