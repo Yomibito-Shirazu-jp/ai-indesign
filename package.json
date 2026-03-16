@@ -2,13 +2,33 @@
   "name": "indesign-mcp-server",
   "version": "1.2.1",
   "description": "A comprehensive Model Context Protocol (MCP) server for Adobe InDesign automation with 50+ professional tools including document management, text/graphics creation, style management, and image scaling",
-  "main": "src/index.js",
+  "main": "app/main.js",
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
+    "app": "electron .",
     "dev": "node --inspect src/index.js",
-    "build": "echo 'No build step required for Node.js'",
+    "build:mac": "electron-builder -m",
+    "build:win": "electron-builder -w",
     "test": "node tests/test-all-handlers.js"
+  },
+  "build": {
+    "appId": "com.yomibitoshirazujp.ai-indesign",
+    "productName": "Ai-inDesign",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "app/**/*",
+      "src/**/*",
+      "bridge/**/*"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity"
+    },
+    "win": {
+      "target": "nsis"
+    }
   },
   "keywords": [
     "mcp",
@@ -40,5 +60,9 @@
   "bugs": {
     "url": "https://github.com/Yomibito-Shirazu-jp/ai-indesign/issues"
   },
-  "homepage": "https://github.com/Yomibito-Shirazu-jp/ai-indesign#readme"
+  "homepage": "https://github.com/Yomibito-Shirazu-jp/ai-indesign#readme",
+  "devDependencies": {
+    "electron": "^41.0.2",
+    "electron-builder": "^26.8.1"
+  }
 }

@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ai-inDesign Desktop Settings</title>
+    <style>
+        :root {
+            --bg-dark: #1e1e1e;
+            --bg-card: #252526;
+            --text-main: #cccccc;
+            --accent: #ff3366;
+            --accent-hover: #ff5588;
+            --success: #1abc9c;
+            --error: #e74c3c;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        h1 {
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        p {
+            color: #aaa;
+            line-height: 1.5;
+            margin-bottom: 30px;
+        }
+
+        .feature-box {
+            background: rgba(255, 51, 102, 0.1);
+            border: 1px solid rgba(255, 51, 102, 0.3);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .feature-box h3 {
+            margin-top: 0;
+            color: white;
+            font-size: 16px;
+        }
+
+        .btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 14px 28px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        .btn:hover {
+            background-color: var(--accent-hover);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        #status {
+            margin-top: 20px;
+            font-size: 14px;
+            padding: 12px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .status-success {
+            background: rgba(26, 188, 156, 0.1);
+            color: var(--success);
+            border: 1px solid var(--success);
+        }
+
+        .status-error {
+            background: rgba(231, 76, 60, 0.1);
+            color: var(--error);
+            border: 1px solid var(--error);
+        }
+
+        .footer-links {
+            margin-top: 30px;
+            font-size: 13px;
+        }
+
+        .footer-links a {
+            color: var(--accent);
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* License / Paywall Box Example */
+        .pro-box {
+            margin-top: 30px;
+            padding: 20px;
+            background: #2c2c2c;
+            border-radius: 8px;
+            border-left: 4px solid #f39c12;
+            text-align: left;
+        }
+        
+        .pro-box h4 { margin: 0 0 10px 0; color: #f39c12; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- Logo or Icon could go here -->
+        <h1>Ai-inDesign セットアップ</h1>
+        <p>InDesign、Photoshop、Illustratorを<br>AI（Claude Desktop等）と連携させるブリッジアプリです。</p>
+
+        <div class="feature-box">
+            <h3>📦 ワンクリック設定</h3>
+            <p style="margin-bottom:0;">
+                このボタンを押すと、お使いの Claude Desktop の設定ファイルに「Ai-inDesign」の接続情報が自動で追加されます。<br>
+                （メモリ機能、ファイルシステム読み込み機能も同時に設定されます）
+            </p>
+        </div>
+
+        <button class="btn" id="setup-btn">Claude Desktopと連携する</button>
+
+        <div id="status"></div>
+
+        <div class="pro-box">
+            <h4>👑 Pro版（アプリ内課金モジュール準備中）</h4>
+            <p style="font-size: 13px; margin-bottom:0;">
+                現在は「無料版ベース機能（3大アプリ連携）」として動作しています。今後のアップデートにより、この画面からライセンスキーを入力することで「高度なルールエンジン」等のPro版機能がアンロックされる予定です。
+            </p>
+        </div>
+
+        <div class="footer-links">
+            <a id="help-link" href="#">📋 サポート・ヘルプ</a> | 
+            文唱堂印刷株式会社
+        </div>
+    </div>
+
+    <script>
+        const { ipcRenderer } = require('electron');
+
+        document.getElementById('setup-btn').addEventListener('click', async () => {
+            const btn = document.getElementById('setup-btn');
+            const statusDiv = document.getElementById('status');
+            
+            btn.disabled = true;
+            btn.textContent = '設定中...';
+            statusDiv.style.display = 'none';
+            statusDiv.className = '';
+
+            try {
+                // Mainプロセスの設定処理を呼び出す
+                const result = await ipcRenderer.invoke('setup-claude');
+
+                statusDiv.style.display = 'block';
+                if (result.success) {
+                    statusDiv.innerHTML = `
+                        <strong>✅ 設定完了！</strong><br>
+                        Claudeに接続情報が登録されました。<br>
+                        <span style="font-size:11px; opacity:0.8;">保存先: ${result.path}</span><br>
+                        <br>
+                        ⚠️ 必ずClaude Desktopを一度完全に終了（Quit）してから再起動してください。
+                    `;
+                    statusDiv.className = 'status-success';
+                    btn.textContent = '設定済み';
+                } else {
+                    statusDiv.textContent = `❌ エラーが発生しました: ${result.message}`;
+                    statusDiv.className = 'status-error';
+                    btn.disabled = false;
+                    btn.textContent = '再試行する';
+                }
+            } catch (err) {
+                statusDiv.textContent = `❌ アプリ内部エラー: ${err.message}`;
+                statusDiv.className = 'status-error';
+                btn.disabled = false;
+                btn.textContent = '再試行する';
+            }
+        });
+
+        document.getElementById('help-link').addEventListener('click', (e) => {
+            e.preventDefault();
+            ipcRenderer.send('open-external', 'https://github.com/Yomibito-Shirazu-jp/ai-indesign');
+        });
+    </script>
+</body>
+</html>
