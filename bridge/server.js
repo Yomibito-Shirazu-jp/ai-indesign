@@ -4,6 +4,17 @@ const { v4: uuidv4 } = require('uuid');
 const path = require('path');
 const { AiChatSession } = require('./ai-chat');
 
+// ─── In-memory operation log (for Dimension Hub) ───
+const opLog = [];
+const MAX_LOG = 500;
+
+function pushLog(level, message) {
+    const now = new Date();
+    const ts = now.toTimeString().slice(0, 8);
+    opLog.push({ time: ts, level, message });
+    if (opLog.length > MAX_LOG) opLog.shift();
+}
+
 const WS_PORT = 3001;
 const HTTP_PORT = 3000;
 const TIMEOUT_MS = 30000;
@@ -51,6 +62,7 @@ const wss = new WebSocketServer({ port: WS_PORT, host: '127.0.0.1' });
 
 wss.on('connection', (ws) => {
     console.log('[Bridge] Plugin connected');
+    pushLog('success', 'InDesign plugin connected via WebSocket');
     pluginSocket = ws;
 
     ws.on('message', (data) => {
@@ -96,6 +108,7 @@ wss.on('connection', (ws) => {
 
     ws.on('close', () => {
         console.log('[Bridge] Plugin disconnected');
+        pushLog('warn', 'InDesign plugin disconnected');
         pluginSocket = null;
         for (const [id, item] of pending.entries()) {
             clearTimeout(item.timer);
@@ -179,11 +192,55 @@ app.post('/execute', (req, res) => {
     });
 
     console.log('[Bridge] Sending execute:', id, code.slice(0, 100));
+    pushLog('info', 'Execute: ' + code.slice(0, 80) + (code.length > 80 ? '…' : ''));
     pluginSocket.send(JSON.stringify({ type: 'execute', id, code }));
 
     promise
-        .then((result) => res.json({ result }))
-        .catch((err) => res.status(500).json({ error: err.message }));
+        .then((result) => {
+            pushLog('success', 'Execute result: ' + JSON.stringify(result).slice(0, 80));
+            res.json({ result });
+        })
+        .catch((err) => {
+            pushLog('error', 'Execute error: ' + err.message);
+            res.status(500).json({ error: err.message });
+        });
+});
+
+// ─── Dimension Hub API ───
+
+// ツール一覧 (ESMモジュールを動的インポート)
+let cachedTools = null;
+app.get('/api/tools', async (req, res) => {
+    if (cachedTools) return res.json({ tools: cachedTools });
+    try {
+        const { allToolDefinitions } = await import('../src/types/index.js');
+        cachedTools = allToolDefinitions.map(t => ({
+            name: t.name,
+            description: t.description || '',
+        }));
+        pushLog('info', `Tool list loaded: ${cachedTools.length} tools`);
+        res.json({ tools: cachedTools });
+    } catch (e) {
+        res.json({ tools: [], error: e.message });
+    }
+});
+
+// 操作ログ
+app.get('/api/logs', (req, res) => {
+    const limit = parseInt(req.query.limit) || 200;
+    res.json({ logs: opLog.slice(-limit) });
+});
+
+// 詳細ステータス
+app.get('/api/status/detailed', (req, res) => {
+    res.json({
+        bridge: true,
+        pluginConnected: pluginSocket !== null,
+        pendingRequests: pending.size,
+        logCount: opLog.length,
+        serverVersion: '1.2.1',
+        uptime: Math.floor(process.uptime()),
+    });
 });
 
 // ─── CCXプラグイン ダウンロードエンドポイント ───
@@ -209,6 +266,8 @@ app.listen(HTTP_PORT, '127.0.0.1', () => {
     console.log(`[Bridge] WebSocket server on ws://127.0.0.1:${WS_PORT}`);
     console.log('[Bridge] AI Chat engine ready (Gemini)');
     console.log('[Bridge] Waiting for UXP plugin to connect...');
+    pushLog('info', `Bridge server started on HTTP :${HTTP_PORT} / WS :${WS_PORT}`);
+    pushLog('info', 'Dimension Hub ready at http://localhost:' + HTTP_PORT);
 
     // 社員向け: ブラウザを自動で開く
     if (process.env.AUTO_OPEN !== 'false') {
