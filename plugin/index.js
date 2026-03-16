@@ -2,25 +2,73 @@ const { app } = require("indesign");
 const { entrypoints } = require("uxp");
 
 // UI Elements
-const statusIndicator = document.getElementById("status-indicator");
-const overlay = document.getElementById("overlay");
-const overlayText = document.getElementById("overlay-text");
-const chatContainer = document.getElementById("chat-container");
-const chatInput = document.getElementById("chat-input");
-const sendBtn = document.getElementById("send-btn");
-
-// Settings Elements
-const toggleSettingsBtn = document.getElementById("toggle-settings");
-const closeSettingsBtn = document.getElementById("close-settings");
-const settingsView = document.getElementById("settings-view");
-const aiProviderSelect = document.getElementById("ai-provider");
-const apiKeyGroup = document.getElementById("api-key-group");
+let statusIndicator, overlay, overlayText, chatContainer, chatInput, sendBtn;
+let toggleSettingsBtn, closeSettingsBtn, settingsView, aiProviderSelect, apiKeyGroup;
 
 let ws = null;
 let isConnected = false;
 
+// Suppress known UXP WebSocket rejection false errors
+window.addEventListener("unhandledrejection", (e) => {
+    if (e.reason === false) {
+        e.preventDefault(); // Ignore "false" rejection
+    }
+});
+
+// Initialize elements safely
+function initUI() {
+    statusIndicator = document.getElementById("status-indicator");
+    overlay = document.getElementById("overlay");
+    overlayText = document.getElementById("overlay-text");
+    chatContainer = document.getElementById("chat-container");
+    chatInput = document.getElementById("chat-input");
+    sendBtn = document.getElementById("send-btn");
+
+    toggleSettingsBtn = document.getElementById("toggle-settings");
+    closeSettingsBtn = document.getElementById("close-settings");
+    settingsView = document.getElementById("settings-view");
+    aiProviderSelect = document.getElementById("ai-provider");
+    apiKeyGroup = document.getElementById("api-key-group");
+
+    if (toggleSettingsBtn) {
+        toggleSettingsBtn.addEventListener("click", () => {
+            if (settingsView) settingsView.style.display = settingsView.style.display === "flex" ? "none" : "flex";
+        });
+    }
+
+    if (closeSettingsBtn) {
+        closeSettingsBtn.addEventListener("click", () => {
+            if (settingsView) settingsView.style.display = "none";
+        });
+    }
+
+    if (aiProviderSelect) {
+        aiProviderSelect.addEventListener("change", (e) => {
+            if (e.target.value === "external") {
+                if (apiKeyGroup) apiKeyGroup.style.display = "none";
+                addMessage("外部MCP設定（Claude Desktop等）からの接続を待機します。", "system");
+            } else {
+                if (apiKeyGroup) apiKeyGroup.style.display = "flex";
+                addMessage(`${e.target.value} のAPI設定に切り替えました。`, "system");
+            }
+        });
+    }
+
+    if (sendBtn) sendBtn.addEventListener("click", sendMessage);
+    
+    if (chatInput) {
+        chatInput.addEventListener("keypress", (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+    }
+}
+
 // Helpers
 function addMessage(text, type = 'user') {
+  if (!chatContainer) return;
   const msgDiv = document.createElement("div");
   msgDiv.className = `message msg-${type}`;
   msgDiv.textContent = text;
@@ -29,65 +77,40 @@ function addMessage(text, type = 'user') {
 }
 
 function updateStatus(state) {
+  if (!statusIndicator) return;
   statusIndicator.className = "status-dot";
   if (state === 'connected') {
     statusIndicator.classList.add("connected");
-    overlay.style.display = "none";
-    sendBtn.disabled = false;
+    if (overlay) overlay.style.display = "none";
+    if (sendBtn) sendBtn.disabled = false;
     isConnected = true;
   } else if (state === 'disconnected') {
     statusIndicator.classList.add("disconnected");
-    overlay.style.display = "flex";
-    overlayText.textContent = "Bridgeサーバーから切断されました...";
-    sendBtn.disabled = true;
+    if (overlay) overlay.style.display = "flex";
+    if (overlayText) overlayText.textContent = "Bridgeサーバーから切断されました...";
+    if (sendBtn) sendBtn.disabled = true;
     isConnected = false;
   }
 }
 
-// Settings Toggle
-toggleSettingsBtn.addEventListener("click", () => {
-    settingsView.style.display = settingsView.style.display === "flex" ? "none" : "flex";
-});
-closeSettingsBtn.addEventListener("click", () => {
-    settingsView.style.display = "none";
-});
-aiProviderSelect.addEventListener("change", (e) => {
-    if (e.target.value === "external") {
-        apiKeyGroup.style.display = "none";
-        addMessage("外部MCP設定（Claude Desktop等）からの接続を待機します。", "system");
-    } else {
-        apiKeyGroup.style.display = "flex";
-        addMessage(`${e.target.value} のAPI設定に切り替えました。`, "system");
-    }
-});
-
 // Chat Send
 function sendMessage() {
-    if (!isConnected) return;
+    if (!isConnected || !chatInput) return;
     const text = chatInput.value.trim();
     if (!text) return;
 
     addMessage(text, 'user');
     chatInput.value = "";
     
-    // Simulate AI thinking or send to bridge
-    if (aiProviderSelect.value === "external") {
+    if (aiProviderSelect && aiProviderSelect.value === "external") {
         addMessage("※外部MCPモードのため、チャット入力は無視されます。Claude Desktop等から直接指示をお願いします！", "system");
     } else {
         addMessage("考え中...", "system");
         if (ws && ws.readyState === WebSocket.OPEN) {
-            ws.send(JSON.stringify({ type: 'chat', message: text, provider: aiProviderSelect.value }));
+            ws.send(JSON.stringify({ type: 'chat', message: text, provider: aiProviderSelect ? aiProviderSelect.value : 'external' }));
         }
     }
 }
-
-sendBtn.addEventListener("click", sendMessage);
-chatInput.addEventListener("keypress", (e) => {
-    if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault();
-        sendMessage();
-    }
-});
 
 // Serialize for execute result
 function serializeResult(value) {
@@ -119,7 +142,7 @@ async function handleExecute(ws, msg) {
 }
 
 function connectToBridge() {
-  ws = new WebSocket("ws://127.0.0.1:3001");
+  ws = new WebSocket("ws://localhost:3001");
 
   ws.onopen = () => {
     updateStatus("connected");
@@ -158,7 +181,14 @@ entrypoints.setup({
   panels: {
     mainPanel: {
       show() {
-        connectToBridge();
+        console.log("[Plugin] Panel show() called");
+        try {
+            initUI();
+            console.log("[Plugin] initUI() successful");
+            connectToBridge();
+        } catch (e) {
+            console.error("[Plugin] Error in show():", e);
+        }
       }
     }
   }

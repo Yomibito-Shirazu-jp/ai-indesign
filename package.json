@@ -2,11 +2,11 @@
   "name": "indesign-mcp-server",
   "version": "1.2.1",
   "description": "A comprehensive Model Context Protocol (MCP) server for Adobe InDesign automation with 50+ professional tools including document management, text/graphics creation, style management, and image scaling",
-  "main": "app/main.js",
+  "main": "app/main.cjs",
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
-    "app": "electron .",
+    "app": "cross-env ELECTRON_RUN_AS_NODE= electron .",
     "dev": "node --inspect src/index.js",
     "build:mac": "electron-builder -m",
     "build:win": "electron-builder -w",
@@ -48,7 +48,11 @@
   "author": "Yomibito-Shirazu-jp",
   "license": "MIT",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.27.1"
+    "@google/genai": "^1.45.0",
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "cors": "^2.8.6",
+    "express": "^5.2.1",
+    "ws": "^8.19.0"
   },
   "engines": {
     "node": ">=18.0.0"
@@ -62,6 +66,7 @@
   },
   "homepage": "https://github.com/Yomibito-Shirazu-jp/ai-indesign#readme",
   "devDependencies": {
+    "cross-env": "^10.1.0",
     "electron": "^41.0.2",
     "electron-builder": "^26.8.1"
   }

@@ -1,8 +1,9 @@
-import { app, BrowserWindow, ipcMain, shell } from 'electron';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs';
-import os from 'os';
+console.log("ELECTRON_RUN_AS_NODE:", process.env.ELECTRON_RUN_AS_NODE);
+const electron = require('electron');
+const { app, BrowserWindow, ipcMain, shell } = electron;
+const path = require('path');
+const fs = require('fs');
+const os = require('os');
 
 // If started with the --mcp flag, run silently as the MCP server
 const isMCP = process.argv.includes('--mcp');
@@ -11,16 +12,13 @@ if (isMCP) {
     // Hide Electron in macOS dock
     if (app.dock) app.dock.hide();
     
-    // We import the MCP server module directly.
+    // Dynamically import the ESM server module
     import('../src/index.js').catch(err => {
         console.error('Failed to start MCP Server:', err);
         process.exit(1);
     });
 } else {
     // Normal GUI App Mode
-    const __filename = fileURLToPath(import.meta.url);
-    const __dirname = path.dirname(__filename);
-
     let mainWindow;
 
     async function createWindow() {
@@ -69,7 +67,8 @@ if (isMCP) {
             let config = {};
             if (fs.existsSync(configPath)) {
                 try {
-                    config = JSON.parse(fs.readFileSync(configPath, 'utf8'));
+                    const rawData = fs.readFileSync(configPath, 'utf8');
+                    config = JSON.parse(rawData.replace(/^\uFEFF/, ''));
                 } catch (e) {
                     return { success: false, message: '既存の設定ファイルの読み込みに失敗しました。' };
                 }
@@ -77,26 +76,45 @@ if (isMCP) {
             if (!config.mcpServers) config.mcpServers = {};
 
             // Determine executable path
-            const exePath = app.getPath('exe');
+            const isPackaged = app.isPackaged;
+            let command, args;
 
-            config.mcpServers['Ai-inDesign'] = {
-                command: exePath,
-                args: ['--mcp']
+            if (isPackaged) {
+                // Production (Built .exe)
+                command = app.getPath('exe');
+                args = ['--mcp'];
+            } else {
+                // Development
+                command = 'node';
+                // Resolve path to src/index.js correctly escaping backslashes for JSON automatically
+                args = [path.join(__dirname, 'src', 'index.js')];
+            }
+
+            config.mcpServers['ai-indesign'] = {
+                command: command,
+                args: args
             };
 
             // Optional standard MCPs
             if (!config.mcpServers['memory']) {
                 config.mcpServers['memory'] = {
                     command: "npx",
-                    args: ["-y", "@modelcontextprotocol/server-memory"]
+                    args: [
+                        "-y",
+                        "@modelcontextprotocol/server-memory"
+                    ]
                 };
             }
 
             if (!config.mcpServers['filesystem']) {
-                const desktopPath = path.join(os.homedir(), 'Desktop').split(path.sep).join('/');
+                const desktopPath = path.join(os.homedir(), 'Desktop');
                 config.mcpServers['filesystem'] = {
                     command: "npx",
-                    args: ["-y", "@modelcontextprotocol/server-filesystem", desktopPath]
+                    args: [
+                        "-y",
+                        "@modelcontextprotocol/server-filesystem",
+                        desktopPath
+                    ]
                 };
             }
 

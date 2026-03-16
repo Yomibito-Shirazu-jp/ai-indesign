@@ -107,3 +107,19 @@ temp_script.jsx
 Thumbs.db
 ehthumbs.db
 Desktop.ini
+
+# Electron build output
+release/
+dist/
+
+# Distribution packages (ZIP, CCX archives)
+*.zip
+*.ccx
+
+# Employee distribution folders
+Employee_Distribution/
+Employee_Distribution_Folder/
+Employee_Release_v2/
+
+# Planning artifacts
+.planning/
