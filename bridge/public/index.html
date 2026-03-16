@@ -3,304 +3,925 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI in Design - 接続サポートツール</title>
+    <title>Ai-inDesign セットアップ & チュートリアル</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #f8fafc;
-            --text-color: #334155;
-            --accent-color: #2563eb;
-            --success-color: #10b981;
-            --error-color: #ef4444;
-            --card-bg: #ffffff;
-            --border-color: #e2e8f0;
+            --bg: #0f172a;
+            --bg-card: #1e293b;
+            --bg-card-hover: #273548;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --text-dim: #64748b;
+            --accent: #f43f5e;
+            --accent-hover: #fb7185;
+            --success: #10b981;
+            --success-bg: rgba(16, 185, 129, 0.1);
+            --warning: #f59e0b;
+            --warning-bg: rgba(245, 158, 11, 0.1);
+            --error: #ef4444;
+            --error-bg: rgba(239, 68, 68, 0.1);
+            --info: #3b82f6;
+            --info-bg: rgba(59, 130, 246, 0.1);
+            --border: #334155;
+            --glow: rgba(244, 63, 94, 0.15);
         }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            line-height: 1.6;
+            font-family: 'Noto Sans JP', 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            min-height: 100vh;
         }
 
-        .container {
-            max-width: 800px;
-            margin: 40px auto;
-            padding: 0 20px;
-        }
-
-        .header {
+        /* Hero */
+        .hero {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 50%, #1a1a2e 100%);
+            border-bottom: 1px solid var(--border);
+            padding: 60px 20px 40px;
             text-align: center;
-            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
         }
 
-        .header h1 {
-            color: #0f172a;
-            margin-bottom: 10px;
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 60% 40%, var(--glow) 0%, transparent 50%);
+            animation: pulse-glow 8s ease-in-out infinite;
         }
 
-        .header p {
-            color: #64748b;
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
 
-        .card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            padding: 30px;
-            margin-bottom: 30px;
+        .hero-content { position: relative; z-index: 1; }
+
+        .hero h1 {
+            font-size: 2.5em;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #fff, #f43f5e);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .card h2 {
-            margin-top: 0;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 10px;
-            margin-bottom: 20px;
-            color: #0f172a;
+        .hero p {
+            color: var(--text-muted);
+            font-size: 1.1em;
+            max-width: 600px;
+            margin: 0 auto;
         }
 
-        .status-box {
+        /* Status Banner */
+        .status-banner {
+            max-width: 900px;
+            margin: -24px auto 0;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .status-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px 28px;
             display: flex;
             align-items: center;
-            padding: 20px;
-            border-radius: 8px;
-            background-color: #f1f5f9;
-            margin-bottom: 20px;
-            transition: all 0.3s ease;
+            justify-content: space-between;
+            gap: 16px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            flex-wrap: wrap;
         }
 
-        .status-box.connected {
-            background-color: #ecfdf5;
-            border: 1px solid #a7f3d0;
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .status-box.disconnected {
-            background-color: #fef2f2;
-            border: 1px solid #fecaca;
-        }
-
-        .status-indicator {
-            width: 16px;
-            height: 16px;
+        .status-dot {
+            width: 12px;
+            height: 12px;
             border-radius: 50%;
-            background-color: #94a3b8;
-            margin-right: 15px;
+            background: var(--text-dim);
+            transition: all 0.3s;
+            flex-shrink: 0;
         }
 
-        .connected .status-indicator {
-            background-color: var(--success-color);
-            box-shadow: 0 0 10px var(--success-color);
+        .status-dot.online {
+            background: var(--success);
+            box-shadow: 0 0 12px var(--success);
         }
 
-        .disconnected .status-indicator {
-            background-color: var(--error-color);
+        .status-dot.offline {
+            background: var(--error);
         }
 
-        .status-text {
-            flex-grow: 1;
-            font-size: 1.1em;
-            font-weight: 500;
+        .status-label {
+            font-weight: 600;
+            font-size: 0.9em;
         }
 
-        button {
-            background-color: var(--accent-color);
+        .status-value {
+            font-size: 0.8em;
+            color: var(--text-muted);
+        }
+
+        .btn-test {
+            padding: 10px 20px;
+            background: var(--accent);
             color: white;
             border: none;
-            padding: 12px 24px;
-            border-radius: 6px;
-            font-size: 1em;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.9em;
             cursor: pointer;
-            font-weight: 500;
-            transition: background-color 0.2s;
-            display: inline-flex;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .btn-test:hover { background: var(--accent-hover); transform: translateY(-1px); }
+        .btn-test:disabled { background: var(--text-dim); cursor: not-allowed; transform: none; }
+
+        /* Main Content */
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px 80px;
+        }
+
+        /* Tab Navigation */
+        .tab-nav {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 32px;
+            background: var(--bg-card);
+            border-radius: 12px;
+            padding: 4px;
+            border: 1px solid var(--border);
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 14px 16px;
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.95em;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.2s;
+        }
+
+        .tab-btn:hover { color: var(--text); background: rgba(255,255,255,0.05); }
+
+        .tab-btn.active {
+            background: var(--accent);
+            color: white;
+            box-shadow: 0 4px 12px rgba(244, 63, 94, 0.3);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        /* Steps */
+        .step {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 28px;
+            margin-bottom: 20px;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .step:hover { border-color: var(--accent); }
+
+        .step-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--accent), #e11d48);
+            border-radius: 12px;
+            display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        button:hover {
-            background-color: #1d4ed8;
-        }
-
-        button:disabled {
-            background-color: #94a3b8;
-            cursor: not-allowed;
-        }
-
-        .info-section {
-            background-color: #eff6ff;
-            border-left: 4px solid var(--accent-color);
-            padding: 20px;
-            border-radius: 0 8px 8px 0;
-            margin-bottom: 20px;
-        }
-
-        .info-section h3 {
-            margin-top: 0;
-            color: #1e3a8a;
-        }
-
-        .terminal {
-            background-color: #1e293b;
-            color: #e2e8f0;
-            padding: 15px;
-            border-radius: 8px;
-            font-family: 'Courier New', Courier, monospace;
-            font-size: 0.9em;
-            margin-top: 20px;
-            overflow-x: auto;
-            min-height: 100px;
-            white-space: pre-wrap;
-        }
-
-        .free-tier-list {
-            list-style: none;
-            padding: 0;
-        }
-        
-        .free-tier-list li {
-            background: #fff;
-            margin-bottom: 10px;
-            padding: 15px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            border-left: 4px solid var(--accent-color);
-        }
-
-        .free-tier-list strong {
-            display: block;
-            color: #0f172a;
-            margin-bottom: 5px;
+            font-weight: 800;
             font-size: 1.1em;
+            color: white;
+            flex-shrink: 0;
+        }
+
+        .step-number.done {
+            background: linear-gradient(135deg, var(--success), #059669);
+        }
+
+        .step-title {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: white;
+        }
+
+        .step-desc {
+            color: var(--text-muted);
+            font-size: 0.9em;
+            margin-top: 4px;
+        }
+
+        .step-body {
+            margin-left: 56px;
+        }
+
+        .step-body p {
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            font-size: 0.95em;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #0c1222;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            font-family: 'Consolas', 'Courier New', monospace;
+            font-size: 0.9em;
+            color: #a5f3fc;
+            overflow-x: auto;
+            margin: 12px 0;
+            position: relative;
+        }
+
+        .code-block .copy-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 4px 10px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            color: var(--text-muted);
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .code-block .copy-btn:hover {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+
+        /* Alert Boxes */
+        .alert {
+            padding: 16px 20px;
+            border-radius: 10px;
+            margin: 16px 0;
+            font-size: 0.9em;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .alert-success { background: var(--success-bg); border: 1px solid rgba(16,185,129,0.3); color: #6ee7b7; }
+        .alert-warning { background: var(--warning-bg); border: 1px solid rgba(245,158,11,0.3); color: #fcd34d; }
+        .alert-error { background: var(--error-bg); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; }
+        .alert-info { background: var(--info-bg); border: 1px solid rgba(59,130,246,0.3); color: #93c5fd; }
+
+        .alert-icon { font-size: 1.2em; flex-shrink: 0; }
+        .alert-text { line-height: 1.6; }
+
+        /* Tutorial Images placeholder */
+        .screenshot {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            color: var(--text-dim);
+            font-size: 0.9em;
+            margin: 16px 0;
+        }
+
+        /* Example Prompts */
+        .prompt-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 12px;
+            margin: 16px 0;
+        }
+
+        .prompt-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .prompt-card:hover {
+            border-color: var(--accent);
+            background: rgba(244, 63, 94, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .prompt-emoji { font-size: 1.5em; margin-bottom: 8px; }
+        .prompt-title { font-weight: 700; font-size: 0.95em; color: white; margin-bottom: 6px; }
+        .prompt-text { font-size: 0.85em; color: var(--text-muted); font-style: italic; }
+
+        /* Terminal output */
+        .terminal {
+            background: #0c1222;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px 20px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.85em;
+            color: var(--text-muted);
+            min-height: 80px;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            margin-top: 12px;
+        }
+
+        /* FAQ */
+        .faq-item {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+
+        .faq-q {
+            padding: 16px 20px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .faq-q:hover { background: rgba(255,255,255,0.03); }
+
+        .faq-a {
+            display: none;
+            padding: 0 20px 16px;
+            color: var(--text-muted);
+            font-size: 0.9em;
+            line-height: 1.8;
+        }
+
+        .faq-item.open .faq-a { display: block; }
+        .faq-item.open .faq-arrow { transform: rotate(180deg); }
+
+        .faq-arrow {
+            transition: transform 0.2s;
+            color: var(--text-dim);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-dim);
+            font-size: 0.85em;
+            border-top: 1px solid var(--border);
+        }
+
+        .footer a { color: var(--accent); text-decoration: none; }
+        .footer a:hover { text-decoration: underline; }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .hero h1 { font-size: 1.8em; }
+            .status-card { flex-direction: column; align-items: flex-start; }
+            .step-body { margin-left: 0; margin-top: 12px; }
+            .tab-nav { flex-wrap: wrap; }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <h1>AI in Design 接続サポート</h1>
-        <p>InDesignとブリッジサーバーの通信状況を確認するためのツールです。AI未契約でも利用できます。</p>
-    </div>
-
-    <!-- ステータス確認 -->
-    <div class="card">
-        <h2>1. InDesign通信ステータス</h2>
-        <div id="statusBox" class="status-box">
-            <div class="status-indicator"></div>
-            <div id="statusText" class="status-text">サーバーと通信中...</div>
-            <button id="refreshBtn">更新</button>
-        </div>
-        
-        <p><strong>うまく接続できない場合：</strong></p>
-        <ol>
-            <li>InDesignを起動してください。</li>
-            <li>UXP Developer Tool を利用して、「AI in Design」プラグイン（<code>plugin/manifest.json</code>）をロードしてください。</li>
-            <li>「Load」をクリックし、パネルを表示させた状態で「更新」ボタンを押してください。</li>
-        </ol>
-
-        <div style="margin-top: 30px;">
-            <h3>▶ InDesign動作テスト (AI不要)</h3>
-            <p>下記のボタンを押すと、InDesign側でアラートダイアログが表示されます。<br>これが成功すれば、システムとInDesignの通信は<strong>完全に正常</strong>です！</p>
-            <button id="testExecuteBtn" disabled>InDesignにテスト通信を送信</button>
-            <div id="terminal" class="terminal">// 実行結果がここに表示されます...</div>
-        </div>
-    </div>
-
-    <!-- AI契約がないユーザー向け -->
-    <div class="card">
-        <h2>2. AI有料契約をしていない方へ (無料の利用方法)</h2>
-        <div class="info-section">
-            <p><strong>「Claude Proなどの有料AIを契約していないと使えないの？」</strong><br>
-            いいえ、安心してください！<b>無料のツールやサービス</b>を組み合わせることで、完全無料でAI in Designを利用（またはテスト）することが可能です。</p>
-        </div>
-
-        <p>以下のいずれかの方法を利用すれば、有償のAIサブスクリプションがなくても動作させることができます。</p>
-
-        <ul class="free-tier-list">
-            <li>
-                <strong>方法 A: 【一番おすすめ】VS Code + Roo Code (Cline) + 無料API</strong>
-                無料で使えるエディタ「VS Code」に、「Roo Code (旧Cline)」という無料拡張機能を入れます。<br>
-                Gemini 1.5 Pro/2.0 API（無料枠あり）などをAPIキーで連携し、MCPサーバーとして「AI in Design」を設定すれば、チャット形式でInDesignを操作できます。
-            </li>
-            <li>
-                <strong>方法 B: Cursorエディタ (無料体験)</strong>
-                人気のAIエディタ「Cursor」（基本無料）をダウンロードします。CursorのMCP設定画面から、このシステムの `npm start` を登録するだけで、エディタ内のチャットからそのままInDesignに指示が出せます。
-            </li>
-            <li>
-                <strong>方法 C: Ollama + Chatbox (完全ローカル・無料)</strong>
-                Ollamaなどを利用してPC内で無料AI（Llama3やQwenなど）を動かし、「Chatbox」などのMCP対応GUIアプリに連携させます。完全にオフライン＆無料で操作が可能です。
-            </li>
-        </ul>
-        <p>※ 「Claude Desktop」にこだわらなくても、近年様々な無料の「MCP対応クライアント」が登場しています。<br>
-        <strong>「MCP クライアント 無料」</strong>などで検索し、ご自身にあったツールをお選びください。</p>
+<!-- Hero -->
+<div class="hero">
+    <div class="hero-content">
+        <h1>Ai-inDesign</h1>
+        <p>AIでInDesignを自動操作。セットアップからチュートリアルまで、すべてここで完結します。</p>
     </div>
 </div>
 
-<script>
-    const statusBox = document.getElementById('statusBox');
-    const statusText = document.getElementById('statusText');
-    const refreshBtn = document.getElementById('refreshBtn');
-    const testExecuteBtn = document.getElementById('testExecuteBtn');
-    const terminal = document.getElementById('terminal');
+<!-- Status Banner -->
+<div class="status-banner">
+    <div class="status-card">
+        <div class="status-item">
+            <div id="statusDot" class="status-dot"></div>
+            <div>
+                <div class="status-label">ブリッジサーバー</div>
+                <div id="statusText" class="status-value">確認中...</div>
+            </div>
+        </div>
+        <div class="status-item">
+            <div id="indesignDot" class="status-dot"></div>
+            <div>
+                <div class="status-label">InDesign 接続</div>
+                <div id="indesignText" class="status-value">確認中...</div>
+            </div>
+        </div>
+        <button id="testBtn" class="btn-test" disabled onclick="runTest()">
+            InDesignにテスト送信
+        </button>
+    </div>
+</div>
 
-    function logToTerminal(msg) {
-        const time = new Date().toLocaleTimeString();
-        terminal.innerText += `\n[${time}] ${msg}`;
-        terminal.scrollTop = terminal.scrollHeight;
+<!-- Main Content -->
+<div class="container">
+
+    <!-- Tab Navigation -->
+    <div class="tab-nav">
+        <button class="tab-btn active" onclick="switchTab('setup')">📦 セットアップ</button>
+        <button class="tab-btn" onclick="switchTab('tutorial')">🎓 チュートリアル</button>
+        <button class="tab-btn" onclick="switchTab('faq')">❓ よくある質問</button>
+    </div>
+
+    <!-- ===================== SETUP TAB ===================== -->
+    <div id="tab-setup" class="tab-content active">
+
+        <div class="step" id="step1">
+            <div class="step-header">
+                <div class="step-number" id="step1num">1</div>
+                <div>
+                    <div class="step-title">Node.js をインストール</div>
+                    <div class="step-desc">このページが見えていれば、既に完了しています！</div>
+                </div>
+            </div>
+            <div class="step-body">
+                <div class="alert alert-success">
+                    <span class="alert-icon">✅</span>
+                    <span class="alert-text" id="nodeStatus">このページが表示されているということは、Node.jsは正常に動作しています。</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="step" id="step2">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <div>
+                    <div class="step-title">InDesign にプラグインをインストール</div>
+                    <div class="step-desc">ボタンを押してダウンロード → ダブルクリックするだけ！</div>
+                </div>
+            </div>
+            <div class="step-body">
+                <div style="text-align: center; padding: 24px 0;">
+                    <a href="/download-plugin" 
+                       class="btn-test" 
+                       style="display: inline-flex; align-items: center; gap: 10px; padding: 16px 32px; font-size: 1.1em; text-decoration: none; border-radius: 12px; background: linear-gradient(135deg, #f43f5e, #e11d48); box-shadow: 0 4px 20px rgba(244, 63, 94, 0.4);"
+                       download>
+                        ⬇️ Ai-inDesign.ccx をダウンロード
+                    </a>
+                    <p style="margin-top: 12px; font-size: 0.85em; color: var(--text-dim);">ダウンロードしたファイルをダブルクリックすると自動でインストールされます</p>
+                </div>
+
+                <div style="background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin: 16px 0;">
+                    <p style="font-weight: 700; color: white; margin-bottom: 12px;">📋 インストール手順：</p>
+                    <ol style="margin-left: 20px; color: var(--text-muted); font-size: 0.9em;">
+                        <li style="margin-bottom: 8px;">上のボタンで <strong>Ai-inDesign.ccx</strong> をダウンロード</li>
+                        <li style="margin-bottom: 8px;">ダウンロードした <strong>.ccx ファイルをダブルクリック</strong></li>
+                        <li style="margin-bottom: 8px;">Adobe Creative Cloud が自動的にインストールを実行します</li>
+                        <li style="margin-bottom: 8px;">InDesign を起動（または再起動）</li>
+                        <li>メニュー <strong>「ウィンドウ」→「プラグイン」→「Bridge Panel」</strong> をクリック</li>
+                    </ol>
+                </div>
+
+                <div class="alert alert-warning">
+                    <span class="alert-icon">⚠️</span>
+                    <span class="alert-text">
+                        CCXインストールが動かない場合は、<strong>UXP Developer Tool</strong> を使って <code>plugin/</code> フォルダを直接ロードすることもできます。詳しくはFAQを確認してください。
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="step" id="step3">
+            <div class="step-header">
+                <div class="step-number">3</div>
+                <div>
+                    <div class="step-title">Claude Desktop に接続設定を追加</div>
+                    <div class="step-desc">バッチファイルで自動設定済みのはずです</div>
+                </div>
+            </div>
+            <div class="step-body">
+                <p>起動バッチファイル（<code>AutoDTP_起動.bat</code>）を実行済みなら、Claude Desktop の設定は<strong>自動で完了</strong>しています。</p>
+                
+                <div class="alert alert-warning">
+                    <span class="alert-icon">⚠️</span>
+                    <span class="alert-text">
+                        <strong>重要:</strong> Claude Desktop を一度<strong>完全に終了</strong>（タスクトレイ→右クリック→Quit）してから再起動してください。設定は再起動しないと反映されません。
+                    </span>
+                </div>
+
+                <p>手動で設定する場合は、以下のJSONを <code>claude_desktop_config.json</code> に追加してください：</p>
+                <div class="code-block">
+                    <button class="copy-btn" onclick="copyConfig()">📋 コピー</button>
+<pre id="configJson">{
+  "mcpServers": {
+    "ai-indesign": {
+      "command": "node",
+      "args": ["<span id="configPath">C:\\path\\to\\src\\index.js</span>"]
     }
+  }
+}</pre>
+                </div>
+                <p style="font-size: 0.85em; color: var(--text-dim);">
+                    設定ファイルの場所: <code>%APPDATA%\Claude\claude_desktop_config.json</code>
+                </p>
+            </div>
+        </div>
+
+        <div class="step" id="step4">
+            <div class="step-header">
+                <div class="step-number">4</div>
+                <div>
+                    <div class="step-title">接続を確認する</div>
+                    <div class="step-desc">すべてが正しく動いているかテスト</div>
+                </div>
+            </div>
+            <div class="step-body">
+                <p>上部のステータスバーで「ブリッジサーバー」と「InDesign 接続」の両方が<strong>緑色</strong>になっていれば成功です！</p>
+                <p>「InDesignにテスト送信」ボタンを押すと、InDesign上にダイアログが表示されます。</p>
+                <div id="terminal" class="terminal">// テスト結果がここに表示されます...</div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ===================== TUTORIAL TAB ===================== -->
+    <div id="tab-tutorial" class="tab-content">
+
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number" style="background: linear-gradient(135deg, #8b5cf6, #6d28d9);">🎓</div>
+                <div>
+                    <div class="step-title">Claude Desktop からInDesignを操作してみよう</div>
+                    <div class="step-desc">5分で体験できる実践チュートリアル</div>
+                </div>
+            </div>
+            <div class="step-body">
+                <div class="alert alert-info">
+                    <span class="alert-icon">📋</span>
+                    <span class="alert-text"><strong>前提条件:</strong> セットアップが完了し、ステータスバーの「InDesign 接続」が緑色になっていること</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">1</div>
+                <div>
+                    <div class="step-title">Claudeに話しかけてみよう</div>
+                    <div class="step-desc">まずは簡単な操作から</div>
+                </div>
+            </div>
+            <div class="step-body">
+                <p>Claude Desktop を開き、チャット欄に以下のように入力してください：</p>
+                <div class="prompt-grid">
+                    <div class="prompt-card" onclick="copyPrompt(this)">
+                        <div class="prompt-emoji">📄</div>
+                        <div class="prompt-title">新規ドキュメント作成</div>
+                        <div class="prompt-text">「InDesignでA4サイズの新しいドキュメントを作成して」</div>
+                    </div>
+                    <div class="prompt-card" onclick="copyPrompt(this)">
+                        <div class="prompt-emoji">📝</div>
+                        <div class="prompt-title">テキスト配置</div>
+                        <div class="prompt-text">「ページの上部にタイトル'サンプルレイアウト'を大きく配置して」</div>
+                    </div>
+                </div>
+                <div class="alert alert-success">
+                    <span class="alert-icon">💡</span>
+                    <span class="alert-text">Claude が「ai-indesign」のツールを使ってInDesignを操作します。チャット欄にツール使用の表示が出れば正常です！</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">2</div>
+                <div>
+                    <div class="step-title">テキストフレームを操作する</div>
+                    <div class="step-desc">文章の配置と書式設定</div>
+                </div>
+            </div>
+            <div class="step-body">
+                <p>ドキュメントができたら、テキストを操作してみましょう：</p>
+                <div class="prompt-grid">
+                    <div class="prompt-card" onclick="copyPrompt(this)">
+                        <div class="prompt-emoji">✍️</div>
+                        <div class="prompt-title">本文テキスト追加</div>
+                        <div class="prompt-text">「本文エリアに適当なダミーテキストを流し込んで、フォントサイズを10ptにして」</div>
+                    </div>
+                    <div class="prompt-card" onclick="copyPrompt(this)">
+                        <div class="prompt-emoji">🔤</div>
+                        <div class="prompt-title">フォント変更</div>
+                        <div class="prompt-text">「タイトルのフォントをゴシック体に変更して、色を赤にして」</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">3</div>
+                <div>
+                    <div class="step-title">ページ操作とレイアウト</div>
+                    <div class="step-desc">複数ページの管理</div>
+                </div>
+            </div>
+            <div class="step-body">
+                <div class="prompt-grid">
+                    <div class="prompt-card" onclick="copyPrompt(this)">
+                        <div class="prompt-emoji">📑</div>
+                        <div class="prompt-title">ページ追加</div>
+                        <div class="prompt-text">「新しいページを3ページ追加して」</div>
+                    </div>
+                    <div class="prompt-card" onclick="copyPrompt(this)">
+                        <div class="prompt-emoji">📊</div>
+                        <div class="prompt-title">ドキュメント情報</div>
+                        <div class="prompt-text">「今開いているドキュメントのページ数と使っているフォント一覧を教えて」</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="step">
+            <div class="step-header">
+                <div class="step-number">4</div>
+                <div>
+                    <div class="step-title">実践的な使い方</div>
+                    <div class="step-desc">日常業務で使えるプロンプト集</div>
+                </div>
+            </div>
+            <div class="step-body">
+                <p>慣れてきたら、実際の業務に近いプロンプトを試しましょう：</p>
+                <div class="prompt-grid">
+                    <div class="prompt-card" onclick="copyPrompt(this)">
+                        <div class="prompt-emoji">📐</div>
+                        <div class="prompt-title">テンプレート作成</div>
+                        <div class="prompt-text">「B5サイズの雑誌テンプレートを作って。マージンは上下20mm、左右15mmで」</div>
+                    </div>
+                    <div class="prompt-card" onclick="copyPrompt(this)">
+                        <div class="prompt-emoji">🔍</div>
+                        <div class="prompt-title">テキスト検索・置換</div>
+                        <div class="prompt-text">「ドキュメント内の'株式会社'を全て'(株)'に置換して」</div>
+                    </div>
+                    <div class="prompt-card" onclick="copyPrompt(this)">
+                        <div class="prompt-emoji">📤</div>
+                        <div class="prompt-title">PDF書き出し</div>
+                        <div class="prompt-text">「このドキュメントを印刷用PDFで書き出して」</div>
+                    </div>
+                    <div class="prompt-card" onclick="copyPrompt(this)">
+                        <div class="prompt-emoji">🎨</div>
+                        <div class="prompt-title">段落スタイル</div>
+                        <div class="prompt-text">「'見出し1'という段落スタイルを作って。ゴシック18pt、太字、色は紺色で」</div>
+                    </div>
+                </div>
+
+                <div class="alert alert-info" style="margin-top: 20px">
+                    <span class="alert-icon">🚀</span>
+                    <span class="alert-text">
+                        <strong>ポイント:</strong> Claudeに日本語で自然に話しかけるだけでOKです。「～して」「～を教えて」のように、人に話しかけるような感覚で指示できます。
+                    </span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ===================== FAQ TAB ===================== -->
+    <div id="tab-faq" class="tab-content">
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">
+                <span>🔌 「InDesign 接続」が赤いままです</span>
+                <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-a">
+                <p>以下を順番に確認してください：</p>
+                <ol style="margin-left: 20px; margin-top: 8px;">
+                    <li>InDesign が起動しているか？</li>
+                    <li>InDesign のメニュー「ウィンドウ」→「プラグイン」→「Bridge Panel」がクリックされているか？</li>
+                    <li>Bridge Panel に「接続しました」と表示されているか？</li>
+                </ol>
+                <p style="margin-top: 12px;">CCXプラグインが未インストールの場合は、<strong>Ai-inDesign.ccx</strong> をダブルクリックしてインストールしてから、InDesignを再起動してください。</p>
+            </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">
+                <span>🤖 Claude Desktop で「ai-indesign」が表示されません</span>
+                <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-a">
+                <ol style="margin-left: 20px;">
+                    <li>Claude Desktop を<strong>完全に終了</strong>してください（タスクトレイ→右クリック→Quit）</li>
+                    <li>Claude Desktop を再起動してください</li>
+                    <li>設定画面の「Developer」→「MCP Servers」に「ai-indesign」が表示されるか確認</li>
+                </ol>
+                <p style="margin-top: 12px;">表示されない場合は、<code>AutoDTP_起動.bat</code> を再実行して設定を自動追加してください。</p>
+            </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">
+                <span>⚡ 「ポート3000が使用中」と表示されます</span>
+                <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-a">
+                <p>既にブリッジサーバーが起動している可能性があります。</p>
+                <ul style="margin-left: 20px; margin-top: 8px;">
+                    <li>既に開いているコマンドプロンプトのウィンドウがないか確認</li>
+                    <li>タスクマネージャーで「node.exe」プロセスを終了</li>
+                    <li>PCを再起動してからバッチファイルを再実行</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">
+                <span>💻 Node.js がないと言われます</span>
+                <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-a">
+                <p><a href="https://nodejs.org/ja/" target="_blank" style="color: var(--accent);">https://nodejs.org/ja/</a> からLTS版をダウンロードしてインストールしてください。</p>
+                <p style="margin-top: 8px;">インストール時は、すべてデフォルト設定のままで<strong>「Next」をクリックし続ける</strong>だけでOKです。インストール後、PCの再起動が必要な場合があります。</p>
+            </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">
+                <span>🔑 Claude Desktop は有料ですか？無料で使えますか？</span>
+                <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-a">
+                <p>Claude Desktop 自体は<strong>無料</strong>で利用できます（基本のChatモード）。MCP機能も無料プランで使えます。</p>
+                <p style="margin-top: 8px;">より高度な利用をする場合は、Proプラン（月額$20）でより長い会話が可能です。</p>
+                <p style="margin-top: 8px;">Claude Desktop 以外にも、以下の無料ツールからMCP接続できます：</p>
+                <ul style="margin-left: 20px; margin-top: 8px;">
+                    <li><strong>VS Code + Roo Code</strong> — 無料のAIコーディングツール</li>
+                    <li><strong>Cursor</strong> — 無料体験あり</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="faq-item" onclick="toggleFaq(this)">
+            <div class="faq-q">
+                <span>🔒 セキュリティ上の懸念はありますか？</span>
+                <span class="faq-arrow">▼</span>
+            </div>
+            <div class="faq-a">
+                <p>ブリッジサーバーは <strong>localhost（127.0.0.1）</strong> のみでリッスンしています。外部からのアクセスは受け付けません。</p>
+                <p style="margin-top: 8px;">通信はすべてお使いのPC内で完結するため、社外にデータが流出することはありません。AIサービス（Claude/Gemini等）を使う場合のみ、テキストデータに限りクラウドに送信されます。</p>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Footer -->
+<div class="footer">
+    <p>Ai-inDesign — 文唱堂印刷株式会社 × <a href="https://github.com/Yomibito-Shirazu-jp/ai-indesign" target="_blank">Yomibito Shirazu</a></p>
+    <p style="margin-top: 8px;">問題が解決しない場合は、管理者にお問い合わせください。</p>
+</div>
+
+<script>
+    // ━━━ Tab Switching ━━━
+    function switchTab(tab) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById('tab-' + tab).classList.add('active');
+        event.target.classList.add('active');
+    }
+
+    // ━━━ Status Checking ━━━
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    const indesignDot = document.getElementById('indesignDot');
+    const indesignText = document.getElementById('indesignText');
+    const testBtn = document.getElementById('testBtn');
+    const terminal = document.getElementById('terminal');
 
     async function checkStatus() {
         try {
             const res = await fetch('/status');
             const data = await res.json();
-            
-            statusBox.className = 'status-box ' + (data.connected ? 'connected' : 'disconnected');
-            statusText.innerText = data.connected ? '✅ InDesignと接続されています' : '❌ InDesignと未接続です';
-            testExecuteBtn.disabled = !data.connected;
 
-            if (data.connected && terminal.innerText.includes('// 実行結果がここに表示されます')) {
-                logToTerminal('通信確立済み。テスト送信が可能です。');
+            // Bridge server is running (we got a response)
+            statusDot.className = 'status-dot online';
+            statusText.textContent = '稼働中';
+            document.getElementById('step1num').classList.add('done');
+            document.getElementById('step1num').textContent = '✓';
+
+            // InDesign connection
+            if (data.connected) {
+                indesignDot.className = 'status-dot online';
+                indesignText.textContent = '接続済み';
+                testBtn.disabled = false;
+            } else {
+                indesignDot.className = 'status-dot offline';
+                indesignText.textContent = '未接続（InDesign側でBridge Panelを開いてください）';
+                testBtn.disabled = true;
             }
         } catch (e) {
-            statusBox.className = 'status-box disconnected';
-            statusText.innerText = '⚠️ Node.js サーバーが起動していません。npm startを実行してください。';
-            testExecuteBtn.disabled = true;
-            console.error(e);
+            statusDot.className = 'status-dot offline';
+            statusText.textContent = 'サーバー未起動';
+            indesignDot.className = 'status-dot';
+            indesignText.textContent = '—';
+            testBtn.disabled = true;
         }
     }
 
-    async function runTestExecute() {
-        testExecuteBtn.disabled = true;
-        logToTerminal('InDesignにテストコードを送信中...');
+    // ━━━ Test Execute ━━━
+    async function runTest() {
+        testBtn.disabled = true;
+        logTerminal('InDesignにテストコードを送信中...');
         try {
             const res = await fetch('/execute', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    // 単純なInDesignへのJSXコマンド: ダイアログを出して、アプリのバージョンを返す
-                    code: "alert('【サーバー通信成功】 AI in Designと正しくつながっています！'); app.version;"
+                    code: "alert('🎉 接続成功！ Ai-inDesignが正しく動作しています！'); app.version;"
                 })
             });
             const data = await res.json();
-            
             if (data.error) {
-                logToTerminal('エラー: ' + data.error);
+                logTerminal('❌ エラー: ' + data.error);
             } else {
-                logToTerminal('成功！ InDesignのバージョン: ' + data.result);
-                logToTerminal('これでMCP連携の準備は完了です。');
+                logTerminal('✅ 成功！ InDesign バージョン: ' + data.result);
+                logTerminal('🎉 おめでとうございます！ セットアップ完了です！');
+                logTerminal('');
+                logTerminal('→ Claude Desktop を開いて、InDesignに話しかけてみてください。');
             }
         } catch (e) {
-            logToTerminal('通信エラー: ' + e.message);
+            logTerminal('❌ 通信エラー: ' + e.message);
         }
-        testExecuteBtn.disabled = false;
-        checkStatus();
+        testBtn.disabled = false;
     }
 
-    refreshBtn.addEventListener('click', checkStatus);
-    testExecuteBtn.addEventListener('click', runTestExecute);
+    function logTerminal(msg) {
+        if (!terminal) return;
+        const time = new Date().toLocaleTimeString();
+        if (terminal.textContent.includes('テスト結果がここに表示されます')) {
+            terminal.textContent = '';
+        }
+        terminal.textContent += `[${time}] ${msg}\n`;
+        terminal.scrollTop = terminal.scrollHeight;
+    }
 
-    // Initial check
+    // ━━━ FAQ Toggle ━━━
+    function toggleFaq(el) {
+        el.classList.toggle('open');
+    }
+
+    // ━━━ Copy Helpers ━━━
+    function copyConfig() {
+        const text = document.getElementById('configJson').textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            event.target.textContent = '✅ コピー済み';
+            setTimeout(() => { event.target.textContent = '📋 コピー'; }, 2000);
+        });
+    }
+
+    function copyPrompt(card) {
+        const text = card.querySelector('.prompt-text').textContent.replace(/[「」]/g, '');
+        navigator.clipboard.writeText(text).then(() => {
+            const orig = card.querySelector('.prompt-title').textContent;
+            card.querySelector('.prompt-title').textContent = '✅ コピーしました！';
+            setTimeout(() => { card.querySelector('.prompt-title').textContent = orig; }, 1500);
+        });
+    }
+
+    // ━━━ Initialize ━━━
     checkStatus();
     setInterval(checkStatus, 3000);
 </script>

@@ -11,14 +11,14 @@ const TIMEOUT_MS = 30000;
 const app = express();
 app.use(express.json());
 
-// 接続サポート用UIを配信（bridge/public）
-app.use('/bridge', express.static(path.join(__dirname, 'public')));
+// セットアップ＆チュートリアルUI（メインページ）
+app.use(express.static(path.join(__dirname, 'public')));
 
 // AutoDTP ダッシュボードUI配信（app/ui ビルド済み）
 const uiPath = path.join(__dirname, '..', 'app', 'ui');
 if (require('fs').existsSync(uiPath)) {
-    app.use(express.static(uiPath));
-    console.log('[Bridge] Serving AutoDTP UI from', uiPath);
+    app.use('/app', express.static(uiPath));
+    console.log('[Bridge] Serving AutoDTP UI from', uiPath, '(at /app)');
 }
 
 let pluginSocket = null;
@@ -184,6 +184,16 @@ app.post('/execute', (req, res) => {
     promise
         .then((result) => res.json({ result }))
         .catch((err) => res.status(500).json({ error: err.message }));
+});
+
+// ─── CCXプラグイン ダウンロードエンドポイント ───
+app.get('/download-plugin', (req, res) => {
+    const ccxPath = path.join(__dirname, '..', 'plugin', 'Ai-inDesign.ccx');
+    if (require('fs').existsSync(ccxPath)) {
+        res.download(ccxPath, 'Ai-inDesign.ccx');
+    } else {
+        res.status(404).json({ error: 'CCXファイルが見つかりません' });
+    }
 });
 
 // ─── APIキー設定エンドポイント ───
