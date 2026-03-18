@@ -27,9 +27,9 @@ if %ERRORLEVEL% NEQ 0 (
     pause & exit /b 1
 )
 
-REM Kill existing processes on ports 3000-3002
+REM Kill existing processes on port 49300
 echo  [1/4] Port cleanup ...
-for /f "tokens=5" %%p in ('netstat -ano 2^>nul ^| findstr ":49300 \|:49301 \|:49302 " ^| findstr "LISTENING"') do (
+for /f "tokens=5" %%p in ('netstat -ano 2^>nul ^| findstr ":49300 " ^| findstr "LISTENING"') do (
     if not "%%p"=="" taskkill /PID %%p /F >nul 2>&1
 )
 timeout /t 2 /nobreak >nul
@@ -56,27 +56,16 @@ if %ERRORLEVEL% EQU 0 (
 node setup.mjs >nul 2>&1
 start shell:AppsFolder\Claude_pzs8sxrjxfjjc!Claude
 echo         OK
+timeout /t 3 /nobreak >nul
 
-REM Start Bridge (auto-restart loop)
+REM Start Bridge server in THIS window (foreground)
 echo  [4/4] Bridge server launch ...
-start "Ai-inDesign Bridge" /min cmd /c "cd /d "%~dp0bridge" && :loop && node server.js && timeout /t 3 /nobreak >nul && goto loop"
-timeout /t 4 /nobreak >nul
-echo         OK
+echo.
+echo  ======================================================================
+echo   Bridge server starting on port 49300 ...
+echo   InDesign plugin will connect automatically.
+echo   Press Ctrl+C to stop.
+echo  ======================================================================
+echo.
 
-REM Demo broadcast
-echo.
-echo  ======================================================================
-echo   >>  TORA TORA TORA  --  demo broadcast to all Adobe apps
-echo  ======================================================================
-echo.
-node test-broadcast.js
-
-echo.
-echo  ======================================================================
-echo   SETUP COMPLETE
-echo.
-echo   InDesign ^> Window ^> Plugins ^> Ai-inDesign  ( green = connected )
-echo   Claude Desktop ^: give instructions in Japanese
-echo  ======================================================================
-echo.
-pause
+node bridge/server.js

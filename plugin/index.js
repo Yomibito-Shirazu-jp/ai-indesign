@@ -1,11 +1,9 @@
 const { app } = require("indesign");
 const { entrypoints } = require("uxp");
 
-// UI refs
-let statusRing, statusLabel, hint;
+let statusRing, statusLabel, hint, testBtn, testResult;
 let ws = null;
 
-// Suppress UXP false-rejection noise
 window.addEventListener("unhandledrejection", (e) => {
     if (e.reason === false) e.preventDefault();
 });
@@ -15,16 +13,19 @@ function setStatus(state) {
     statusRing.className = "status-ring " + state;
     if (state === "connected") {
         statusRing.textContent = "✅";
-        statusLabel.textContent = "Claude Desktopから操作できます";
+        statusLabel.textContent = "接続OK";
         if (hint) hint.className = "hint show";
+        if (testBtn) testBtn.className = "test-btn show";
     } else if (state === "disconnected") {
         statusRing.textContent = "❌";
         statusLabel.textContent = "サーバーが見つかりません";
         if (hint) hint.className = "hint";
+        if (testBtn) testBtn.className = "test-btn";
     } else {
         statusRing.textContent = "🔌";
         statusLabel.textContent = "Bridgeサーバーに接続中...";
         if (hint) hint.className = "hint";
+        if (testBtn) testBtn.className = "test-btn";
     }
 }
 
@@ -47,6 +48,29 @@ async function handleExecute(socket, msg) {
         socket.send(JSON.stringify({ type: "error", id: msg.id, error: e.message || String(e) }));
     }
 }
+
+// テスト送信ボタン
+window.sendTest = function() {
+    if (!testResult) return;
+    testResult.textContent = "テスト中...";
+    try {
+        const doc = app.documents.length > 0 ? app.documents[0] : app.documents.add();
+        const frame = doc.pages[0].textFrames.add();
+        frame.geometricBounds = [20, 20, 40, 120];
+        frame.contents = "Ai-inDesign OK - " + new Date().toLocaleTimeString();
+        testResult.textContent = "✅ テキストフレーム作成OK";
+        testResult.style.color = "#2ecc71";
+    } catch (e) {
+        testResult.textContent = "❌ " + e.message;
+        testResult.style.color = "#e74c3c";
+    }
+    setTimeout(() => {
+        if (testResult) {
+            testResult.textContent = "";
+            testResult.style.color = "#aaa";
+        }
+    }, 5000);
+};
 
 function connect() {
     setStatus("connecting");
@@ -78,6 +102,8 @@ entrypoints.setup({
                 statusRing  = document.getElementById("status-ring");
                 statusLabel = document.getElementById("status-label");
                 hint        = document.getElementById("hint");
+                testBtn     = document.getElementById("test-btn");
+                testResult  = document.getElementById("test-result");
                 connect();
             }
         }
