@@ -67,70 +67,8 @@ function executeInDesignCode(code) {
     });
 }
 
-// WebSocket server — UXP plugin connects here
-const wss = new WebSocketServer({ port: WS_PORT, host: '127.0.0.1' });
 
-wss.on('connection', (ws) => {
-    console.log('[Bridge] Plugin connected');
-    pushLog('success', 'InDesign plugin connected via WebSocket');
-    pluginSocket = ws;
 
-    ws.on('message', (data) => {
-        let msg;
-        try {
-            msg = JSON.parse(data.toString());
-        } catch (e) {
-            console.error('[Bridge] Invalid JSON from plugin:', data.toString());
-            return;
-        }
-
-        // ─── AIチャットメッセージ ───
-        if (msg.type === 'chat') {
-            handleChatMessage(ws, msg);
-            return;
-        }
-
-        // ─── APIキー設定 ───
-        if (msg.type === 'set_api_key') {
-            geminiApiKey = msg.apiKey || '';
-            aiSession = null; // セッションリセット
-            console.log('[Bridge] API key updated');
-            ws.send(JSON.stringify({ type: 'system', message: 'APIキーを設定しました。' }));
-            return;
-        }
-
-        console.log('[Bridge] From plugin:', JSON.stringify(msg).slice(0, 200));
-
-        const item = pending.get(msg.id);
-        if (!item) return;
-
-        clearTimeout(item.timer);
-        pending.delete(msg.id);
-
-        if (msg.type === 'result') {
-            item.resolve(msg.result);
-        } else if (msg.type === 'error') {
-            item.reject(new Error(msg.error));
-        } else if (msg.type === 'pong') {
-            item.resolve('pong');
-        }
-    });
-
-    ws.on('close', () => {
-        console.log('[Bridge] Plugin disconnected');
-        pushLog('warn', 'InDesign plugin disconnected');
-        pluginSocket = null;
-        for (const [id, item] of pending.entries()) {
-            clearTimeout(item.timer);
-            item.reject(new Error('Plugin disconnected'));
-            pending.delete(id);
-        }
-    });
-
-    ws.on('error', (err) => {
-        console.error('[Bridge] WebSocket error:', err);
-    });
-});
 
 // ─── AIチャット処理 ───
 async function handleChatMessage(ws, msg) {
@@ -286,13 +224,28 @@ wss.on('connection', (ws) => {
         let msg;
         try { msg = JSON.parse(data.toString()); } catch { return; }
 
+        // AIチャット
+        if (msg.type === 'chat') {
+            handleChatMessage(ws, msg);
+            return;
+        }
+
+        // APIキー設定
+        if (msg.type === 'set_api_key') {
+            geminiApiKey = msg.apiKey || '';
+            aiSession = null;
+            ws.send(JSON.stringify({ type: 'system', message: 'APIキーを設定しました。' }));
+            return;
+        }
+
+        // コマンド結果
         if (msg.type === 'pong' || msg.type === 'result' || msg.type === 'error') {
             const p = pending.get(msg.id);
             if (p) {
                 clearTimeout(p.timer);
                 pending.delete(msg.id);
                 if (msg.type === 'error') p.reject(new Error(msg.error));
-                else p.resolve(msg.result);
+                else p.resolve(msg.result || 'pong');
             }
         }
     });
@@ -301,6 +254,15 @@ wss.on('connection', (ws) => {
         console.log('[Bridge] UXP plugin disconnected');
         pluginSocket = null;
         pushLog('warn', 'UXP plugin disconnected');
+        for (const [id, item] of pending.entries()) {
+            clearTimeout(item.timer);
+            item.reject(new Error('Plugin disconnected'));
+            pending.delete(id);
+        }
+    });
+
+    ws.on('error', (err) => {
+        console.error('[Bridge] WebSocket error:', err.message);
     });
 });
 
