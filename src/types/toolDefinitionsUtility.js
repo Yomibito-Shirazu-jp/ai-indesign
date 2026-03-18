@@ -7,7 +7,7 @@ export const utilityToolDefinitions = [
     // =================== UTILITY TOOLS ===================
     {
         name: 'execute_indesign_code',
-        description: 'Execute custom InDesign ExtendScript code',
+        description: 'ExtendScriptコードをInDesignで実行',
         inputSchema: {
             type: 'object',
             properties: {
@@ -18,17 +18,17 @@ export const utilityToolDefinitions = [
     },
     {
         name: 'view_document',
-        description: 'View document information and current state',
+        description: 'ドキュメントのスクリーンショットを取得',
         inputSchema: { type: 'object', properties: {} },
     },
     {
         name: 'get_session_info',
-        description: 'Get current session information including page dimensions and active document',
+        description: '現在のセッション情報を取得',
         inputSchema: { type: 'object', properties: {} },
     },
     {
         name: 'clear_session',
-        description: 'Clear all session data including page dimensions and document information',
+        description: 'セッションをリセット',
         inputSchema: { type: 'object', properties: {} },
     },
 ]; 

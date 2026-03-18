@@ -7,12 +7,12 @@ export const documentToolDefinitions = [
     // =================== DOCUMENT MANAGEMENT ===================
     {
         name: 'get_document_info',
-        description: 'Get information about the active document',
+        description: 'アクティブドキュメントの情報を取得',
         inputSchema: { type: 'object', properties: {} },
     },
     {
         name: 'create_document',
-        description: 'Create a new document',
+        description: '新規ドキュメントを作成',
         inputSchema: {
             type: 'object',
             properties: {
@@ -34,7 +34,7 @@ export const documentToolDefinitions = [
     },
     {
         name: 'open_document',
-        description: 'Open an existing document',
+        description: '既存のドキュメントを開く',
         inputSchema: {
             type: 'object',
             properties: {
@@ -45,7 +45,7 @@ export const documentToolDefinitions = [
     },
     {
         name: 'save_document',
-        description: 'Save the active document',
+        description: 'ドキュメントを保存',
         inputSchema: {
             type: 'object',
             properties: {
@@ -56,14 +56,14 @@ export const documentToolDefinitions = [
     },
     {
         name: 'close_document',
-        description: 'Close the active document',
+        description: 'ドキュメントを閉じる',
         inputSchema: { type: 'object', properties: {} },
     },
 
     // =================== DOCUMENT ADVANCED TOOLS ===================
     {
         name: 'preflight_document',
-        description: 'Run preflight on the document',
+        description: 'プリフライトチェックを実行',
         inputSchema: {
             type: 'object',
             properties: {
@@ -74,7 +74,7 @@ export const documentToolDefinitions = [
     },
     {
         name: 'zoom_to_page',
-        description: 'Zoom to fit page in view',
+        description: '指定ページへズーム',
         inputSchema: {
             type: 'object',
             properties: {
@@ -86,7 +86,7 @@ export const documentToolDefinitions = [
     },
     {
         name: 'data_merge',
-        description: 'Perform data merge operation',
+        description: 'データ差し込み（データマージ）',
         inputSchema: {
             type: 'object',
             properties: {
@@ -102,7 +102,7 @@ export const documentToolDefinitions = [
     // =================== DOCUMENT ELEMENTS & STYLES ===================
     {
         name: 'get_document_elements',
-        description: 'Get all elements in the document',
+        description: 'ドキュメント内の全要素を取得',
         inputSchema: {
             type: 'object',
             properties: {
@@ -112,7 +112,7 @@ export const documentToolDefinitions = [
     },
     {
         name: 'get_document_styles',
-        description: 'Get all styles in the document',
+        description: 'ドキュメント内のスタイル一覧を取得',
         inputSchema: {
             type: 'object',
             properties: {
@@ -122,7 +122,7 @@ export const documentToolDefinitions = [
     },
     {
         name: 'get_document_colors',
-        description: 'Get all colors and swatches in the document',
+        description: 'カラー・スウォッチ一覧を取得',
         inputSchema: {
             type: 'object',
             properties: {
@@ -136,7 +136,7 @@ export const documentToolDefinitions = [
     // =================== DOCUMENT PREFERENCES ===================
     {
         name: 'get_document_preferences',
-        description: 'Get document preferences and settings',
+        description: 'ドキュメント環境設定を取得',
         inputSchema: {
             type: 'object',
             properties: {
@@ -146,7 +146,7 @@ export const documentToolDefinitions = [
     },
     {
         name: 'set_document_preferences',
-        description: 'Set document preferences',
+        description: 'ドキュメント環境設定を変更',
         inputSchema: {
             type: 'object',
             properties: {
@@ -160,7 +160,7 @@ export const documentToolDefinitions = [
     // =================== DOCUMENT STORIES & TEXT ===================
     {
         name: 'get_document_stories',
-        description: 'Get all stories in the document',
+        description: '全ストーリーを取得',
         inputSchema: {
             type: 'object',
             properties: {
@@ -171,7 +171,7 @@ export const documentToolDefinitions = [
     },
     {
         name: 'find_text_in_document',
-        description: 'Find text across the entire document',
+        description: 'テキストを検索・置換',
         inputSchema: {
             type: 'object',
             properties: {
@@ -188,7 +188,7 @@ export const documentToolDefinitions = [
     // =================== DOCUMENT LAYERS & ORGANIZATION ===================
     {
         name: 'get_document_layers',
-        description: 'Get all layers in the document',
+        description: 'レイヤー一覧を取得',
         inputSchema: {
             type: 'object',
             properties: {
@@ -199,7 +199,7 @@ export const documentToolDefinitions = [
     },
     {
         name: 'organize_document_layers',
-        description: 'Organize and clean up document layers',
+        description: 'レイヤーを整理・クリーンアップ',
         inputSchema: {
             type: 'object',
             properties: {
@@ -213,7 +213,7 @@ export const documentToolDefinitions = [
     // =================== DOCUMENT HYPERLINKS & INTERACTIVITY ===================
     {
         name: 'get_document_hyperlinks',
-        description: 'Get all hyperlinks in the document',
+        description: 'ハイパーリンク一覧を取得',
         inputSchema: {
             type: 'object',
             properties: {
@@ -224,7 +224,7 @@ export const documentToolDefinitions = [
     },
     {
         name: 'create_document_hyperlink',
-        description: 'Create a hyperlink in the document',
+        description: 'ハイパーリンクを作成',
         inputSchema: {
             type: 'object',
             properties: {
@@ -240,12 +240,12 @@ export const documentToolDefinitions = [
     // =================== DOCUMENT SECTIONS & NUMBERING ===================
     {
         name: 'get_document_sections',
-        description: 'Get all sections in the document',
+        description: 'セクション一覧を取得',
         inputSchema: { type: 'object', properties: {} },
     },
     {
         name: 'create_document_section',
-        description: 'Create a new section in the document',
+        description: '新規セクションを作成',
         inputSchema: {
             type: 'object',
             properties: {
@@ -261,7 +261,7 @@ export const documentToolDefinitions = [
     // =================== DOCUMENT XML & STRUCTURE ===================
     {
         name: 'get_document_xml_structure',
-        description: 'Get XML structure of the document',
+        description: 'XML構造を取得',
         inputSchema: {
             type: 'object',
             properties: {
@@ -272,7 +272,7 @@ export const documentToolDefinitions = [
     },
     {
         name: 'export_document_xml',
-        description: 'Export document as XML',
+        description: 'XML形式でエクスポート',
         inputSchema: {
             type: 'object',
             properties: {
@@ -287,7 +287,7 @@ export const documentToolDefinitions = [
     // =================== DOCUMENT CLOUD & COLLABORATION ===================
     {
         name: 'save_document_to_cloud',
-        description: 'Save document to Adobe Creative Cloud',
+        description: 'Adobe Creative Cloudに保存',
         inputSchema: {
             type: 'object',
             properties: {
@@ -299,7 +299,7 @@ export const documentToolDefinitions = [
     },
     {
         name: 'open_cloud_document',
-        description: 'Open a document from Adobe Creative Cloud',
+        description: 'Creative Cloudからドキュメントを開く',
         inputSchema: {
             type: 'object',
             properties: {
@@ -312,12 +312,12 @@ export const documentToolDefinitions = [
     // =================== DOCUMENT GRID & LAYOUT ===================
     {
         name: 'get_document_grid_settings',
-        description: 'Get comprehensive grid settings for the document',
+        description: 'グリッド設定を取得',
         inputSchema: { type: 'object', properties: {} },
     },
     {
         name: 'set_document_grid_settings',
-        description: 'Set comprehensive grid settings for the document',
+        description: 'グリッド設定を変更',
         inputSchema: {
             type: 'object',
             properties: {
@@ -337,12 +337,12 @@ export const documentToolDefinitions = [
     },
     {
         name: 'get_document_layout_preferences',
-        description: 'Get layout preferences and settings for the document',
+        description: 'レイアウト環境設定を取得',
         inputSchema: { type: 'object', properties: {} },
     },
     {
         name: 'set_document_layout_preferences',
-        description: 'Set layout preferences for the document',
+        description: 'レイアウト環境設定を変更',
         inputSchema: {
             type: 'object',
             properties: {
@@ -360,7 +360,7 @@ export const documentToolDefinitions = [
     // =================== DOCUMENT VALIDATION & CLEANUP ===================
     {
         name: 'validate_document',
-        description: 'Validate document structure and content',
+        description: 'ドキュメントの構造・内容を検証',
         inputSchema: {
             type: 'object',
             properties: {
@@ -373,7 +373,7 @@ export const documentToolDefinitions = [
     },
     {
         name: 'cleanup_document',
-        description: 'Clean up document (remove unused elements)',
+        description: 'ドキュメントをクリーンアップ（未使用要素を削除）',
         inputSchema: {
             type: 'object',
             properties: {

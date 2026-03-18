@@ -4,6 +4,7 @@
   "display_name": "Ai-inDesign — Adobe DTP自動化",
   "version": "1.0.0",
   "description": "InDesign・Illustrator・Photoshopを自然な日本語で操作。テキスト流し込み、校閲、組版、PDF出力など170以上のツールを提供。",
+  "icon": "icon.png",
   "author": {
     "name": "Yomibito-Shirazu"
   },

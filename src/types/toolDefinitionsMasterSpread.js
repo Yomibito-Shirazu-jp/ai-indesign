@@ -7,7 +7,7 @@ export const masterSpreadToolDefinitions = [
     // =================== MASTER SPREAD MANAGEMENT ===================
     {
         name: 'create_master_spread',
-        description: 'Create a new master spread',
+        description: 'マスタースプレッドを作成',
         inputSchema: {
             type: 'object',
             properties: {
@@ -22,12 +22,12 @@ export const masterSpreadToolDefinitions = [
     },
     {
         name: 'list_master_spreads',
-        description: 'List all master spreads in the document',
+        description: 'マスタースプレッド一覧を取得',
         inputSchema: { type: 'object', properties: {} },
     },
     {
         name: 'delete_master_spread',
-        description: 'Delete a master spread',
+        description: 'マスタースプレッドを削除',
         inputSchema: {
             type: 'object',
             properties: {
@@ -38,7 +38,7 @@ export const masterSpreadToolDefinitions = [
     },
     {
         name: 'duplicate_master_spread',
-        description: 'Duplicate a master spread',
+        description: 'マスタースプレッドを複製',
         inputSchema: {
             type: 'object',
             properties: {
@@ -51,7 +51,7 @@ export const masterSpreadToolDefinitions = [
     },
     {
         name: 'apply_master_spread',
-        description: 'Apply a master spread to pages',
+        description: 'マスタースプレッドを適用',
         inputSchema: {
             type: 'object',
             properties: {
@@ -63,7 +63,7 @@ export const masterSpreadToolDefinitions = [
     },
     {
         name: 'create_master_text_frame',
-        description: 'Create a text frame on a master spread',
+        description: 'マスターにテキストフレームを作成',
         inputSchema: {
             type: 'object',
             properties: {
@@ -84,7 +84,7 @@ export const masterSpreadToolDefinitions = [
     },
     {
         name: 'create_master_rectangle',
-        description: 'Create a rectangle on a master spread',
+        description: 'マスターに長方形を作成',
         inputSchema: {
             type: 'object',
             properties: {
@@ -103,7 +103,7 @@ export const masterSpreadToolDefinitions = [
     },
     {
         name: 'create_master_guides',
-        description: 'Create guides on a master spread',
+        description: 'マスターにガイドを作成',
         inputSchema: {
             type: 'object',
             properties: {
@@ -122,7 +122,7 @@ export const masterSpreadToolDefinitions = [
     },
     {
         name: 'get_master_spread_info',
-        description: 'Get detailed information about a master spread',
+        description: 'マスタースプレッドの情報を取得',
         inputSchema: {
             type: 'object',
             properties: {

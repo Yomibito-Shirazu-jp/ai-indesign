@@ -7,7 +7,7 @@ export const exportToolDefinitions = [
     // =================== EXPORT MANAGEMENT ===================
     {
         name: 'export_pdf',
-        description: 'Export document to PDF',
+        description: 'PDFとしてエクスポート',
         inputSchema: {
             type: 'object',
             properties: {
@@ -22,7 +22,7 @@ export const exportToolDefinitions = [
     },
     {
         name: 'export_images',
-        description: 'Export pages as images',
+        description: '画像としてエクスポート',
         inputSchema: {
             type: 'object',
             properties: {
@@ -50,7 +50,7 @@ export const exportToolDefinitions = [
     },
     {
         name: 'package_document',
-        description: 'Package document for printing',
+        description: 'パッケージ（入稿データ）を作成',
         inputSchema: {
             type: 'object',
             properties: {

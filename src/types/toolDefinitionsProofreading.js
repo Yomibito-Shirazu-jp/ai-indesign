@@ -5,7 +5,7 @@
 export const proofreadingTools = [
     {
         name: 'check_joyo_kanji',
-        description: '常用漢字外の漢字を検出。InDesignドキュメント内のテキスト、または直接指定テキストを検査。',
+        description: '常用漢字の使用を確認（旧字体・異体字チェック）',
         inputSchema: {
             type: 'object',
             properties: {
@@ -16,7 +16,7 @@ export const proofreadingTools = [
     },
     {
         name: 'check_hyoki_yure',
-        description: '表記揺れを検知（送り仮名、漢字/かな、外来語等の混在）。同一文書内で複数の表記が混在する箇所を報告。',
+        description: '表記揺れを検出・修正候補を提示',
         inputSchema: {
             type: 'object',
             properties: {
@@ -31,7 +31,7 @@ export const proofreadingTools = [
     },
     {
         name: 'check_sensitive_terms',
-        description: '不適切表現・差別用語を検出。身体・職業・性別・人種等のカテゴリ別に検出し、代替表現を提案。',
+        description: '不適切表現・差別表現を確認',
         inputSchema: {
             type: 'object',
             properties: {
@@ -52,7 +52,7 @@ export const proofreadingTools = [
     },
     {
         name: 'proofread_all',
-        description: '校閲総合チェック（常用漢字・表記揺れ・不適切表現を一括検査）',
+        description: '全校閲チェックを一括実行（表記・用語・禁則）',
         inputSchema: {
             type: 'object',
             properties: {

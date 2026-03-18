@@ -5,7 +5,7 @@ export const pageItemGroupToolDefinitions = [
     // PageItem Management Tools
     {
         name: 'get_page_item_info',
-        description: 'Get detailed information about a specific page item',
+        description: 'ページアイテムの情報を取得',
         inputSchema: {
             type: 'object',
             properties: {
@@ -23,7 +23,7 @@ export const pageItemGroupToolDefinitions = [
     },
     {
         name: 'select_page_item',
-        description: 'Select a specific page item',
+        description: 'ページアイテムを選択',
         inputSchema: {
             type: 'object',
             properties: {
@@ -47,7 +47,7 @@ export const pageItemGroupToolDefinitions = [
     },
     {
         name: 'move_page_item',
-        description: 'Move a page item to a new position',
+        description: 'ページアイテムを移動',
         inputSchema: {
             type: 'object',
             properties: {
@@ -73,7 +73,7 @@ export const pageItemGroupToolDefinitions = [
     },
     {
         name: 'resize_page_item',
-        description: 'Resize a page item',
+        description: 'ページアイテムのサイズを変更',
         inputSchema: {
             type: 'object',
             properties: {
@@ -105,7 +105,7 @@ export const pageItemGroupToolDefinitions = [
     },
     {
         name: 'set_page_item_properties',
-        description: 'Set properties of a page item',
+        description: 'ページアイテムのプロパティを設定',
         inputSchema: {
             type: 'object',
             properties: {
@@ -143,7 +143,7 @@ export const pageItemGroupToolDefinitions = [
     },
     {
         name: 'duplicate_page_item',
-        description: 'Duplicate a page item',
+        description: 'ページアイテムを複製',
         inputSchema: {
             type: 'object',
             properties: {
@@ -169,7 +169,7 @@ export const pageItemGroupToolDefinitions = [
     },
     {
         name: 'delete_page_item',
-        description: 'Delete a page item',
+        description: 'ページアイテムを削除',
         inputSchema: {
             type: 'object',
             properties: {
@@ -187,7 +187,7 @@ export const pageItemGroupToolDefinitions = [
     },
     {
         name: 'list_page_items',
-        description: 'List all page items on a specific page',
+        description: 'ページアイテム一覧を取得',
         inputSchema: {
             type: 'object',
             properties: {
@@ -203,7 +203,7 @@ export const pageItemGroupToolDefinitions = [
     // Group Management Tools
     {
         name: 'create_group',
-        description: 'Create a group from currently selected items',
+        description: 'グループを作成',
         inputSchema: {
             type: 'object',
             properties: {
@@ -217,7 +217,7 @@ export const pageItemGroupToolDefinitions = [
     },
     {
         name: 'create_group_from_items',
-        description: 'Create a group from specific page items by their indices',
+        description: '選択アイテムからグループを作成',
         inputSchema: {
             type: 'object',
             properties: {
@@ -239,7 +239,7 @@ export const pageItemGroupToolDefinitions = [
     },
     {
         name: 'ungroup',
-        description: 'Ungroup a group, releasing all its items',
+        description: 'グループを解除',
         inputSchema: {
             type: 'object',
             properties: {
@@ -257,7 +257,7 @@ export const pageItemGroupToolDefinitions = [
     },
     {
         name: 'get_group_info',
-        description: 'Get detailed information about a group',
+        description: 'グループの情報を取得',
         inputSchema: {
             type: 'object',
             properties: {
@@ -275,7 +275,7 @@ export const pageItemGroupToolDefinitions = [
     },
     {
         name: 'add_item_to_group',
-        description: 'Add a page item to an existing group',
+        description: 'アイテムをグループに追加',
         inputSchema: {
             type: 'object',
             properties: {
@@ -297,7 +297,7 @@ export const pageItemGroupToolDefinitions = [
     },
     {
         name: 'remove_item_from_group',
-        description: 'Remove a page item from a group',
+        description: 'アイテムをグループから除外',
         inputSchema: {
             type: 'object',
             properties: {
@@ -319,7 +319,7 @@ export const pageItemGroupToolDefinitions = [
     },
     {
         name: 'list_groups',
-        description: 'List all groups on a specific page',
+        description: 'グループ一覧を取得',
         inputSchema: {
             type: 'object',
             properties: {
@@ -333,7 +333,7 @@ export const pageItemGroupToolDefinitions = [
     },
     {
         name: 'set_group_properties',
-        description: 'Set properties of a group',
+        description: 'グループのプロパティを設定',
         inputSchema: {
             type: 'object',
             properties: {

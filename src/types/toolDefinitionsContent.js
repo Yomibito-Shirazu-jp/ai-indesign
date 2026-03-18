@@ -7,7 +7,7 @@ export const contentToolDefinitions = [
     // =================== TEXT MANAGEMENT ===================
     {
         name: 'create_text_frame',
-        description: 'Create a text frame on the active page',
+        description: 'テキストフレームを作成',
         inputSchema: {
             type: 'object',
             properties: {
@@ -28,7 +28,7 @@ export const contentToolDefinitions = [
     },
     {
         name: 'edit_text_frame',
-        description: 'Edit an existing text frame',
+        description: 'テキストフレームを編集',
         inputSchema: {
             type: 'object',
             properties: {
@@ -44,7 +44,7 @@ export const contentToolDefinitions = [
     },
     {
         name: 'find_replace_text',
-        description: 'Find and replace text in the document',
+        description: 'テキストの検索・置換',
         inputSchema: {
             type: 'object',
             properties: {
@@ -58,7 +58,7 @@ export const contentToolDefinitions = [
     },
     {
         name: 'create_table',
-        description: 'Create a table on the active page',
+        description: 'テーブルを作成',
         inputSchema: {
             type: 'object',
             properties: {
@@ -76,7 +76,7 @@ export const contentToolDefinitions = [
     },
     {
         name: 'populate_table',
-        description: 'Populate a table with data',
+        description: 'テーブルにデータを入力',
         inputSchema: {
             type: 'object',
             properties: {
@@ -92,7 +92,7 @@ export const contentToolDefinitions = [
     // =================== GRAPHICS MANAGEMENT ===================
     {
         name: 'place_image',
-        description: 'Place an image on the active page with scaling and fitting options',
+        description: '画像を配置',
         inputSchema: {
             type: 'object',
             properties: {
@@ -115,7 +115,7 @@ export const contentToolDefinitions = [
     },
     {
         name: 'help',
-        description: 'Get help information about available tools and their usage',
+        description: '利用可能なツール一覧・ヘルプを表示',
         inputSchema: {
             type: 'object',
             properties: {
@@ -140,7 +140,7 @@ export const contentToolDefinitions = [
     },
     {
         name: 'create_rectangle',
-        description: 'Create a rectangle on the active page',
+        description: '長方形を作成',
         inputSchema: {
             type: 'object',
             properties: {
@@ -158,7 +158,7 @@ export const contentToolDefinitions = [
     },
     {
         name: 'create_ellipse',
-        description: 'Create an ellipse on the active page',
+        description: '楕円を作成',
         inputSchema: {
             type: 'object',
             properties: {
@@ -175,7 +175,7 @@ export const contentToolDefinitions = [
     },
     {
         name: 'create_polygon',
-        description: 'Create a polygon on the active page',
+        description: '多角形を作成',
         inputSchema: {
             type: 'object',
             properties: {
@@ -193,7 +193,7 @@ export const contentToolDefinitions = [
     },
     {
         name: 'create_object_style',
-        description: 'Create an object style for consistent formatting',
+        description: 'オブジェクトスタイルを作成',
         inputSchema: {
             type: 'object',
             properties: {
@@ -209,12 +209,12 @@ export const contentToolDefinitions = [
     },
     {
         name: 'list_object_styles',
-        description: 'List all object styles in the document',
+        description: 'オブジェクトスタイル一覧を取得',
         inputSchema: { type: 'object', properties: {} },
     },
     {
         name: 'apply_object_style',
-        description: 'Apply an object style to a page item',
+        description: 'オブジェクトスタイルを適用',
         inputSchema: {
             type: 'object',
             properties: {
@@ -227,7 +227,7 @@ export const contentToolDefinitions = [
     },
     {
         name: 'get_image_info',
-        description: 'Get detailed information about an image',
+        description: '配置画像の情報を取得',
         inputSchema: {
             type: 'object',
             properties: {
@@ -239,7 +239,7 @@ export const contentToolDefinitions = [
     // =================== STYLES MANAGEMENT ===================
     {
         name: 'create_paragraph_style',
-        description: 'Create a paragraph style',
+        description: '段落スタイルを作成',
         inputSchema: {
             type: 'object',
             properties: {
@@ -257,7 +257,7 @@ export const contentToolDefinitions = [
     },
     {
         name: 'create_character_style',
-        description: 'Create a character style',
+        description: '文字スタイルを作成',
         inputSchema: {
             type: 'object',
             properties: {
@@ -274,7 +274,7 @@ export const contentToolDefinitions = [
     },
     {
         name: 'apply_paragraph_style',
-        description: 'Apply a paragraph style to text',
+        description: '段落スタイルを適用',
         inputSchema: {
             type: 'object',
             properties: {
@@ -286,7 +286,7 @@ export const contentToolDefinitions = [
     },
     {
         name: 'list_styles',
-        description: 'List all paragraph and character styles',
+        description: 'スタイル一覧を取得',
         inputSchema: {
             type: 'object',
             properties: {
@@ -298,7 +298,7 @@ export const contentToolDefinitions = [
     // =================== COLORS MANAGEMENT ===================
     {
         name: 'create_color_swatch',
-        description: 'Create a color swatch',
+        description: 'カラースウォッチを作成',
         inputSchema: {
             type: 'object',
             properties: {
@@ -313,12 +313,12 @@ export const contentToolDefinitions = [
     },
     {
         name: 'list_color_swatches',
-        description: 'List all color swatches',
+        description: 'カラースウォッチ一覧を取得',
         inputSchema: { type: 'object', properties: {} },
     },
     {
         name: 'apply_color',
-        description: 'Apply color to an object',
+        description: 'カラーを適用',
         inputSchema: {
             type: 'object',
             properties: {

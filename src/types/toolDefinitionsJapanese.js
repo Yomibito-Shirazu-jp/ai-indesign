@@ -4,7 +4,7 @@
 export const japaneseTypesettingTools = [
     {
         name: 'apply_japanese_typesetting_preset',
-        description: '和文組版プリセットを適用（書籍/冊子/チラシ/広報紙/POP）。禁則、行送り、トラッキング、ぶら下がり等を一括設定。',
+        description: '日本語組版プリセットを適用（禁則・約物・字詰め）',
         inputSchema: {
             type: 'object',
             properties: {
@@ -17,7 +17,7 @@ export const japaneseTypesettingTools = [
     },
     {
         name: 'normalize_japanese_text',
-        description: '日本語テキスト正規化（半角全角変換、数字表記統一、連続スペース削除）',
+        description: '日本語テキストを正規化（全角・半角統一）',
         inputSchema: {
             type: 'object',
             properties: {
@@ -30,7 +30,7 @@ export const japaneseTypesettingTools = [
     },
     {
         name: 'fix_kinsoku',
-        description: '禁則処理設定（行頭禁則、行末禁則、ぶら下がり）',
+        description: '禁則処理を一括修正',
         inputSchema: {
             type: 'object',
             properties: {
@@ -42,7 +42,7 @@ export const japaneseTypesettingTools = [
     },
     {
         name: 'adjust_kumihan',
-        description: '和欧混植調整、約物処理、句読点処理',
+        description: '字詰め・組方向を調整',
         inputSchema: {
             type: 'object',
             properties: {
@@ -55,7 +55,7 @@ export const japaneseTypesettingTools = [
     },
     {
         name: 'adjust_tracking_for_japanese',
-        description: '和文字詰め・字送り調整',
+        description: '和文トラッキングを調整',
         inputSchema: {
             type: 'object',
             properties: {
@@ -68,7 +68,7 @@ export const japaneseTypesettingTools = [
     },
     {
         name: 'adjust_leading_for_japanese',
-        description: '行送り調整（行間距離）',
+        description: '和文行送りを調整',
         inputSchema: {
             type: 'object',
             properties: {
@@ -82,7 +82,7 @@ export const japaneseTypesettingTools = [
     },
     {
         name: 'validate_japanese_layout',
-        description: '和文組版品質検証（オーバーセット、スタイル未適用、可読性スコア）',
+        description: '日本語レイアウトの妥当性を検証',
         inputSchema: {
             type: 'object',
             properties: {
@@ -93,7 +93,7 @@ export const japaneseTypesettingTools = [
     },
     {
         name: 'detect_style_inconsistencies',
-        description: 'スタイル未適用・不整合箇所を検出',
+        description: 'スタイルの不統一・乱れを検出',
         inputSchema: {
             type: 'object',
             properties: {

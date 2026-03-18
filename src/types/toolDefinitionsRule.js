@@ -1,7 +1,7 @@
 export const ruleTools = [
     {
         name: 'get_customer_rules',
-        description: 'Get formatting and notation rules specific to a customer or project. Returns rules including half-width/full-width settings, punctuation, and specific notation patterns.',
+        description: '顧客別の表記ルールを取得',
         inputSchema: {
             type: 'object',
             properties: {
@@ -15,7 +15,7 @@ export const ruleTools = [
     },
     {
         name: 'save_customer_rules',
-        description: 'Save or update formatting and notation rules for a specific customer or project.',
+        description: '顧客別の表記ルールを保存',
         inputSchema: {
             type: 'object',
             properties: {
@@ -39,7 +39,7 @@ export const ruleTools = [
     },
     {
         name: 'add_notation_rule',
-        description: 'Add a specific notation replacement rule to a customer/project profile.',
+        description: '表記ルールを追加',
         inputSchema: {
             type: 'object',
             properties: {
@@ -63,7 +63,7 @@ export const ruleTools = [
     },
     {
         name: 'list_customers',
-        description: 'List all customers or projects that have saved rules.',
+        description: '顧客一覧を表示',
         inputSchema: {
             type: 'object',
             properties: {}
@@ -71,7 +71,7 @@ export const ruleTools = [
     },
     {
         name: 'learn_rules_from_diff',
-        description: 'Analyze before and after text to automatically learn frequently applied notation changes.',
+        description: '修正差分から表記ルールを自動学習',
         inputSchema: {
             type: 'object',
             properties: {

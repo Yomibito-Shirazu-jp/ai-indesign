@@ -4,7 +4,7 @@
 export const verticalTextTools = [
     {
         name: 'create_vertical_text_frame',
-        description: '縦組みテキストフレームを作成',
+        description: '縦書きテキストフレームを作成',
         inputSchema: {
             type: 'object',
             properties: {
@@ -20,7 +20,7 @@ export const verticalTextTools = [
     },
     {
         name: 'convert_frame_to_vertical',
-        description: 'テキストフレームを横組み→縦組みに変換',
+        description: '横書きフレームを縦書きに変換',
         inputSchema: {
             type: 'object',
             properties: {
@@ -33,7 +33,7 @@ export const verticalTextTools = [
     },
     {
         name: 'validate_vertical_layout',
-        description: '縦書き品質検証（数字崩れ、英字崩れ、約物崩れ、オーバーセット検出）',
+        description: '縦書きレイアウトを検証',
         inputSchema: {
             type: 'object',
             properties: {
@@ -43,7 +43,7 @@ export const verticalTextTools = [
     },
     {
         name: 'fix_tatechuyoko',
-        description: '縦中横設定（縦組み中の数字・英字を横配置）',
+        description: '縦中横（たてちゅうよこ）を自動修正',
         inputSchema: {
             type: 'object',
             properties: {
@@ -56,7 +56,7 @@ export const verticalTextTools = [
     },
     {
         name: 'fix_vertical_punctuation',
-        description: '縦組みの約物回転・括弧・句読点位置補正',
+        description: '縦書き用に句読点を整形',
         inputSchema: {
             type: 'object',
             properties: {
@@ -67,7 +67,7 @@ export const verticalTextTools = [
     },
     {
         name: 'mix_vertical_and_horizontal_layout',
-        description: '縦横混在レイアウト情報の取得・管理',
+        description: '縦横混在レイアウトを構成',
         inputSchema: {
             type: 'object',
             properties: {

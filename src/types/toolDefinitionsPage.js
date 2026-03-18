@@ -7,7 +7,7 @@ export const pageToolDefinitions = [
     // =================== BASIC PAGE MANAGEMENT ===================
     {
         name: 'add_page',
-        description: 'Add a new page to the document',
+        description: 'ページを追加',
         inputSchema: {
             type: 'object',
             properties: {
@@ -18,7 +18,7 @@ export const pageToolDefinitions = [
     },
     {
         name: 'delete_page',
-        description: 'Delete a page from the document',
+        description: 'ページを削除',
         inputSchema: {
             type: 'object',
             properties: {
@@ -29,7 +29,7 @@ export const pageToolDefinitions = [
     },
     {
         name: 'duplicate_page',
-        description: 'Duplicate a page',
+        description: 'ページを複製',
         inputSchema: {
             type: 'object',
             properties: {
@@ -42,7 +42,7 @@ export const pageToolDefinitions = [
     },
     {
         name: 'navigate_to_page',
-        description: 'Navigate to a specific page',
+        description: '指定ページに移動',
         inputSchema: {
             type: 'object',
             properties: {
@@ -53,7 +53,7 @@ export const pageToolDefinitions = [
     },
     {
         name: 'get_page_info',
-        description: 'Get detailed information about a specific page',
+        description: 'ページ情報を取得',
         inputSchema: {
             type: 'object',
             properties: {
@@ -64,7 +64,7 @@ export const pageToolDefinitions = [
     },
     {
         name: 'move_page',
-        description: 'Move a page to a different position',
+        description: 'ページを移動',
         inputSchema: {
             type: 'object',
             properties: {
@@ -80,7 +80,7 @@ export const pageToolDefinitions = [
     // =================== ADVANCED PAGE PROPERTIES ===================
     {
         name: 'set_page_properties',
-        description: 'Set properties for a page',
+        description: 'ページのプロパティを設定',
         inputSchema: {
             type: 'object',
             properties: {
@@ -97,7 +97,7 @@ export const pageToolDefinitions = [
     },
     {
         name: 'adjust_page_layout',
-        description: 'Adjust page layout with new dimensions and margins',
+        description: 'ページレイアウトを調整',
         inputSchema: {
             type: 'object',
             properties: {
@@ -118,7 +118,7 @@ export const pageToolDefinitions = [
     },
     {
         name: 'resize_page',
-        description: 'Resize a page',
+        description: 'ページサイズを変更',
         inputSchema: {
             type: 'object',
             properties: {
@@ -134,7 +134,7 @@ export const pageToolDefinitions = [
     },
     {
         name: 'place_file_on_page',
-        description: 'Place a file on a page',
+        description: 'ファイルをページに配置',
         inputSchema: {
             type: 'object',
             properties: {
@@ -151,7 +151,7 @@ export const pageToolDefinitions = [
     },
     {
         name: 'place_xml_on_page',
-        description: 'Place XML content on a page',
+        description: 'XMLをページに配置',
         inputSchema: {
             type: 'object',
             properties: {
@@ -166,7 +166,7 @@ export const pageToolDefinitions = [
     },
     {
         name: 'snapshot_page_layout',
-        description: 'Create a snapshot of the current page layout',
+        description: 'レイアウトのスナップショットを保存',
         inputSchema: {
             type: 'object',
             properties: {
@@ -177,7 +177,7 @@ export const pageToolDefinitions = [
     },
     {
         name: 'delete_page_layout_snapshot',
-        description: 'Delete the layout snapshot for a page',
+        description: 'レイアウトのスナップショットを削除',
         inputSchema: {
             type: 'object',
             properties: {
@@ -188,7 +188,7 @@ export const pageToolDefinitions = [
     },
     {
         name: 'delete_all_page_layout_snapshots',
-        description: 'Delete all layout snapshots for a page',
+        description: '全スナップショットを削除',
         inputSchema: {
             type: 'object',
             properties: {
@@ -199,7 +199,7 @@ export const pageToolDefinitions = [
     },
     {
         name: 'reframe_page',
-        description: 'Reframe (resize) a page',
+        description: 'ページのフレームを変更',
         inputSchema: {
             type: 'object',
             properties: {
@@ -215,7 +215,7 @@ export const pageToolDefinitions = [
     },
     {
         name: 'create_page_guides',
-        description: 'Create guides on a page',
+        description: 'ガイドを作成',
         inputSchema: {
             type: 'object',
             properties: {
@@ -234,7 +234,7 @@ export const pageToolDefinitions = [
     },
     {
         name: 'select_page',
-        description: 'Select a page',
+        description: 'ページを選択',
         inputSchema: {
             type: 'object',
             properties: {
@@ -246,7 +246,7 @@ export const pageToolDefinitions = [
     },
     {
         name: 'get_page_content_summary',
-        description: 'Get a summary of content on a page',
+        description: 'ページのコンテンツ概要を取得',
         inputSchema: {
             type: 'object',
             properties: {
@@ -257,7 +257,7 @@ export const pageToolDefinitions = [
     },
     {
         name: 'set_page_background',
-        description: 'Set page background by creating a full-page rectangle with specified color',
+        description: 'ページの背景を設定',
         inputSchema: {
             type: 'object',
             properties: {

@@ -7,7 +7,7 @@ export const bookToolDefinitions = [
     // =================== BOOK MANAGEMENT ===================
     {
         name: 'create_book',
-        description: 'Create a new InDesign book',
+        description: 'ブックを作成',
         inputSchema: {
             type: 'object',
             properties: {
@@ -18,7 +18,7 @@ export const bookToolDefinitions = [
     },
     {
         name: 'open_book',
-        description: 'Open an existing InDesign book',
+        description: 'ブックを開く',
         inputSchema: {
             type: 'object',
             properties: {
@@ -29,12 +29,12 @@ export const bookToolDefinitions = [
     },
     {
         name: 'list_books',
-        description: 'List all open books in InDesign',
+        description: 'ブック一覧を取得',
         inputSchema: { type: 'object', properties: {} }
     },
     {
         name: 'add_document_to_book',
-        description: 'Add a document to a book',
+        description: 'ドキュメントをブックに追加',
         inputSchema: {
             type: 'object',
             properties: {
@@ -46,7 +46,7 @@ export const bookToolDefinitions = [
     },
     {
         name: 'synchronize_book',
-        description: 'Synchronize styles and content across all documents in a book',
+        description: 'ブックを同期',
         inputSchema: {
             type: 'object',
             properties: {
@@ -57,7 +57,7 @@ export const bookToolDefinitions = [
     },
     {
         name: 'repaginate_book',
-        description: 'Repaginate all documents in a book',
+        description: 'ブックのページを再割り付け',
         inputSchema: {
             type: 'object',
             properties: {
@@ -68,7 +68,7 @@ export const bookToolDefinitions = [
     },
     {
         name: 'update_all_cross_references',
-        description: 'Update all cross references in a book',
+        description: '全相互参照を更新',
         inputSchema: {
             type: 'object',
             properties: {
@@ -79,7 +79,7 @@ export const bookToolDefinitions = [
     },
     {
         name: 'update_all_numbers',
-        description: 'Update all numbers (page numbers, chapter numbers, paragraph numbers) in a book',
+        description: '全番号を更新',
         inputSchema: {
             type: 'object',
             properties: {
@@ -90,7 +90,7 @@ export const bookToolDefinitions = [
     },
     {
         name: 'update_chapter_and_paragraph_numbers',
-        description: 'Update chapter and paragraph numbers in a book',
+        description: '章番号・段落番号を更新',
         inputSchema: {
             type: 'object',
             properties: {
@@ -101,7 +101,7 @@ export const bookToolDefinitions = [
     },
     {
         name: 'export_book',
-        description: 'Export an entire book to various formats',
+        description: 'ブックをエクスポート',
         inputSchema: {
             type: 'object',
             properties: {
@@ -119,7 +119,7 @@ export const bookToolDefinitions = [
     },
     {
         name: 'package_book',
-        description: 'Package a book for print production',
+        description: 'ブックをパッケージ',
         inputSchema: {
             type: 'object',
             properties: {
@@ -140,7 +140,7 @@ export const bookToolDefinitions = [
     },
     {
         name: 'preflight_book',
-        description: 'Preflight a book and optionally save the report',
+        description: 'ブックのプリフライトチェック',
         inputSchema: {
             type: 'object',
             properties: {
@@ -153,7 +153,7 @@ export const bookToolDefinitions = [
     },
     {
         name: 'print_book',
-        description: 'Print a book',
+        description: 'ブックを印刷',
         inputSchema: {
             type: 'object',
             properties: {
@@ -171,7 +171,7 @@ export const bookToolDefinitions = [
     },
     {
         name: 'get_book_info',
-        description: 'Get detailed information about a book',
+        description: 'ブックの情報を取得',
         inputSchema: {
             type: 'object',
             properties: {
@@ -182,7 +182,7 @@ export const bookToolDefinitions = [
     },
     {
         name: 'set_book_properties',
-        description: 'Set various properties for a book',
+        description: 'ブックのプロパティを設定',
         inputSchema: {
             type: 'object',
             properties: {
