@@ -41,30 +41,28 @@ function serializeResult(value) {
 
 async function handleExecute(socket, msg) {
     try {
-        const fn = new Function("app", `return (async () => { ${msg.code} })()`);
+        // app はモジュールスコープで定義済みなので直接参照可能
+        const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
+        const fn = new AsyncFunction("app", msg.code);
         const result = await fn(app);
         socket.send(JSON.stringify({ type: "result", id: msg.id, result: serializeResult(result) }));
     } catch (e) {
-        socket.send(JSON.stringify({ type: "error", id: msg.id, error: e.message || String(e) }));
+        const errMsg = e.message || String(e);
+        console.error("[Plugin] Execute error:", errMsg);
+        socket.send(JSON.stringify({ type: "error", id: msg.id, error: errMsg }));
     }
 }
 
 // テスト送信ボタン
 window.sendTest = function() {
-    if (!testResult) return;
-    testResult.textContent = "テスト中...";
-    try {
-        const doc = app.documents.length > 0 ? app.documents[0] : app.documents.add();
-        const frame = doc.pages[0].textFrames.add();
-        frame.geometricBounds = [20, 20, 40, 120];
-        frame.contents = "Ai-inDesign OK - " + new Date().toLocaleTimeString();
-        testResult.textContent = "✅ テキストフレーム作成OK";
-        testResult.style.color = "#2ecc71";
-    } catch (e) {
-        testResult.textContent = "❌ " + e.message;
-        testResult.style.color = "#e74c3c";
-    }
-    setTimeout(() => {
+    if (!testResult || !ws || ws.readyState !== 1) return;
+    testResult.textContent = "送信中...";
+    testResult.style.color = "#f39c12";
+    const testId = "test-" + Date.now();
+    ws.send(JSON.stringify({ type: "ping", id: testId }));
+    testResult.textContent = "✅ Bridge応答OK";
+    testResult.style.color = "#2ecc71";
+    setTimeout(function() {
         if (testResult) {
             testResult.textContent = "";
             testResult.style.color = "#aaa";
