@@ -1,74 +1,82 @@
 @echo off
 chcp 65001 >nul
 cd /d "%~dp0"
-title Ai-inDesign
+title *** Ai-inDesign TORA TORA TORA ***
 
 echo.
-echo ╔══════════════════════════════════════════════════════╗
-echo ║        Ai-inDesign  ワンクリックセットアップ         ║
-echo ╚══════════════════════════════════════════════════════╝
+echo  /---------\   /----------\    /---\    /----------\  /----------\
+echo  ^|  /-----/   ^|  /--------   ^|   ^|   ^|  /--------  ^|  /--------
+echo  ^| ^|         ^| ^|           ^|   ^|   ^| ^|           ^| ^|
+echo  ^| ^|         ^| ^|--\        ^|   ^|   ^| ^|           ^| ^|--\
+echo  ^| ^|         ^| ^|   ^|       ^|   ^|   ^| ^|           ^| ^|   ^|
+echo  ^|  \-----\   ^|  \------\   ^|   ^|   ^|  \------\   ^|  \------\
+echo  ^|________/   ^|__________^|  ^|___|   ^|__________^|  ^|__________^|
+echo.
+echo      A i - i n D e s i g n   ^|  A d o b e  D T P  A u t o m a t i o n
+echo.
+echo  [ TORA TORA TORA  --  Kumo Yama Nobore  --  All Adobe Apps Targeted ]
+echo.
+echo  ======================================================================
 echo.
 
-REM ── Node.js チェック ──
+REM Node.js check
 where node >nul 2>&1
 if %ERRORLEVEL% NEQ 0 (
-    echo ❌ Node.js が見つかりません。https://nodejs.org/ からインストールしてください。
+    echo  !! ERROR: Node.js not found. Install from https://nodejs.org/
     start https://nodejs.org/ja/
     pause & exit /b 1
 )
 
-REM ── 既存プロセスをポートごとクリーンアップ ──
-echo [1/4] クリーンアップ中...
-for /f "tokens=5" %%p in ('netstat -ano 2^>nul ^| findstr ":3000 \|:3001 \|:3002 " ^| findstr "LISTENING"') do (
+REM Kill existing processes on ports 3000-3002
+echo  [1/4] Port cleanup ...
+for /f "tokens=5" %%p in ('netstat -ano 2^>nul ^| findstr ":49300 \|:49301 \|:49302 " ^| findstr "LISTENING"') do (
     if not "%%p"=="" taskkill /PID %%p /F >nul 2>&1
 )
-timeout /t 1 /nobreak >nul
+timeout /t 2 /nobreak >nul
+echo         OK
 
-REM ── npm install (初回のみ) ──
-echo [2/4] パッケージ確認中...
+REM npm install (first time only)
+echo  [2/4] Package check ...
 if not exist "bridge\node_modules" (
-    echo       初回インストール中...
+    echo         First-time install ...
     pushd bridge & call npm install --no-fund --no-audit >nul 2>&1 & popd
 )
 if not exist "node_modules" (
     call npm install --no-fund --no-audit >nul 2>&1
 )
+echo         OK
 
-REM ── Claude Desktop 設定 & 再起動 ──
-echo [3/4] Claude Desktop を設定中...
-REM 必ず先にKill（起動中に書くと設定が上書きされる）
+REM Claude Desktop setup
+echo  [3/4] Claude Desktop setup ...
 tasklist /FI "IMAGENAME eq Claude.exe" 2>nul | findstr /I "Claude.exe" >nul
 if %ERRORLEVEL% EQU 0 (
     taskkill /IM Claude.exe /F >nul 2>&1
     timeout /t 2 /nobreak >nul
 )
-REM Claude完全停止後に設定書き込み
 node setup.mjs >nul 2>&1
-REM 設定確認してからClaude起動
 start shell:AppsFolder\Claude_pzs8sxrjxfjjc!Claude
-echo       Claude Desktop を起動しました
-timeout /t 3 /nobreak >nul
+echo         OK
 
-REM ── Bridge をバックグラウンドで起動 ──
-echo [4/4] Bridgeサーバーを起動中...
+REM Start Bridge (auto-restart loop)
+echo  [4/4] Bridge server launch ...
 start "Ai-inDesign Bridge" /min cmd /c "cd /d "%~dp0bridge" && :loop && node server.js && timeout /t 3 /nobreak >nul && goto loop"
-timeout /t 3 /nobreak >nul
+timeout /t 4 /nobreak >nul
+echo         OK
 
-REM ── デモ送信（トラトラトラ）──
+REM Demo broadcast
 echo.
-echo ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-echo  📡 デモ送信: トラトラトラ
-echo ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo  ======================================================================
+echo   >>  TORA TORA TORA  --  demo broadcast to all Adobe apps
+echo  ======================================================================
+echo.
 node test-broadcast.js
 
 echo.
-echo ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-echo  ✅ セットアップ完了！
+echo  ======================================================================
+echo   SETUP COMPLETE
 echo.
-echo  InDesign: ウィンドウ→プラグイン→Ai-inDesign
-echo            緑ランプ = 接続OK
-echo.
-echo  あとは Claude Desktop から指示するだけ
-echo ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+echo   InDesign ^> Window ^> Plugins ^> Ai-inDesign  ( green = connected )
+echo   Claude Desktop ^: give instructions in Japanese
+echo  ======================================================================
 echo.
 pause

@@ -50,7 +50,7 @@ async function handleExecute(socket, msg) {
 
 function connect() {
     setStatus("connecting");
-    ws = new WebSocket("ws://localhost:3000");
+    ws = new WebSocket("ws://localhost:49300");
 
     ws.onopen = () => setStatus("connected");
 
