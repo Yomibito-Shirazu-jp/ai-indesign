@@ -17,8 +17,7 @@
   ],
   "requiredPermissions": {
     "network": {
-      "domains": ["ws://127.0.0.1:49302", "http://127.0.0.1:49302", "ws://localhost:49302", "http://localhost:49302", "ws://127.0.0.1:*", "ws://localhost:*"]
-    },
-    "allowCodeGenerationFromStrings": true
+      "domains": ["ws://127.0.0.1:49302", "ws://localhost:49302", "ws://127.0.0.1:*", "ws://localhost:*"]
+    }
   }
 }
