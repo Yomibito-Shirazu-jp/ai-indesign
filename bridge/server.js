@@ -2,7 +2,18 @@ const { WebSocketServer } = require('ws');
 const express = require('express');
 const { v4: uuidv4 } = require('uuid');
 const path = require('path');
+const fs = require('fs');
 const { AiChatSession } = require('./ai-chat');
+
+// ─── .env 読み込み ───
+(function loadEnv() {
+    const envPath = path.join(__dirname, '..', '.env');
+    if (!fs.existsSync(envPath)) return;
+    for (const line of fs.readFileSync(envPath, 'utf8').split('\n')) {
+        const m = line.replace(/#.*$/, '').trim().match(/^([A-Z_]+)\s*=\s*(.+)/);
+        if (m) process.env[m[1]] = m[2].trim();
+    }
+})();
 
 // ─── In-memory operation log (for Dimension Hub) ───
 const opLog = [];
@@ -15,8 +26,7 @@ function pushLog(level, message) {
     if (opLog.length > MAX_LOG) opLog.shift();
 }
 
-const WS_PORT = 3001;
-const HTTP_PORT = 3000;
+const HTTP_PORT = parseInt(process.env.INDESIGN_PORT || '49300');
 const TIMEOUT_MS = 30000;
 
 const app = express();
@@ -261,22 +271,42 @@ app.post('/set-api-key', (req, res) => {
     res.json({ success: true });
 });
 
-app.listen(HTTP_PORT, '127.0.0.1', () => {
-    console.log(`[Bridge] HTTP server on http://127.0.0.1:${HTTP_PORT}`);
-    console.log(`[Bridge] WebSocket server on ws://127.0.0.1:${WS_PORT}`);
-    console.log('[Bridge] AI Chat engine ready (Gemini)');
-    console.log('[Bridge] Waiting for UXP plugin to connect...');
-    pushLog('info', `Bridge server started on HTTP :${HTTP_PORT} / WS :${WS_PORT}`);
-    pushLog('info', 'Dimension Hub ready at http://localhost:' + HTTP_PORT);
+const http = require('http');
+const server = http.createServer(app);
 
-    // 社員向け: ブラウザを自動で開く
-    if (process.env.AUTO_OPEN !== 'false') {
-        const { exec } = require('child_process');
-        const url = `http://127.0.0.1:${HTTP_PORT}`;
-        if (process.platform === 'win32') {
-            exec(`start ${url}`);
-        } else if (process.platform === 'darwin') {
-            exec(`open ${url}`);
+// WebSocket: HTTPサーバーにupgradeで統合（UXPプラグイン接続用）
+const wss = new WebSocketServer({ server });
+
+wss.on('connection', (ws) => {
+    console.log('[Bridge] UXP plugin connected');
+    pluginSocket = ws;
+    pushLog('info', 'UXP plugin connected');
+
+    ws.on('message', (data) => {
+        let msg;
+        try { msg = JSON.parse(data.toString()); } catch { return; }
+
+        if (msg.type === 'pong' || msg.type === 'result' || msg.type === 'error') {
+            const p = pending.get(msg.id);
+            if (p) {
+                clearTimeout(p.timer);
+                pending.delete(msg.id);
+                if (msg.type === 'error') p.reject(new Error(msg.error));
+                else p.resolve(msg.result);
+            }
         }
-    }
+    });
+
+    ws.on('close', () => {
+        console.log('[Bridge] UXP plugin disconnected');
+        pluginSocket = null;
+        pushLog('warn', 'UXP plugin disconnected');
+    });
 });
+
+server.listen(HTTP_PORT, '127.0.0.1', () => {
+    console.log(`[Bridge] Server on http://127.0.0.1:${HTTP_PORT} (HTTP + WebSocket)`);
+    console.log('[Bridge] Waiting for UXP plugin to connect...');
+    pushLog('info', `Bridge server started on port ${HTTP_PORT}`);
+});
+
