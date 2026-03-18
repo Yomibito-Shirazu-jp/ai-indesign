@@ -45,6 +45,12 @@ export const allToolDefinitions = [
     ...interpretationTools,
     ...proofreadingTools,
     ...ruleTools,
+    // システム管理
+    { name: 'check_bridge_status', description: 'InDesign/Illustrator/Photoshopのブリッジ接続状態を確認', inputSchema: { type: 'object', properties: {} } },
+    { name: 'start_bridge',        description: 'InDesignブリッジサーバーを起動する', inputSchema: { type: 'object', properties: {} } },
+    { name: 'stop_bridge',         description: 'ブリッジサーバーを停止する', inputSchema: { type: 'object', properties: {} } },
+    { name: 'run_demo_broadcast',  description: 'トラトラトラ — InDesign/Illustrator/Photoshopにテストメッセージを送信し接続確認', inputSchema: { type: 'object', properties: { message: { type: 'string', description: '送信するテストメッセージ' } } } },
+    { name: 'auto_setup',          description: 'セットアップ全自動：ブリッジ起動→デモ送信まで一発実行', inputSchema: { type: 'object', properties: {} } },
 ];
 
 // Export individual modules for specific use cases

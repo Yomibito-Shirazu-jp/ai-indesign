@@ -6,10 +6,15 @@
   "type": "module",
   "scripts": {
     "start": "node src/index.js",
+    "demo": "node test-broadcast.js",
     "app": "cross-env ELECTRON_RUN_AS_NODE= electron .",
-    "dev": "node --inspect src/index.js",
-    "build:mac": "electron-builder -m",
-    "build:win": "electron-builder -w",
+    "dev:backend": "node --inspect src/index.js",
+    "dev:ui": "cd mcpui && npm run dev",
+    "dev:electron": "electron .",
+    "dev": "concurrently \"npm run dev:ui\" \"npm run dev:electron\"",
+    "build:ui": "cd mcpui && npm run build",
+    "build:mac": "npm run build:ui && electron-builder -m",
+    "build:win": "npm run build:ui && electron-builder -w",
     "test": "node tests/test-all-handlers.js"
   },
   "build": {
@@ -21,7 +26,8 @@
     "files": [
       "app/**/*",
       "src/**/*",
-      "bridge/**/*"
+      "bridge/**/*",
+      "plugin/**/*"
     ],
     "mac": {
       "category": "public.app-category.productivity"
@@ -67,6 +73,7 @@
   },
   "homepage": "https://github.com/Yomibito-Shirazu-jp/ai-indesign#readme",
   "devDependencies": {
+    "concurrently": "^9.2.1",
     "cross-env": "^10.1.0",
     "electron": "^41.0.2",
     "electron-builder": "^26.8.1"

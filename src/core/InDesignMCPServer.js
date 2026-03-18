@@ -28,6 +28,7 @@ import {
     ProofreadingHandlers,
     RuleHandlers,
 } from '../handlers/index.js';
+import { SystemHandlers } from '../handlers/systemHandlers.js';
 import { formatResponse, formatErrorResponse } from '../utils/stringUtils.js';
 import { operationLogger } from './operationLogger.js';
 import { safetyManager } from './safetyManager.js';
@@ -321,6 +322,13 @@ export class InDesignMCPServer {
             case 'add_notation_rule': return await RuleHandlers.addNotationRule(args);
             case 'list_customers': return await RuleHandlers.listCustomers();
             case 'learn_rules_from_diff': return await RuleHandlers.learnRulesFromDiff(args);
+
+            // システム管理（ブリッジ・デモ）
+            case 'check_bridge_status':   return await SystemHandlers.checkBridgeStatus();
+            case 'start_bridge':          return await SystemHandlers.startBridge();
+            case 'stop_bridge':           return await SystemHandlers.stopBridge();
+            case 'run_demo_broadcast':    return await SystemHandlers.runDemoBroadcast(args);
+            case 'auto_setup':            return await SystemHandlers.autoSetup();
 
             default:
                 return formatErrorResponse(`Tool '${name}' not found or not implemented. Use 'help' to see available tools.`, "Tool Call");

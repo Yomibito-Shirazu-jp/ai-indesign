@@ -2,13 +2,27 @@
  * Main entry point for InDesign MCP Server
  */
 import { InDesignMCPServer } from './core/InDesignMCPServer.js';
-import { spawn } from 'child_process';
+import { fork } from 'child_process';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import net from 'net';
+import fs from 'fs';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const BRIDGE_PORT = 3001;
+
+// .envのポート設定を読み込む
+(function loadEnv() {
+    const envPath = join(__dirname, '..', '.env');
+    if (!fs.existsSync(envPath)) return;
+    const lines = fs.readFileSync(envPath, 'utf8').split('\n');
+    for (const line of lines) {
+        const trimmed = line.replace(/#.*$/, '').trim();
+        const m = trimmed.match(/^([A-Z_]+)\s*=\s*(\d+)/);
+        if (m) process.env[m[1]] = m[2];
+    }
+})();
+
+const BRIDGE_PORT = parseInt(process.env.INDESIGN_PORT || '3000', 10);
 
 function isBridgeRunning() {
     return new Promise((resolve) => {
@@ -20,9 +34,10 @@ function isBridgeRunning() {
 
 function startBridge() {
     const bridgePath = join(__dirname, '../bridge/server.js');
-    const child = spawn('node', [bridgePath], {
+    process.env.AUTO_OPEN = 'false';
+    const child = fork(bridgePath, [], {
         detached: true,
-        stdio: 'ignore',
+        stdio: 'ignore'
     });
     child.unref();
     console.error('[MCP] Bridge server started (pid ' + child.pid + ')');

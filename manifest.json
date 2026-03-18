@@ -1,0 +1,25 @@
+{
+  "dxt_version": "0.1",
+  "name": "ai-indesign",
+  "display_name": "Ai-inDesign — Adobe DTP自動化",
+  "version": "1.0.0",
+  "description": "InDesign・Illustrator・Photoshopを自然な日本語で操作。テキスト流し込み、校閲、組版、PDF出力など170以上のツールを提供。",
+  "author": {
+    "name": "Yomibito-Shirazu"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Yomibito-Shirazu-jp/ai-indesign"
+  },
+  "server": {
+    "type": "node",
+    "entry_point": "src/index.js",
+    "mcp_config": {
+      "command": "node",
+      "args": ["${__dirname}/src/index.js"]
+    }
+  },
+  "compatibility": {
+    "platforms": ["win32", "darwin"]
+  }
+}
