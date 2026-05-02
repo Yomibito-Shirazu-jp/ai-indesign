@@ -18,7 +18,7 @@ const ROOT = join(__dirname, '..', '..');
 // .env からポートを取得
 function loadPorts() {
     const envPath = join(ROOT, '.env');
-    const ports = { INDESIGN_PORT: 3000, ILLUSTRATOR_PORT: 3001, PHOTOSHOP_PORT: 3002 };
+    const ports = { INDESIGN_PORT: 49300, ILLUSTRATOR_PORT: 3001, PHOTOSHOP_PORT: 3002 };
     if (!existsSync(envPath)) return ports;
     for (const line of readFileSync(envPath, 'utf8').split('\n')) {
         const m = line.replace(/#.*$/, '').trim().match(/^([A-Z_]+)\s*=\s*(\d+)/);

@@ -4,7 +4,7 @@
  * Requires InDesign open with a document and Bridge panel connected
  */
 
-const BASE = 'http://127.0.0.1:3000';
+const BASE = `http://127.0.0.1:${process.env.INDESIGN_PORT || '49300'}`;
 
 async function uxp(code) {
   const r = await fetch(`${BASE}/execute`, {
