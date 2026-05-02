@@ -28,6 +28,7 @@ function pushLog(level, message) {
 
 const HTTP_PORT = parseInt(process.env.INDESIGN_PORT || '49300');
 const TIMEOUT_MS = 30000;
+const ALLOW_UNSAFE_CODE = process.env.ALLOW_UNSAFE_CODE === 'true';
 
 const app = express();
 app.use(express.json());
@@ -66,20 +67,6 @@ function executeInDesignCode(code) {
         pluginSocket.send(JSON.stringify({ type: 'execute', id, code }));
     });
 }
-
-// ─── HTTP経由でInDesignコード実行 ───
-app.post('/execute', async (req, res) => {
-    const { code } = req.body;
-    if (!code) return res.status(400).json({ error: 'code is required' });
-    try {
-        const result = await executeInDesignCode(code);
-        res.json({ result });
-    } catch (e) {
-        console.error('[Bridge] Execute error:', e.message);
-        res.json({ error: e.message });
-    }
-});
-
 
 // ─── AIチャット処理 ───
 async function handleChatMessage(ws, msg) {
@@ -134,9 +121,15 @@ app.post('/execute', (req, res) => {
         });
     }
 
-    const { code } = req.body;
+    const { code, action, params } = req.body || {};
+    if (action) {
+        return res.status(501).json({ error: 'Action schema is not implemented yet on this bridge.' });
+    }
     if (!code) {
         return res.status(400).json({ error: 'Missing "code" in request body' });
+    }
+    if (!ALLOW_UNSAFE_CODE) {
+        return res.status(403).json({ error: 'Direct code execution is disabled. Set ALLOW_UNSAFE_CODE=true only for local development.' });
     }
 
     const id = uuidv4();
@@ -197,7 +190,7 @@ app.get('/api/status/detailed', (req, res) => {
         pluginConnected: pluginSocket !== null,
         pendingRequests: pending.size,
         logCount: opLog.length,
-        serverVersion: '1.2.1',
+        serverVersion: require('../package.json').version,
         uptime: Math.floor(process.uptime()),
     });
 });

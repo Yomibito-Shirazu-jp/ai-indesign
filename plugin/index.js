@@ -40,20 +40,10 @@ function serializeResult(value) {
 }
 
 async function handleExecute(socket, msg) {
-    try {
-        // app はモジュールスコープで定義済みなので直接参照可能
-        const AsyncFunction = Object.getPrototypeOf(async function(){}).constructor;
-        const fn = new AsyncFunction("app", msg.code);
-        const result = await fn(app);
-        socket.send(JSON.stringify({ type: "result", id: msg.id, result: serializeResult(result) }));
-    } catch (e) {
-        const errMsg = e.message || String(e);
-        console.error("[Plugin] Execute error:", errMsg);
-        socket.send(JSON.stringify({ type: "error", id: msg.id, error: errMsg }));
-    }
+    const err = "Direct code execution is disabled in production mode.";
+    socket.send(JSON.stringify({ type: "error", id: msg.id, error: err }));
 }
 
-// テスト送信ボタン
 window.sendTest = function() {
     if (!testResult || !ws || ws.readyState !== 1) return;
     testResult.textContent = "送信中...";
@@ -72,7 +62,8 @@ window.sendTest = function() {
 
 function connect() {
     setStatus("connecting");
-    ws = new WebSocket("ws://localhost:49300");
+    const port = Number(globalThis.INDESIGN_PORT || 49300);
+    ws = new WebSocket(`ws://localhost:${port}`);
 
     ws.onopen = () => setStatus("connected");
 

@@ -22,7 +22,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
     }
 })();
 
-const BRIDGE_PORT = parseInt(process.env.INDESIGN_PORT || '3000', 10);
+const BRIDGE_PORT = parseInt(process.env.INDESIGN_PORT || '49300', 10);
 
 function isBridgeRunning() {
     return new Promise((resolve) => {
