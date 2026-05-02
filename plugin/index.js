@@ -40,8 +40,37 @@ function serializeResult(value) {
 }
 
 async function handleExecute(socket, msg) {
-    const err = "Direct code execution is disabled in production mode.";
-    socket.send(JSON.stringify({ type: "error", id: msg.id, error: err }));
+    try {
+        if (msg.action === "get_document_info") {
+            if (app.documents.length === 0) return socket.send(JSON.stringify({ type: "error", id: msg.id, error: "No document open" }));
+            const doc = app.activeDocument;
+            return socket.send(JSON.stringify({ type: "result", id: msg.id, result: { name: doc.name, pages: doc.pages.length, width: doc.documentPreferences.pageWidth, height: doc.documentPreferences.pageHeight } }));
+        }
+        if (msg.action === "create_document") {
+            const params = msg.params || {};
+            const doc = app.documents.add();
+            doc.documentPreferences.pageWidth = params.width || 210;
+            doc.documentPreferences.pageHeight = params.height || 297;
+            doc.documentPreferences.facingPages = !!params.facingPages;
+            app.activeDocument = doc;
+            return socket.send(JSON.stringify({ type: "result", id: msg.id, result: { success: true, name: doc.name } }));
+        }
+        if (msg.action === "create_text_frame") {
+            const params = msg.params || {};
+            if (app.documents.length === 0) return socket.send(JSON.stringify({ type: "error", id: msg.id, error: "No document open" }));
+            const doc = app.activeDocument;
+            const page = doc.pages.item(0);
+            const frame = page.textFrames.add();
+            const x = Number(params.x || 20), y = Number(params.y || 20), w = Number(params.width || 120), h = Number(params.height || 40);
+            frame.geometricBounds = [y, x, y + h, x + w];
+            frame.contents = String(params.content || "");
+            return socket.send(JSON.stringify({ type: "result", id: msg.id, result: { success: true, message: "Text frame created" } }));
+        }
+        const err = "Action not implemented: " + (msg.action || "unknown");
+        socket.send(JSON.stringify({ type: "error", id: msg.id, error: err }));
+    } catch (e) {
+        socket.send(JSON.stringify({ type: "error", id: msg.id, error: e.message || String(e) }));
+    }
 }
 
 window.sendTest = function() {
@@ -50,8 +79,6 @@ window.sendTest = function() {
     testResult.style.color = "#f39c12";
     const testId = "test-" + Date.now();
     ws.send(JSON.stringify({ type: "ping", id: testId }));
-    testResult.textContent = "✅ Bridge応答OK";
-    testResult.style.color = "#2ecc71";
     setTimeout(function() {
         if (testResult) {
             testResult.textContent = "";
@@ -65,12 +92,15 @@ function connect() {
     const port = Number(globalThis.INDESIGN_PORT || 49300);
     ws = new WebSocket(`ws://localhost:${port}`);
 
-    ws.onopen = () => setStatus("connected");
+    ws.onopen = () => { ws.send(JSON.stringify({ type: "hello", role: "uxp-plugin" })); setStatus("connected"); };
 
     ws.onmessage = (event) => {
         let msg;
         try { msg = JSON.parse(event.data); } catch { return; }
-        if (msg.type === "ping") {
+        if (msg.type === "pong") {
+            testResult.textContent = "✅ Bridge応答OK";
+            testResult.style.color = "#2ecc71";
+        } else if (msg.type === "ping") {
             ws.send(JSON.stringify({ type: "pong", id: msg.id }));
         } else if (msg.type === "execute") {
             handleExecute(ws, msg);

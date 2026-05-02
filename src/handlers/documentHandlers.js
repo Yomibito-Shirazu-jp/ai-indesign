@@ -38,36 +38,7 @@ export class DocumentHandlers {
      * Get information about the active document
      */
     static async getDocumentInfo() {
-        const result = await ScriptExecutor.executeViaUXP(`
-            if (app.documents.length === 0) {
-                return { error: 'No document open' };
-            }
-            const doc = app.activeDocument;
-            let filePath = 'Unsaved';
-            try {
-                const fp = await doc.filePath;
-                filePath = fp ? (fp.nativePath || fp.url || String(fp) || 'Unsaved') : 'Unsaved';
-            } catch (e) {}
-            return {
-                name: doc.name,
-                filePath,
-                pages: doc.pages.length,
-                spreads: doc.spreads.length,
-                layers: doc.layers.length,
-                masterSpreads: doc.masterSpreads.length,
-                width: doc.documentPreferences.pageWidth,
-                height: doc.documentPreferences.pageHeight,
-                facingPages: doc.documentPreferences.facingPages,
-                bleedTop: doc.documentPreferences.documentBleedTopOffset,
-                bleedBottom: doc.documentPreferences.documentBleedBottomOffset,
-                bleedInside: doc.documentPreferences.documentBleedInsideOrLeftOffset,
-                bleedOutside: doc.documentPreferences.documentBleedOutsideOrRightOffset,
-                marginTop: doc.marginPreferences.top,
-                marginBottom: doc.marginPreferences.bottom,
-                marginLeft: doc.marginPreferences.left,
-                marginRight: doc.marginPreferences.right
-            };
-        `);
+        const result = await ScriptExecutor.executeAction('get_document_info');
 
         if (result && !result.error) {
             sessionManager.setActiveDocument({
@@ -145,7 +116,7 @@ export class DocumentHandlers {
             return { success: true, name: doc.name, widthPt: ${wPt}, heightPt: ${hPt} };
         `;
 
-        const result = await ScriptExecutor.executeViaUXP(code);
+        const result = await ScriptExecutor.executeAction('create_document', { width: wPt, height: hPt, facingPages, bleedTop: bTPt, bleedBottom: bBPt, bleedInside: bIPt, bleedOutside: bOPt, marginTop: mTPt, marginBottom: mBPt, marginLeft: mLPt, marginRight: mRPt });
 
         if (result?.success) {
             sessionManager.setActiveDocument({

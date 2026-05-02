@@ -7,7 +7,6 @@
 
 import { spawn, execSync } from 'child_process';
 import { createConnection } from 'net';
-import { WebSocket } from 'ws';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { readFileSync, existsSync } from 'fs';
@@ -28,13 +27,13 @@ function loadPorts() {
 }
 
 // ポートが使えるかチェック
-function checkPort(port) {
-    return new Promise(resolve => {
-        const ws = new WebSocket(`ws://127.0.0.1:${port}`);
-        const t = setTimeout(() => { ws.terminate(); resolve(false); }, 1500);
-        ws.on('open',  () => { clearTimeout(t); ws.close(); resolve(true); });
-        ws.on('error', () => { clearTimeout(t); resolve(false); });
-    });
+async function checkPort(port) {
+    try {
+        const response = await fetch(`http://127.0.0.1:${port}/status`, { signal: AbortSignal.timeout(1500) });
+        return response.ok;
+    } catch {
+        return false;
+    }
 }
 
 let bridgeProcess = null;
