@@ -100,7 +100,7 @@ export class TextHandlers {
             return { success: true, message: 'Text frame created. ' + styleMessage };
         `;
 
-        const result = await ScriptExecutor.executeViaUXP(code);
+        const result = await ScriptExecutor.executeAction('create_text_frame', { content, x: positioning.x, y: positioning.y, width: positioning.width, height: positioning.height, fontSize, fontName, textColor, alignment, paragraphStyle, characterStyle });
 
         if (result?.success) {
             sessionManager.setLastCreatedItem({

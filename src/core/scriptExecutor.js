@@ -30,6 +30,21 @@ export class ScriptExecutor {
      * Check if the UXP bridge is running and plugin is connected
      * @returns {boolean}
      */
+
+    static async executeAction(action, params = {}) {
+        const response = await fetch(`${BRIDGE_URL}/execute`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ action, params }),
+        });
+
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error || `Bridge error: ${response.status}`);
+        }
+        return data.result;
+    }
+
     static async isUXPAvailable() {
         try {
             const response = await fetch(`${BRIDGE_URL}/status`, { signal: AbortSignal.timeout(1000) });

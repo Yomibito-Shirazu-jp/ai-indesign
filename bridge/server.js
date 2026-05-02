@@ -123,7 +123,20 @@ app.post('/execute', (req, res) => {
 
     const { code, action, params } = req.body || {};
     if (action) {
-        return res.status(501).json({ error: 'Action schema is not implemented yet on this bridge.' });
+        const id = uuidv4();
+        const promise = new Promise((resolve, reject) => {
+            const timer = setTimeout(() => {
+                pending.delete(id);
+                reject(new Error('Execution timed out after 30s'));
+            }, TIMEOUT_MS);
+            pending.set(id, { resolve, reject, timer });
+        });
+
+        pluginSocket.send(JSON.stringify({ type: 'execute', id, action, params: params || {} }));
+
+        return promise
+            .then((result) => res.json({ result }))
+            .catch((err) => res.status(500).json({ error: err.message }));
     }
     if (!code) {
         return res.status(400).json({ error: 'Missing "code" in request body' });
@@ -220,13 +233,24 @@ const server = http.createServer(app);
 const wss = new WebSocketServer({ server });
 
 wss.on('connection', (ws) => {
-    console.log('[Bridge] UXP plugin connected');
-    pluginSocket = ws;
-    pushLog('info', 'UXP plugin connected');
+    let isPluginConnection = false;
 
     ws.on('message', (data) => {
         let msg;
         try { msg = JSON.parse(data.toString()); } catch { return; }
+
+        if (msg.type === 'hello' && msg.role === 'uxp-plugin') {
+            pluginSocket = ws;
+            isPluginConnection = true;
+            console.log('[Bridge] UXP plugin connected');
+            pushLog('info', 'UXP plugin connected');
+            return;
+        }
+
+        if (msg.type === 'ping') {
+            ws.send(JSON.stringify({ type: 'pong', id: msg.id }));
+            return;
+        }
 
         // AIチャット
         if (msg.type === 'chat') {
@@ -255,6 +279,7 @@ wss.on('connection', (ws) => {
     });
 
     ws.on('close', () => {
+        if (!isPluginConnection || pluginSocket !== ws) return;
         console.log('[Bridge] UXP plugin disconnected');
         pluginSocket = null;
         pushLog('warn', 'UXP plugin disconnected');
