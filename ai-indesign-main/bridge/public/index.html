@@ -1,0 +1,1656 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ai-inDesign — Dimension Hub</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ─── Design Tokens ─── */
+    :root {
+      --bg:          #080c14;
+      --bg-surface:  #0f1623;
+      --bg-card:     #131c2e;
+      --bg-hover:    #1a2540;
+      --bg-active:   #1e2d4a;
+
+      --text:        #e8edf5;
+      --text-muted:  #8896b0;
+      --text-dim:    #4a5568;
+
+      --accent:      #f43f5e;
+      --accent-dim:  rgba(244,63,94,.15);
+      --accent-hover:#fb7185;
+
+      --success:     #10b981;
+      --success-dim: rgba(16,185,129,.12);
+      --warning:     #f59e0b;
+      --warning-dim: rgba(245,158,11,.12);
+      --error:       #ef4444;
+      --error-dim:   rgba(239,68,68,.12);
+      --info:        #3b82f6;
+      --info-dim:    rgba(59,130,246,.12);
+
+      --border:      #1e2d45;
+      --border-light:#243352;
+
+      --radius:      10px;
+      --radius-lg:   14px;
+      --sidebar-w:   220px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* ─── Sidebar ─── */
+    .sidebar {
+      width: var(--sidebar-w);
+      flex-shrink: 0;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-logo {
+      padding: 20px 18px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .logo-mark {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .logo-icon {
+      width: 32px;
+      height: 32px;
+      background: var(--accent);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .logo-icon svg { width: 18px; height: 18px; fill: #fff; }
+
+    .logo-name {
+      font-weight: 800;
+      font-size: 1.05em;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .logo-sub {
+      font-size: 0.7em;
+      color: var(--text-dim);
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      margin-top: 1px;
+    }
+
+    /* Connection indicator in sidebar */
+    .sidebar-status {
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .conn-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 0.78em;
+    }
+
+    .conn-label { color: var(--text-muted); }
+
+    .conn-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 600;
+      font-size: 0.9em;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--text-dim);
+      flex-shrink: 0;
+      transition: background .3s, box-shadow .3s;
+    }
+
+    .dot.online  { background: var(--success); box-shadow: 0 0 8px var(--success); }
+    .dot.offline { background: var(--error); }
+    .dot.pulse   {
+      background: var(--warning);
+      animation: dotpulse 1.2s ease-in-out infinite;
+    }
+
+    @keyframes dotpulse {
+      0%,100% { opacity: 1; }
+      50%      { opacity: .4; }
+    }
+
+    /* Nav */
+    .nav-section {
+      padding: 14px 10px 0;
+    }
+
+    .nav-section-label {
+      font-size: 0.68em;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      padding: 0 8px 8px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 10px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background .15s, color .15s;
+      color: var(--text-muted);
+      font-size: 0.88em;
+      font-weight: 500;
+      user-select: none;
+      margin-bottom: 2px;
+      position: relative;
+    }
+
+    .nav-item svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+    .nav-item:hover {
+      background: var(--bg-hover);
+      color: var(--text);
+    }
+
+    .nav-item.active {
+      background: var(--bg-active);
+      color: var(--text);
+    }
+
+    .nav-item.active::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 6px;
+      bottom: 6px;
+      width: 3px;
+      background: var(--accent);
+      border-radius: 0 2px 2px 0;
+    }
+
+    .nav-badge {
+      margin-left: auto;
+      background: var(--accent-dim);
+      color: var(--accent);
+      font-size: 0.75em;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 20px;
+    }
+
+    .sidebar-footer {
+      margin-top: auto;
+      padding: 14px 18px;
+      border-top: 1px solid var(--border);
+      font-size: 0.75em;
+      color: var(--text-dim);
+    }
+
+    .sidebar-footer a { color: var(--accent); text-decoration: none; }
+
+    /* ─── Main Area ─── */
+    .main {
+      flex: 1;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+
+    /* Topbar */
+    .topbar {
+      height: 52px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+      gap: 16px;
+      background: var(--bg-surface);
+      flex-shrink: 0;
+    }
+
+    .topbar-title {
+      font-weight: 700;
+      font-size: 1em;
+      letter-spacing: -0.01em;
+    }
+
+    .topbar-crumb {
+      color: var(--text-dim);
+      font-size: 0.85em;
+    }
+
+    .topbar-sep { color: var(--border-light); }
+
+    .topbar-actions { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+
+    .btn {
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 0.82em;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: all .15s;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover { background: var(--accent-hover); }
+    .btn-primary:disabled { background: var(--text-dim); cursor: not-allowed; }
+
+    .btn-secondary {
+      background: var(--bg-card);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { background: var(--bg-hover); color: var(--text); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-muted);
+    }
+    .btn-ghost:hover { background: var(--bg-hover); color: var(--text); }
+
+    /* ─── Content ─── */
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px 28px 40px;
+    }
+
+    /* Views */
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* ─── Dashboard ─── */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 1100px) { .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+
+    .stat-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      transition: border-color .2s;
+    }
+
+    .stat-card:hover { border-color: var(--border-light); }
+
+    .stat-label {
+      font-size: 0.75em;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      color: var(--text-dim);
+      margin-bottom: 10px;
+    }
+
+    .stat-value {
+      font-size: 2em;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      font-family: 'JetBrains Mono', monospace;
+      line-height: 1;
+    }
+
+    .stat-sub {
+      font-size: 0.78em;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }
+
+    .stat-accent  { color: var(--accent); }
+    .stat-success { color: var(--success); }
+    .stat-warning { color: var(--warning); }
+    .stat-info    { color: var(--info); }
+
+    /* Two-col layout */
+    .dash-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    @media (max-width: 900px) { .dash-grid { grid-template-columns: 1fr; } }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-title {
+      font-weight: 700;
+      font-size: 0.88em;
+      color: var(--text);
+    }
+
+    .card-action {
+      font-size: 0.78em;
+      color: var(--accent);
+      cursor: pointer;
+    }
+
+    .card-body { padding: 16px 20px; }
+
+    /* Status list */
+    .status-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .status-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--bg-surface);
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+
+    .status-row-left { display: flex; align-items: center; gap: 10px; font-size: 0.87em; }
+    .status-row-left .dot { width: 8px; height: 8px; }
+
+    .badge {
+      font-size: 0.72em;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 20px;
+    }
+
+    .badge-success  { background: var(--success-dim); color: var(--success); }
+    .badge-error    { background: var(--error-dim);   color: var(--error); }
+    .badge-warning  { background: var(--warning-dim); color: var(--warning); }
+    .badge-info     { background: var(--info-dim);    color: var(--info); }
+    .badge-neutral  { background: var(--bg-hover);    color: var(--text-muted); }
+
+    /* Activity feed */
+    .activity-feed { display: flex; flex-direction: column; gap: 0; }
+
+    .activity-item {
+      display: flex;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.82em;
+    }
+
+    .activity-item:last-child { border-bottom: none; }
+
+    .activity-time {
+      color: var(--text-dim);
+      flex-shrink: 0;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95em;
+      width: 52px;
+    }
+
+    .activity-text { color: var(--text-muted); flex: 1; line-height: 1.5; }
+    .activity-text strong { color: var(--text); }
+
+    .activity-status { flex-shrink: 0; }
+
+    /* ─── Tools View ─── */
+    .tools-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 200px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px 14px;
+      transition: border-color .2s;
+    }
+
+    .search-box:focus-within { border-color: var(--accent); }
+
+    .search-box svg { width: 14px; height: 14px; color: var(--text-dim); flex-shrink: 0; }
+
+    .search-box input {
+      flex: 1;
+      background: none;
+      border: none;
+      outline: none;
+      color: var(--text);
+      font-size: 0.85em;
+      font-family: inherit;
+    }
+
+    .search-box input::placeholder { color: var(--text-dim); }
+
+    .filter-chips { display: flex; gap: 6px; flex-wrap: wrap; }
+
+    .chip {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.78em;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--bg-card);
+      color: var(--text-muted);
+      transition: all .15s;
+      white-space: nowrap;
+    }
+
+    .chip:hover { border-color: var(--border-light); color: var(--text); }
+    .chip.active { background: var(--accent-dim); border-color: var(--accent); color: var(--accent); }
+
+    .tools-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 10px;
+    }
+
+    .tool-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      cursor: default;
+      transition: border-color .2s, background .2s;
+    }
+
+    .tool-card:hover {
+      border-color: var(--border-light);
+      background: var(--bg-hover);
+    }
+
+    .tool-card-top {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .tool-name {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8em;
+      font-weight: 500;
+      color: var(--accent);
+      word-break: break-all;
+    }
+
+    .tool-desc {
+      font-size: 0.8em;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+
+    .tool-category-tag {
+      font-size: 0.68em;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 4px;
+      flex-shrink: 0;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+
+    /* ─── Logs View ─── */
+    .log-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      flex-wrap: wrap;
+    }
+
+    .log-stream {
+      background: #050912;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78em;
+      overflow-y: auto;
+      max-height: calc(100vh - 260px);
+    }
+
+    .log-line {
+      display: flex;
+      gap: 12px;
+      padding: 5px 16px;
+      border-bottom: 1px solid rgba(30,45,69,.4);
+      line-height: 1.6;
+      transition: background .1s;
+    }
+
+    .log-line:hover { background: rgba(255,255,255,.02); }
+    .log-line:last-child { border-bottom: none; }
+
+    .log-ts {
+      color: var(--text-dim);
+      flex-shrink: 0;
+      min-width: 72px;
+    }
+
+    .log-level {
+      flex-shrink: 0;
+      width: 40px;
+      font-weight: 700;
+    }
+
+    .log-level.info    { color: var(--info); }
+    .log-level.success { color: var(--success); }
+    .log-level.warn    { color: var(--warning); }
+    .log-level.error   { color: var(--error); }
+
+    .log-msg { color: var(--text-muted); flex: 1; word-break: break-word; }
+    .log-msg strong { color: var(--text); }
+
+    /* ─── Config View ─── */
+    .config-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    @media (max-width: 900px) { .config-grid { grid-template-columns: 1fr; } }
+
+    .config-section { display: flex; flex-direction: column; gap: 14px; }
+
+    .config-section-title {
+      font-size: 0.78em;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      color: var(--text-dim);
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .field { display: flex; flex-direction: column; gap: 6px; }
+
+    .field-label { font-size: 0.82em; font-weight: 600; color: var(--text-muted); }
+
+    .field input,
+    .field select,
+    .field textarea {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 9px 12px;
+      color: var(--text);
+      font-size: 0.85em;
+      font-family: inherit;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .field input:focus,
+    .field select:focus,
+    .field textarea:focus { border-color: var(--accent); }
+
+    .field input[readonly] { color: var(--text-muted); cursor: default; }
+
+    .field textarea {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78em;
+      resize: vertical;
+      min-height: 140px;
+      line-height: 1.6;
+    }
+
+    .field-hint { font-size: 0.75em; color: var(--text-dim); }
+
+    /* ─── Setup View ─── */
+    .setup-steps { display: flex; flex-direction: column; gap: 12px; }
+
+    .setup-step {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    .setup-step-head {
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      cursor: pointer;
+      user-select: none;
+      transition: background .15s;
+    }
+
+    .setup-step-head:hover { background: var(--bg-hover); }
+
+    .step-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.9em;
+      flex-shrink: 0;
+    }
+
+    .step-num.done    { background: var(--success-dim); color: var(--success); }
+    .step-num.active  { background: var(--accent);       color: #fff; }
+    .step-num.pending { background: var(--bg-hover);     color: var(--text-dim); }
+
+    .setup-step-title { font-weight: 700; font-size: 0.92em; flex: 1; }
+    .setup-step-desc  { font-size: 0.8em; color: var(--text-muted); margin-top: 2px; }
+
+    .setup-step-arrow {
+      color: var(--text-dim);
+      transition: transform .2s;
+    }
+
+    .setup-step.open .setup-step-arrow { transform: rotate(180deg); }
+
+    .setup-step-body {
+      display: none;
+      padding: 0 20px 20px;
+    }
+
+    .setup-step.open .setup-step-body { display: block; }
+
+    /* Code blocks */
+    .code-block {
+      background: #050912;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.82em;
+      color: #a5f3fc;
+      overflow-x: auto;
+      position: relative;
+      line-height: 1.7;
+      margin: 10px 0;
+    }
+
+    .copy-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      padding: 3px 9px;
+      background: var(--bg-hover);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      color: var(--text-muted);
+      font-size: 0.8em;
+      cursor: pointer;
+      transition: all .15s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .copy-btn:hover { background: var(--bg-active); color: var(--text); }
+
+    .alert {
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.83em;
+      margin: 10px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      line-height: 1.6;
+    }
+
+    .alert-success { background: var(--success-dim); border: 1px solid rgba(16,185,129,.25); color: #6ee7b7; }
+    .alert-warning { background: var(--warning-dim); border: 1px solid rgba(245,158,11,.25); color: #fcd34d; }
+    .alert-info    { background: var(--info-dim);    border: 1px solid rgba(59,130,246,.25);  color: #93c5fd; }
+    .alert-error   { background: var(--error-dim);   border: 1px solid rgba(239,68,68,.25);   color: #fca5a5; }
+
+    /* Test terminal */
+    .terminal {
+      background: #050912;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8em;
+      color: var(--text-muted);
+      min-height: 72px;
+      max-height: 200px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      line-height: 1.7;
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 48px 24px;
+      color: var(--text-dim);
+    }
+
+    .empty-state svg { width: 40px; height: 40px; margin-bottom: 12px; opacity: .4; }
+    .empty-state p { font-size: 0.88em; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--border-light); }
+
+    /* Spinner */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid var(--border);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
+      flex-shrink: 0;
+    }
+
+    /* Responsive mobile */
+    @media (max-width: 700px) {
+      .sidebar { width: 52px; overflow: visible; }
+      .sidebar-logo { padding: 14px 10px; }
+      .logo-name, .logo-sub, .nav-section-label, .conn-row .conn-label,
+      .conn-row .conn-badge span, .sidebar-footer { display: none; }
+      .nav-item { justify-content: center; padding: 10px; }
+      .nav-item svg { width: 18px; height: 18px; }
+      .nav-item::before { display: none; }
+      .nav-badge { display: none; }
+      .content { padding: 16px; }
+      .stats-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ─── Sidebar ─── -->
+<nav class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-mark">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      </div>
+      <div>
+        <div class="logo-name">Ai-inDesign</div>
+        <div class="logo-sub">Dimension Hub</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sidebar-status">
+    <div class="conn-row">
+      <span class="conn-label">Bridge Server</span>
+      <div class="conn-badge">
+        <div class="dot" id="dot-bridge"></div>
+        <span id="lbl-bridge">確認中</span>
+      </div>
+    </div>
+    <div class="conn-row">
+      <span class="conn-label">InDesign Plugin</span>
+      <div class="conn-badge">
+        <div class="dot" id="dot-plugin"></div>
+        <span id="lbl-plugin">未接続</span>
+      </div>
+    </div>
+    <div class="conn-row">
+      <span class="conn-label">MCP Server</span>
+      <div class="conn-badge">
+        <div class="dot" id="dot-mcp"></div>
+        <span id="lbl-mcp">待機中</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-label">Main</div>
+    <div class="nav-item active" onclick="switchView('dashboard', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+      Dashboard
+    </div>
+    <div class="nav-item" onclick="switchView('tools', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+      Tools
+      <span class="nav-badge" id="nav-tools-count">...</span>
+    </div>
+    <div class="nav-item" onclick="switchView('logs', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Operation Logs
+    </div>
+  </div>
+
+  <div class="nav-section" style="margin-top: 8px;">
+    <div class="nav-section-label">System</div>
+    <div class="nav-item" onclick="switchView('config', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93A10 10 0 1 0 4.93 19.07 10 10 0 0 0 19.07 4.93z"/></svg>
+      Config
+    </div>
+    <div class="nav-item" onclick="switchView('setup', this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+      Setup Guide
+    </div>
+  </div>
+
+  <div class="sidebar-footer">
+    v1.2.1 &mdash; <a href="https://github.com/Yomibito-Shirazu-jp/ai-indesign" target="_blank">GitHub</a>
+  </div>
+</nav>
+
+<!-- ─── Main ─── -->
+<div class="main">
+  <!-- Topbar -->
+  <div class="topbar">
+    <span class="topbar-crumb" id="topbar-crumb">Dashboard</span>
+    <div class="topbar-actions">
+      <button class="btn btn-secondary" onclick="refreshAll()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.3"/></svg>
+        Refresh
+      </button>
+      <button class="btn btn-primary" id="btn-test" onclick="runConnectionTest()" disabled>
+        Test Connection
+      </button>
+    </div>
+  </div>
+
+  <!-- Content -->
+  <div class="content">
+
+    <!-- ══════════ DASHBOARD ══════════ -->
+    <div class="view active" id="view-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Tools</div>
+          <div class="stat-value stat-info" id="stat-tools">—</div>
+          <div class="stat-sub">170+ MCP tools registered</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Bridge Status</div>
+          <div class="stat-value stat-success" id="stat-bridge">—</div>
+          <div class="stat-sub">HTTP :3000 / WS :3001</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">InDesign</div>
+          <div class="stat-value" id="stat-indesign" style="color:var(--text-dim)">—</div>
+          <div class="stat-sub">UXP Plugin connection</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Log Entries</div>
+          <div class="stat-value stat-accent" id="stat-logs">0</div>
+          <div class="stat-sub">Since server start</div>
+        </div>
+      </div>
+
+      <div class="dash-grid">
+        <!-- System Status -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">System Connections</span>
+            <span class="card-action" onclick="switchView('config', document.querySelector('.nav-item:nth-child(4)'))">Configure</span>
+          </div>
+          <div class="card-body">
+            <div class="status-list">
+              <div class="status-row">
+                <div class="status-row-left">
+                  <div class="dot" id="sys-dot-bridge"></div>
+                  <div>
+                    <div style="font-weight:600;font-size:.87em;">Bridge Server</div>
+                    <div style="font-size:.75em;color:var(--text-dim)">http://localhost:3000</div>
+                  </div>
+                </div>
+                <span class="badge badge-success" id="sys-badge-bridge">Online</span>
+              </div>
+              <div class="status-row">
+                <div class="status-row-left">
+                  <div class="dot" id="sys-dot-ws"></div>
+                  <div>
+                    <div style="font-weight:600;font-size:.87em;">WebSocket</div>
+                    <div style="font-size:.75em;color:var(--text-dim)">ws://localhost:3001</div>
+                  </div>
+                </div>
+                <span class="badge badge-neutral" id="sys-badge-ws">—</span>
+              </div>
+              <div class="status-row">
+                <div class="status-row-left">
+                  <div class="dot" id="sys-dot-plugin"></div>
+                  <div>
+                    <div style="font-weight:600;font-size:.87em;">InDesign UXP Plugin</div>
+                    <div style="font-size:.75em;color:var(--text-dim)">Bridge Panel</div>
+                  </div>
+                </div>
+                <span class="badge badge-neutral" id="sys-badge-plugin">Waiting</span>
+              </div>
+              <div class="status-row">
+                <div class="status-row-left">
+                  <div class="dot online" id="sys-dot-mcp"></div>
+                  <div>
+                    <div style="font-weight:600;font-size:.87em;">MCP Server</div>
+                    <div style="font-size:.75em;color:var(--text-dim)">stdio transport</div>
+                  </div>
+                </div>
+                <span class="badge badge-success" id="sys-badge-mcp">Ready</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tool Categories -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Tool Categories</span>
+            <span class="card-action" onclick="switchViewByName('tools')">View all</span>
+          </div>
+          <div class="card-body">
+            <div class="status-list" id="tool-categories-list">
+              <div style="text-align:center;padding:20px;color:var(--text-dim);font-size:.85em;">Loading...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Activity feed -->
+      <div class="card" style="margin-top:16px;">
+        <div class="card-header">
+          <span class="card-title">Recent Activity</span>
+          <span class="card-action" onclick="switchViewByName('logs')">View logs</span>
+        </div>
+        <div class="card-body">
+          <div class="activity-feed" id="activity-feed">
+            <div class="activity-item">
+              <span class="activity-time">—</span>
+              <span class="activity-text">Waiting for activity...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ TOOLS ══════════ -->
+    <div class="view" id="view-tools">
+      <div class="tools-header">
+        <div class="search-box">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="tool-search" placeholder="Search tools..." oninput="filterTools()">
+        </div>
+        <div class="filter-chips" id="filter-chips">
+          <div class="chip active" data-cat="all" onclick="setFilter('all', this)">All</div>
+          <div class="chip" data-cat="document" onclick="setFilter('document', this)">Document</div>
+          <div class="chip" data-cat="text" onclick="setFilter('text', this)">Text</div>
+          <div class="chip" data-cat="graphics" onclick="setFilter('graphics', this)">Graphics</div>
+          <div class="chip" data-cat="japanese" onclick="setFilter('japanese', this)">Japanese DTP</div>
+          <div class="chip" data-cat="export" onclick="setFilter('export', this)">Export</div>
+        </div>
+      </div>
+      <div id="tools-count-label" style="font-size:.8em;color:var(--text-dim);margin-bottom:12px;"></div>
+      <div class="tools-grid" id="tools-grid">
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <p>Loading tools...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ LOGS ══════════ -->
+    <div class="view" id="view-logs">
+      <div class="log-controls">
+        <button class="btn btn-secondary" onclick="clearLogs()">Clear</button>
+        <button class="btn btn-secondary" id="btn-auto-scroll" onclick="toggleAutoScroll()">Auto-scroll: ON</button>
+        <div class="filter-chips">
+          <div class="chip active" data-level="all" onclick="setLogFilter('all', this)">All</div>
+          <div class="chip" data-level="info" onclick="setLogFilter('info', this)">Info</div>
+          <div class="chip" data-level="success" onclick="setLogFilter('success', this)">Success</div>
+          <div class="chip" data-level="warn" onclick="setLogFilter('warn', this)">Warn</div>
+          <div class="chip" data-level="error" onclick="setLogFilter('error', this)">Error</div>
+        </div>
+        <span style="margin-left:auto;font-size:.78em;color:var(--text-dim);" id="log-count-label"></span>
+      </div>
+      <div class="log-stream" id="log-stream">
+        <div class="log-line">
+          <span class="log-ts">--:--:--</span>
+          <span class="log-level info">INFO</span>
+          <span class="log-msg">Dimension Hub initialized. Waiting for server events...</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ CONFIG ══════════ -->
+    <div class="view" id="view-config">
+      <div class="config-grid">
+        <div class="config-section">
+          <div class="config-section-title">Server Configuration</div>
+
+          <div class="field">
+            <label class="field-label">HTTP Port</label>
+            <input type="text" value="3000" readonly>
+            <span class="field-hint">Bridge server HTTP endpoint</span>
+          </div>
+          <div class="field">
+            <label class="field-label">WebSocket Port</label>
+            <input type="text" value="3001" readonly>
+            <span class="field-hint">UXP plugin WebSocket connection</span>
+          </div>
+          <div class="field">
+            <label class="field-label">Timeout (ms)</label>
+            <input type="number" value="30000" id="cfg-timeout">
+            <span class="field-hint">Execution timeout for InDesign operations</span>
+          </div>
+
+          <div class="config-section-title" style="margin-top:8px;">API Keys</div>
+
+          <div class="field">
+            <label class="field-label">Gemini API Key</label>
+            <input type="password" id="cfg-api-key" placeholder="AIza...">
+            <span class="field-hint">Used for direct AI chat in the InDesign panel</span>
+          </div>
+          <button class="btn btn-primary" style="align-self:flex-start;margin-top:4px;" onclick="saveApiKey()">Save API Key</button>
+        </div>
+
+        <div class="config-section">
+          <div class="config-section-title">Claude Desktop Config</div>
+          <div class="field">
+            <label class="field-label">claude_desktop_config.json</label>
+            <textarea id="cfg-claude-json" readonly></textarea>
+            <span class="field-hint">Copy this into your Claude Desktop config file</span>
+          </div>
+          <button class="btn btn-secondary" style="align-self:flex-start;" onclick="copyClaudeConfig()">Copy JSON</button>
+
+          <div class="config-section-title" style="margin-top:8px;">Recommended MCP Stack</div>
+          <div style="font-size:.82em;color:var(--text-muted);line-height:1.8;">
+            <div style="margin-bottom:6px;"><strong style="color:var(--text);">filesystem</strong> — ローカルファイル読み書き（必須）</div>
+            <div style="margin-bottom:6px;"><strong style="color:var(--text);">memory</strong> — AI長期記憶（推奨）</div>
+            <div><strong style="color:var(--text);">ai-indesign</strong> — 本サーバー（このファイル）</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══════════ SETUP ══════════ -->
+    <div class="view" id="view-setup">
+      <div class="setup-steps">
+
+        <div class="setup-step open" id="setup-1">
+          <div class="setup-step-head" onclick="toggleStep('setup-1')">
+            <div class="step-num done">1</div>
+            <div>
+              <div class="setup-step-title">Node.js — サーバー起動確認</div>
+              <div class="setup-step-desc">このページが表示されていれば完了</div>
+            </div>
+            <svg class="setup-step-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="setup-step-body">
+            <div class="alert alert-success">
+              Bridge serverが正常に起動しています。Node.js環境は問題ありません。
+            </div>
+          </div>
+        </div>
+
+        <div class="setup-step" id="setup-2">
+          <div class="setup-step-head" onclick="toggleStep('setup-2')">
+            <div class="step-num active">2</div>
+            <div>
+              <div class="setup-step-title">InDesign UXP Plugin をインストール</div>
+              <div class="setup-step-desc">.ccxファイルをダウンロードしてダブルクリック</div>
+            </div>
+            <svg class="setup-step-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="setup-step-body">
+            <div style="text-align:center;padding:16px 0;">
+              <a href="/download-plugin"
+                 class="btn btn-primary"
+                 style="padding:12px 28px;font-size:.95em;text-decoration:none;border-radius:10px;display:inline-flex;gap:8px;align-items:center;"
+                 download>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Ai-inDesign.ccx をダウンロード
+              </a>
+            </div>
+            <ol style="margin-left:20px;font-size:.85em;color:var(--text-muted);line-height:2;">
+              <li>上のボタンで <strong style="color:var(--text)">Ai-inDesign.ccx</strong> をダウンロード</li>
+              <li>ダウンロードした <strong style="color:var(--text)">.ccx ファイルをダブルクリック</strong></li>
+              <li>Adobe Creative Cloud がインストールを自動実行</li>
+              <li>InDesign を起動（または再起動）</li>
+              <li>メニュー <strong style="color:var(--text)">「ウィンドウ」→「プラグイン」→「Bridge Panel」</strong></li>
+            </ol>
+            <div class="alert alert-warning" style="margin-top:12px;">
+              CCXが動かない場合はUXP Developer Toolで <code style="background:var(--bg-hover);padding:1px 5px;border-radius:4px;">plugin/</code> フォルダを直接ロードしてください。
+            </div>
+          </div>
+        </div>
+
+        <div class="setup-step" id="setup-3">
+          <div class="setup-step-head" onclick="toggleStep('setup-3')">
+            <div class="step-num pending">3</div>
+            <div>
+              <div class="setup-step-title">Claude Desktop に接続設定を追加</div>
+              <div class="setup-step-desc">claude_desktop_config.json にMCPサーバーを登録</div>
+            </div>
+            <svg class="setup-step-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="setup-step-body">
+            <p style="font-size:.85em;color:var(--text-muted);margin-bottom:10px;">
+              以下のJSONを <code style="background:var(--bg-hover);padding:1px 5px;border-radius:4px;">%APPDATA%\Claude\claude_desktop_config.json</code> に追加してください。
+              <br>Configタブの「Claude Desktop Config」からもコピーできます。
+            </p>
+            <div class="code-block">
+              <button class="copy-btn" onclick="copySetupConfig()">Copy</button>
+              <pre id="setup-config-json">{
+  "mcpServers": {
+    "ai-indesign": {
+      "command": "node",
+      "args": ["<span id='setup-config-path'>C:\\path\\to\\ai-indesign\\src\\index.js</span>"]
+    }
+  }
+}</pre>
+            </div>
+            <div class="alert alert-warning">
+              設定後は Claude Desktop を<strong>完全に終了</strong>してから再起動してください（タスクトレイ→右クリック→Quit）。
+            </div>
+          </div>
+        </div>
+
+        <div class="setup-step" id="setup-4">
+          <div class="setup-step-head" onclick="toggleStep('setup-4')">
+            <div class="step-num pending">4</div>
+            <div>
+              <div class="setup-step-title">接続テスト</div>
+              <div class="setup-step-desc">全システムの通信を確認する</div>
+            </div>
+            <svg class="setup-step-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </div>
+          <div class="setup-step-body">
+            <p style="font-size:.85em;color:var(--text-muted);margin-bottom:12px;">
+              Dashboardのステータスで「Bridge Server」と「InDesign Plugin」が両方オンラインになっていれば成功です。
+            </p>
+            <button class="btn btn-primary" id="btn-test-setup" onclick="runConnectionTest()" disabled>InDesignにテスト送信</button>
+            <div id="terminal-setup" class="terminal" style="margin-top:12px;">// ここにテスト結果が表示されます...</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- .content -->
+</div><!-- .main -->
+
+<script>
+// ─── State ───────────────────────────────────────────────────────────────────
+const state = {
+  bridgeOnline: false,
+  pluginConnected: false,
+  tools: [],
+  logs: [],
+  logFilter: 'all',
+  toolFilter: 'all',
+  autoScroll: true,
+  pollInterval: null,
+};
+
+// ─── View switching ───────────────────────────────────────────────────────────
+function switchView(name, el) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+  document.getElementById('topbar-crumb').textContent =
+    { dashboard:'Dashboard', tools:'Tools', logs:'Operation Logs', config:'Config', setup:'Setup Guide' }[name] || name;
+}
+
+function switchViewByName(name) {
+  const map = { dashboard: 0, tools: 1, logs: 2, config: 3, setup: 4 };
+  const navItems = document.querySelectorAll('.nav-item');
+  switchView(name, navItems[map[name]]);
+}
+
+// ─── Polling ──────────────────────────────────────────────────────────────────
+async function fetchStatus() {
+  try {
+    const res = await fetch('/status');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    state.bridgeOnline = true;
+    state.pluginConnected = !!data.connected;
+    updateStatusUI();
+  } catch {
+    state.bridgeOnline = false;
+    state.pluginConnected = false;
+    updateStatusUI();
+  }
+}
+
+async function fetchTools() {
+  try {
+    const res = await fetch('/api/tools');
+    if (!res.ok) return;
+    const data = await res.json();
+    state.tools = data.tools || [];
+    document.getElementById('stat-tools').textContent = state.tools.length;
+    document.getElementById('nav-tools-count').textContent = state.tools.length;
+    renderTools();
+    renderToolCategories();
+  } catch {}
+}
+
+async function fetchLogs() {
+  try {
+    const res = await fetch('/api/logs');
+    if (!res.ok) return;
+    const data = await res.json();
+    const newLogs = data.logs || [];
+    if (newLogs.length !== state.logs.length) {
+      state.logs = newLogs;
+      document.getElementById('stat-logs').textContent = state.logs.length;
+      renderLogs();
+      renderActivityFeed();
+    }
+  } catch {}
+}
+
+async function refreshAll() {
+  await Promise.all([fetchStatus(), fetchTools(), fetchLogs()]);
+}
+
+// ─── Status UI ────────────────────────────────────────────────────────────────
+function updateStatusUI() {
+  // Sidebar dots
+  setDot('dot-bridge',  state.bridgeOnline);
+  setDot('dot-plugin',  state.pluginConnected);
+  setDot('dot-mcp',     true);
+
+  // Labels
+  document.getElementById('lbl-bridge').textContent = state.bridgeOnline ? 'Online' : 'Offline';
+  document.getElementById('lbl-plugin').textContent = state.pluginConnected ? 'Connected' : 'Disconnected';
+  document.getElementById('lbl-mcp').textContent    = 'Ready';
+
+  // Dashboard stats
+  document.getElementById('stat-bridge').textContent   = state.bridgeOnline ? 'Online' : 'Offline';
+  document.getElementById('stat-bridge').style.color   = state.bridgeOnline ? 'var(--success)' : 'var(--error)';
+  document.getElementById('stat-indesign').textContent = state.pluginConnected ? 'Connected' : 'Waiting';
+  document.getElementById('stat-indesign').style.color = state.pluginConnected ? 'var(--success)' : 'var(--text-dim)';
+
+  // System status rows
+  setDot('sys-dot-bridge', state.bridgeOnline);
+  setDot('sys-dot-ws',     state.bridgeOnline);
+  setDot('sys-dot-plugin', state.pluginConnected);
+  setDot('sys-dot-mcp',    true);
+
+  setBadge('sys-badge-bridge', state.bridgeOnline ? 'Online'    : 'Offline',     state.bridgeOnline    ? 'success' : 'error');
+  setBadge('sys-badge-ws',     state.bridgeOnline ? 'Active'    : 'Inactive',    state.bridgeOnline    ? 'success' : 'error');
+  setBadge('sys-badge-plugin', state.pluginConnected ? 'Connected' : 'Waiting',  state.pluginConnected ? 'success' : 'warning');
+  setBadge('sys-badge-mcp',    'Ready', 'success');
+
+  // Test buttons
+  const canTest = state.bridgeOnline && state.pluginConnected;
+  document.getElementById('btn-test').disabled = !canTest;
+  const testSetup = document.getElementById('btn-test-setup');
+  if (testSetup) testSetup.disabled = !canTest;
+}
+
+function setDot(id, online) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.className = 'dot ' + (online ? 'online' : 'offline');
+}
+
+function setBadge(id, text, type) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = text;
+  el.className = 'badge badge-' + type;
+}
+
+// ─── Tools ────────────────────────────────────────────────────────────────────
+const CATEGORY_MAP = {
+  document: { label: 'Document', color: '#3b82f6' },
+  page:     { label: 'Page',     color: '#8b5cf6' },
+  text:     { label: 'Text',     color: '#10b981' },
+  graphics: { label: 'Graphics', color: '#f59e0b' },
+  style:    { label: 'Style',    color: '#ec4899' },
+  export:   { label: 'Export',   color: '#14b8a6' },
+  master:   { label: 'Master',   color: '#6366f1' },
+  book:     { label: 'Book',     color: '#a855f7' },
+  group:    { label: 'Group',    color: '#64748b' },
+  japanese: { label: 'Japanese DTP', color: '#f43f5e' },
+  utility:  { label: 'Utility',  color: '#94a3b8' },
+};
+
+function getToolCategory(name) {
+  const n = name.toLowerCase();
+  if (n.includes('japanese') || n.includes('vertical') || n.includes('tatechuyoko') || n.includes('kinsoku') || n.includes('kumihan') || n.includes('joyo') || n.includes('hyoki') || n.includes('proofread') || n.includes('sensitive') || n.includes('manuscript') || n.includes('flow_text') || n.includes('import_text') || n.includes('redline') || n.includes('notation') || n.includes('rule') || n.includes('customer') || n.includes('instruction') || n.includes('confirm') || n.includes('normalize_japanese') || n.includes('preflight') || n.includes('check_font') || n.includes('check_link') || n.includes('check_image') || n.includes('check_bleed') || n.includes('check_overset') || n.includes('check_color') || n.includes('export_print') || n.includes('export_review') || n.includes('revision') || n.includes('operation_log') || n.includes('parse_')) return 'japanese';
+  if (n.includes('document') || n.includes('save') || n.includes('open') || n.includes('close') || n.includes('create_doc') || n.includes('validate') || n.includes('cleanup') || n.includes('story') || n.includes('layer') || n.includes('hyperlink') || n.includes('section') || n.includes('xml') || n.includes('cloud') || n.includes('grid') || n.includes('layout') || n.includes('data_merge')) return 'document';
+  if (n.includes('page') || n.includes('navigate') || n.includes('spread')) return 'page';
+  if (n.includes('text') || n.includes('table') || n.includes('find') || n.includes('replace') || n.includes('frame')) return 'text';
+  if (n.includes('rectangle') || n.includes('ellipse') || n.includes('polygon') || n.includes('image') || n.includes('graphic') || n.includes('place')) return 'graphics';
+  if (n.includes('style') || n.includes('color') || n.includes('swatch')) return 'style';
+  if (n.includes('export') || n.includes('pdf') || n.includes('package')) return 'export';
+  if (n.includes('master')) return 'master';
+  if (n.includes('book')) return 'book';
+  if (n.includes('group')) return 'group';
+  return 'utility';
+}
+
+function renderTools() {
+  const query  = (document.getElementById('tool-search')?.value || '').toLowerCase();
+  const filter = state.toolFilter;
+  const grid   = document.getElementById('tools-grid');
+
+  const filtered = state.tools.filter(t => {
+    const cat = getToolCategory(t.name);
+    const matchCat  = filter === 'all' || cat === filter;
+    const matchText = !query || t.name.toLowerCase().includes(query) ||
+                      (t.description || '').toLowerCase().includes(query);
+    return matchCat && matchText;
+  });
+
+  document.getElementById('tools-count-label').textContent =
+    `${filtered.length} / ${state.tools.length} tools`;
+
+  if (!filtered.length) {
+    grid.innerHTML = `<div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <p>No tools found</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(t => {
+    const cat = getToolCategory(t.name);
+    const info = CATEGORY_MAP[cat] || CATEGORY_MAP.utility;
+    return `<div class="tool-card">
+      <div class="tool-card-top">
+        <span class="tool-name">${esc(t.name)}</span>
+        <span class="tool-category-tag" style="background:${info.color}22;color:${info.color};">${info.label}</span>
+      </div>
+      <div class="tool-desc">${esc(t.description || '—')}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderToolCategories() {
+  const cats = {};
+  state.tools.forEach(t => {
+    const c = getToolCategory(t.name);
+    cats[c] = (cats[c] || 0) + 1;
+  });
+
+  const list = document.getElementById('tool-categories-list');
+  list.innerHTML = Object.entries(cats).sort((a,b) => b[1]-a[1]).map(([c, n]) => {
+    const info = CATEGORY_MAP[c] || CATEGORY_MAP.utility;
+    return `<div class="status-row">
+      <div class="status-row-left">
+        <div class="dot online" style="background:${info.color};box-shadow:0 0 6px ${info.color};"></div>
+        <span style="font-size:.87em;font-weight:500;">${info.label}</span>
+      </div>
+      <span class="badge badge-neutral">${n} tools</span>
+    </div>`;
+  }).join('');
+}
+
+function filterTools() { renderTools(); }
+
+function setFilter(cat, el) {
+  state.toolFilter = cat;
+  document.querySelectorAll('#filter-chips .chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderTools();
+}
+
+// ─── Logs ────────────────────────────────────────────────────────────────────
+function renderLogs() {
+  const stream = document.getElementById('log-stream');
+  const filtered = state.logFilter === 'all'
+    ? state.logs
+    : state.logs.filter(l => l.level === state.logFilter);
+
+  document.getElementById('log-count-label').textContent =
+    `${filtered.length} entries`;
+
+  if (!filtered.length) {
+    stream.innerHTML = `<div class="log-line"><span class="log-ts">—</span><span class="log-msg" style="color:var(--text-dim)">No log entries</span></div>`;
+    return;
+  }
+
+  stream.innerHTML = filtered.map(l =>
+    `<div class="log-line">
+      <span class="log-ts">${esc(l.time || '—')}</span>
+      <span class="log-level ${l.level || 'info'}">${(l.level || 'INFO').toUpperCase().slice(0,4)}</span>
+      <span class="log-msg">${esc(l.message || '')}</span>
+    </div>`
+  ).join('');
+
+  if (state.autoScroll) stream.scrollTop = stream.scrollHeight;
+}
+
+function addLogLine(level, msg) {
+  const now = new Date();
+  const ts = now.toTimeString().slice(0,8);
+  state.logs.push({ time: ts, level, message: msg });
+  document.getElementById('stat-logs').textContent = state.logs.length;
+  if (state.logFilter === 'all' || state.logFilter === level) {
+    const stream = document.getElementById('log-stream');
+    const line = document.createElement('div');
+    line.className = 'log-line';
+    line.innerHTML = `<span class="log-ts">${ts}</span><span class="log-level ${level}">${level.toUpperCase().slice(0,4)}</span><span class="log-msg">${esc(msg)}</span>`;
+    stream.appendChild(line);
+    if (state.autoScroll) stream.scrollTop = stream.scrollHeight;
+  }
+}
+
+function clearLogs() {
+  state.logs = [];
+  document.getElementById('log-stream').innerHTML =
+    `<div class="log-line"><span class="log-ts">—</span><span class="log-msg" style="color:var(--text-dim)">Logs cleared</span></div>`;
+  document.getElementById('stat-logs').textContent = '0';
+  document.getElementById('log-count-label').textContent = '0 entries';
+}
+
+function setLogFilter(level, el) {
+  state.logFilter = level;
+  document.querySelectorAll('#view-logs .chip').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
+  renderLogs();
+}
+
+function toggleAutoScroll() {
+  state.autoScroll = !state.autoScroll;
+  document.getElementById('btn-auto-scroll').textContent =
+    'Auto-scroll: ' + (state.autoScroll ? 'ON' : 'OFF');
+}
+
+// ─── Activity feed ───────────────────────────────────────────────────────────
+function renderActivityFeed() {
+  const feed = document.getElementById('activity-feed');
+  const recent = [...state.logs].reverse().slice(0, 8);
+  if (!recent.length) return;
+
+  feed.innerHTML = recent.map(l => {
+    const levelMap = { success: 'badge-success', error: 'badge-error', warn: 'badge-warning', info: 'badge-info' };
+    const badge = levelMap[l.level] || 'badge-neutral';
+    return `<div class="activity-item">
+      <span class="activity-time">${esc(l.time || '—')}</span>
+      <span class="activity-text">${esc(l.message || '')}</span>
+      <span class="activity-status"><span class="badge ${badge}">${(l.level||'info').toUpperCase().slice(0,4)}</span></span>
+    </div>`;
+  }).join('');
+}
+
+// ─── Connection test ─────────────────────────────────────────────────────────
+async function runConnectionTest() {
+  const terminals = ['terminal-setup'];
+  terminals.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = '// Testing connection to InDesign...';
+  });
+
+  addLogLine('info', 'Connection test initiated');
+
+  try {
+    const res = await fetch('/execute', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ code: `return app.name + " " + app.version` }),
+    });
+    const data = await res.json();
+
+    if (data.result) {
+      const msg = `// Success! Connected to: ${data.result}`;
+      terminals.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = msg;
+      });
+      addLogLine('success', `InDesign connection test passed: ${data.result}`);
+    } else if (data.error) {
+      const msg = `// Error: ${data.error}`;
+      terminals.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = msg;
+      });
+      addLogLine('error', `Connection test failed: ${data.error}`);
+    }
+  } catch (e) {
+    const msg = `// Error: ${e.message}`;
+    terminals.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.textContent = msg;
+    });
+    addLogLine('error', `Connection test exception: ${e.message}`);
+  }
+}
+
+// ─── Config ───────────────────────────────────────────────────────────────────
+function buildClaudeConfig() {
+  const src = window.location.hostname === 'localhost' ? 'C:\\path\\to\\ai-indesign\\src\\index.js' : '/path/to/ai-indesign/src/index.js';
+  return JSON.stringify({
+    mcpServers: {
+      "ai-indesign": { command: "node", args: [src] },
+      "memory":      { command: "npx", args: ["-y", "@modelcontextprotocol/server-memory"] },
+      "filesystem":  { command: "npx", args: ["-y", "@modelcontextprotocol/server-filesystem", "C:\\Users\\YourName\\Desktop"] }
+    }
+  }, null, 2);
+}
+
+function copyClaudeConfig() {
+  navigator.clipboard.writeText(buildClaudeConfig()).then(() => {
+    const btn = event.target;
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy JSON', 1500);
+  });
+}
+
+function copySetupConfig() {
+  const el = document.getElementById('setup-config-json');
+  navigator.clipboard.writeText(el.innerText).then(() => {
+    const btn = event.target;
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+async function saveApiKey() {
+  const key = document.getElementById('cfg-api-key').value.trim();
+  if (!key) return;
+  try {
+    await fetch('/set-api-key', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ apiKey: key }),
+    });
+    addLogLine('success', 'API key saved');
+    document.getElementById('cfg-api-key').value = '';
+  } catch (e) {
+    addLogLine('error', 'Failed to save API key: ' + e.message);
+  }
+}
+
+// ─── Setup steps ─────────────────────────────────────────────────────────────
+function toggleStep(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+// ─── Escape HTML ─────────────────────────────────────────────────────────────
+function esc(str) {
+  return String(str)
+    .replace(/&/g,'&amp;')
+    .replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;');
+}
+
+// ─── Init ────────────────────────────────────────────────────────────────────
+(function init() {
+  // Populate Claude config textarea
+  const ta = document.getElementById('cfg-claude-json');
+  if (ta) ta.value = buildClaudeConfig();
+
+  // Initial logs
+  addLogLine('info', 'Dimension Hub loaded');
+  addLogLine('info', 'Bridge server: http://localhost:3000');
+
+  // Initial fetch
+  refreshAll().then(() => {
+    addLogLine('info', 'Status refresh complete');
+  });
+
+  // Poll every 3s
+  state.pollInterval = setInterval(() => {
+    fetchStatus();
+    fetchLogs();
+  }, 3000);
+})();
+</script>
+</body>
+</html>

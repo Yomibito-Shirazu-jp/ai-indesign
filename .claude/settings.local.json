@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(gh repo *)",
+      "Bash(gh api *)",
+      "Bash(node scripts/generate-vendor-keypair.mjs)",
+      "Bash(node scripts/license-cli.mjs install --file /tmp/test-license.txt)",
+      "Bash(node scripts/license-cli.mjs status)",
+      "Bash(node tests/test-licensing.mjs)"
+    ]
+  }
+}
