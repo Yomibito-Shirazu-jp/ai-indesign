@@ -65,6 +65,28 @@ app.get('/dashboard', (_req, res) => {
     res.sendFile(join(__dirname, 'dashboard', 'index.html'));
 });
 
+// ── Plugin Downloads ─────────────────────────────────────────
+const plugins = {
+    indesign:    '01_InDesign_プラグインインストール.ccx',
+    illustrator: '02_Illustrator_プラグインインストール.ccx',
+    photoshop:   '03_Photoshop_プラグインインストール.ccx',
+};
+
+app.get('/api/plugins', (_req, res) => {
+    res.json(Object.entries(plugins).map(([app, file]) => ({
+        app,
+        filename: file,
+        downloadUrl: `/api/plugins/${app}`,
+    })));
+});
+
+app.get('/api/plugins/:app', (req, res) => {
+    const file = plugins[req.params.app];
+    if (!file) return res.status(404).json({ error: 'Plugin not found' });
+    const filePath = join(__dirname, '..', file);
+    res.download(filePath, file);
+});
+
 app.get('/api/dashboard', (_req, res) => {
     const activeSessions = Object.keys(transports).length;
 
