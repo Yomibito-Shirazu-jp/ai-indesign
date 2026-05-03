@@ -11,7 +11,7 @@
         {
             "type": "panel",
             "id": "mainPanel",
-            "label": { "default": "Ai-inDesign", "ja": "Ai-inDesign" },
+            "label": { "default": "Ai-inDesign", "ja": "AI自動組版アシスタント" },
             "minimumSize": { "width": 280, "height": 400 },
             "preferredDockedSize": { "width": 320, "height": 500 }
         }
