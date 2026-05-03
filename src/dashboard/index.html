@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ai-inDesign Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+JP:wght@300;400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0b0f;--bg2:#12131a;--bg3:#1a1b26;--bg4:#252736;
+  --text:#e4e6f0;--text2:#9ca0b4;--text3:#5c6078;
+  --accent:#6366f1;--accent2:#818cf8;--accent-glow:rgba(99,102,241,.15);
+  --green:#22c55e;--green-glow:rgba(34,197,94,.12);
+  --amber:#f59e0b;--red:#ef4444;
+  --border:rgba(255,255,255,.06);
+  --radius:12px;--radius-lg:16px;
+}
+body{font-family:'Inter','Noto Sans JP',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden}
+a{color:var(--accent2);text-decoration:none}
+
+/* Layout */
+.app{display:grid;grid-template-columns:260px 1fr;min-height:100vh}
+.sidebar{background:var(--bg2);border-right:1px solid var(--border);padding:24px 0;display:flex;flex-direction:column}
+.sidebar-logo{padding:0 24px 32px;display:flex;align-items:center;gap:12px;font-size:18px;font-weight:700;letter-spacing:-.02em}
+.sidebar-logo .dot{width:32px;height:32px;border-radius:8px;background:linear-gradient(135deg,var(--accent),#a78bfa);display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:800;color:#fff}
+.nav{flex:1}
+.nav-section{padding:8px 16px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-top:16px}
+.nav-item{display:flex;align-items:center;gap:12px;padding:10px 24px;color:var(--text2);font-size:14px;cursor:pointer;transition:all .15s;border-left:3px solid transparent}
+.nav-item:hover{background:var(--accent-glow);color:var(--text)}
+.nav-item.active{background:var(--accent-glow);color:var(--accent2);border-left-color:var(--accent)}
+.nav-item svg{width:18px;height:18px;opacity:.7}
+
+.main{padding:32px 40px;overflow-y:auto}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:32px}
+.header h1{font-size:24px;font-weight:700;letter-spacing:-.02em}
+.header-actions{display:flex;gap:12px;align-items:center}
+.badge{padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600}
+.badge-green{background:var(--green-glow);color:var(--green);border:1px solid rgba(34,197,94,.2)}
+.badge-amber{background:rgba(245,158,11,.1);color:var(--amber);border:1px solid rgba(245,158,11,.2)}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:32px}
+.stat-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:24px;position:relative;overflow:hidden;transition:border-color .2s}
+.stat-card:hover{border-color:rgba(255,255,255,.12)}
+.stat-card::after{content:'';position:absolute;top:0;right:0;width:80px;height:80px;border-radius:50%;filter:blur(40px);opacity:.15}
+.stat-card:nth-child(1)::after{background:var(--accent)}
+.stat-card:nth-child(2)::after{background:var(--green)}
+.stat-card:nth-child(3)::after{background:var(--amber)}
+.stat-card:nth-child(4)::after{background:#a78bfa}
+.stat-label{font-size:13px;color:var(--text2);margin-bottom:8px;font-weight:500}
+.stat-value{font-size:32px;font-weight:700;letter-spacing:-.03em;font-family:'JetBrains Mono','Inter',monospace}
+.stat-change{font-size:12px;margin-top:8px;display:flex;align-items:center;gap:4px}
+.stat-change.up{color:var(--green)}
+.stat-change.down{color:var(--red)}
+
+/* Connection */
+.section{margin-bottom:32px}
+.section-title{font-size:16px;font-weight:600;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:hidden}
+.card-body{padding:24px}
+
+.connect-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.connect-box{background:var(--bg3);border:1px solid var(--border);border-radius:var(--radius);padding:20px}
+.connect-box h3{font-size:14px;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.connect-box .url{font-family:'JetBrains Mono',monospace;font-size:13px;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:12px 16px;word-break:break-all;color:var(--accent2);position:relative;cursor:pointer;transition:border-color .2s}
+.connect-box .url:hover{border-color:var(--accent)}
+.connect-box .url::after{content:'📋';position:absolute;right:12px;top:50%;transform:translateY(-50%);opacity:.5}
+.connect-label{font-size:12px;color:var(--text3);margin-top:8px}
+
+/* Sessions table */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{text-align:left;padding:12px 16px;color:var(--text3);font-weight:500;font-size:12px;text-transform:uppercase;letter-spacing:.06em;border-bottom:1px solid var(--border)}
+tbody td{padding:12px 16px;border-bottom:1px solid var(--border);vertical-align:middle}
+tbody tr:hover{background:rgba(255,255,255,.02)}
+.session-id{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--accent2)}
+.pill{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:12px;font-size:11px;font-weight:600}
+.pill-active{background:var(--green-glow);color:var(--green)}
+.pill-idle{background:rgba(245,158,11,.1);color:var(--amber)}
+.pill-closed{background:rgba(255,255,255,.05);color:var(--text3)}
+
+/* Tool usage */
+.tools-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.tool-item{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;background:var(--bg3);border-radius:8px;font-size:13px}
+.tool-item .count{font-family:'JetBrains Mono',monospace;color:var(--accent2);font-weight:600}
+.tool-bar{height:4px;background:var(--bg);border-radius:2px;margin-top:6px;overflow:hidden}
+.tool-bar-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+
+/* Chart placeholder */
+.chart-container{height:200px;background:var(--bg3);border-radius:var(--radius);display:flex;align-items:flex-end;padding:20px 16px 12px;gap:4px}
+.chart-bar{flex:1;background:linear-gradient(to top,var(--accent),var(--accent2));border-radius:4px 4px 0 0;min-height:4px;transition:height .6s cubic-bezier(.4,0,.2,1);opacity:.8}
+.chart-bar:hover{opacity:1}
+.chart-labels{display:flex;justify-content:space-between;padding:8px 16px 0;font-size:11px;color:var(--text3)}
+
+/* Footer */
+.footer{padding:16px 24px;border-top:1px solid var(--border);margin-top:auto;font-size:12px;color:var(--text3)}
+
+/* Responsive */
+@media(max-width:1024px){.app{grid-template-columns:1fr}.sidebar{display:none}.stats{grid-template-columns:repeat(2,1fr)}.connect-grid,.tools-grid{grid-template-columns:1fr}}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.stat-card,.card,.connect-box{animation:fadeUp .5s ease both}
+.stat-card:nth-child(2){animation-delay:.05s}
+.stat-card:nth-child(3){animation-delay:.1s}
+.stat-card:nth-child(4){animation-delay:.15s}
+
+/* Pulse for live indicator */
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s ease infinite;display:inline-block}
+</style>
+</head>
+<body>
+<div class="app">
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <div class="dot">Ai</div>
+      <span>Ai-inDesign</span>
+    </div>
+    <nav class="nav">
+      <div class="nav-section">メイン</div>
+      <div class="nav-item active" onclick="showPage('overview')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        ダッシュボード
+      </div>
+      <div class="nav-item" onclick="showPage('sessions')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M13 12H3"/></svg>
+        セッション
+      </div>
+      <div class="nav-item" onclick="showPage('tools')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 000 1.4l1.6 1.6a1 1 0 001.4 0l3.77-3.77a6 6 0 01-7.94 7.94l-6.91 6.91a2.12 2.12 0 01-3-3l6.91-6.91a6 6 0 017.94-7.94l-3.76 3.76z"/></svg>
+        ツール一覧
+      </div>
+      <div class="nav-section">設定</div>
+      <div class="nav-item" onclick="showPage('connection')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 01-2-2 2 2 0 012-2h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 012-2 2 2 0 012 2v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 012 2 2 2 0 01-2 2h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        接続設定
+      </div>
+    </nav>
+    <div class="footer">
+      <div>© 2026 文唱堂印刷株式会社</div>
+      <div style="margin-top:4px">v1.2.1</div>
+    </div>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="main" id="main-content">
+    <!-- Header -->
+    <div class="header">
+      <h1>ダッシュボード</h1>
+      <div class="header-actions">
+        <span class="badge badge-green"><span class="live-dot"></span>&nbsp; サーバー稼働中</span>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-label">アクティブセッション</div>
+        <div class="stat-value" id="stat-sessions">—</div>
+        <div class="stat-change up">リアルタイム</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">本日のツール実行数</div>
+        <div class="stat-value" id="stat-calls">—</div>
+        <div class="stat-change up" id="stat-calls-change"></div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">登録ツール数</div>
+        <div class="stat-value" id="stat-tools">—</div>
+        <div class="stat-change">全ツール開放済み</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">平均応答時間</div>
+        <div class="stat-value" id="stat-latency">—</div>
+        <div class="stat-change">ms</div>
+      </div>
+    </div>
+
+    <!-- Usage chart -->
+    <div class="section">
+      <div class="section-title">📊 過去24時間のツール実行</div>
+      <div class="card">
+        <div class="card-body" style="padding:16px">
+          <div class="chart-container" id="usage-chart"></div>
+          <div class="chart-labels"><span>24h前</span><span>12h前</span><span>現在</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Connection info -->
+    <div class="section">
+      <div class="section-title">🔗 接続情報</div>
+      <div class="connect-grid">
+        <div class="connect-box">
+          <h3>Streamable HTTP（推奨）</h3>
+          <div class="url" onclick="copyURL(this)" id="url-mcp"></div>
+          <div class="connect-label">Claude Desktop / Cursor / Gemini CLI</div>
+        </div>
+        <div class="connect-box">
+          <h3>Legacy SSE</h3>
+          <div class="url" onclick="copyURL(this)" id="url-sse"></div>
+          <div class="connect-label">旧バージョンクライアント用</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Active Sessions -->
+    <div class="section">
+      <div class="section-title">🖥️ アクティブセッション</div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>セッションID</th><th>トランスポート</th><th>接続時刻</th><th>ツール実行数</th><th>ステータス</th></tr></thead>
+            <tbody id="sessions-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top tools -->
+    <div class="section">
+      <div class="section-title">🔧 よく使われるツール TOP 9</div>
+      <div class="tools-grid" id="top-tools"></div>
+    </div>
+  </main>
+</div>
+
+<script>
+const BASE = location.origin;
+
+// Copy URL
+function copyURL(el) {
+  navigator.clipboard.writeText(el.textContent);
+  const orig = el.textContent;
+  el.style.borderColor = 'var(--green)';
+  setTimeout(() => el.style.borderColor = '', 1500);
+}
+
+// Set URLs
+document.getElementById('url-mcp').textContent = BASE + '/mcp';
+document.getElementById('url-sse').textContent = BASE + '/sse';
+
+// Fetch dashboard data
+async function fetchDashboard() {
+  try {
+    const res = await fetch(BASE + '/api/dashboard');
+    const data = await res.json();
+    
+    document.getElementById('stat-sessions').textContent = data.activeSessions;
+    document.getElementById('stat-calls').textContent = data.totalCalls.toLocaleString();
+    document.getElementById('stat-tools').textContent = data.toolCount;
+    document.getElementById('stat-latency').textContent = data.avgLatency;
+    
+    // Sessions table
+    const tbody = document.getElementById('sessions-tbody');
+    if (data.sessions.length === 0) {
+      tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text3);padding:40px">アクティブなセッションはありません</td></tr>';
+    } else {
+      tbody.innerHTML = data.sessions.map(s => `
+        <tr>
+          <td class="session-id">${s.id.substring(0,8)}…</td>
+          <td>${s.transport}</td>
+          <td>${new Date(s.connectedAt).toLocaleTimeString('ja-JP')}</td>
+          <td>${s.callCount}</td>
+          <td><span class="pill pill-${s.status}">${s.status === 'active' ? '接続中' : 'アイドル'}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    // Usage chart
+    const chart = document.getElementById('usage-chart');
+    const max = Math.max(...data.hourlyUsage, 1);
+    chart.innerHTML = data.hourlyUsage.map(v => 
+      `<div class="chart-bar" style="height:${(v/max)*100}%" title="${v} calls"></div>`
+    ).join('');
+
+    // Top tools
+    const topTools = document.getElementById('top-tools');
+    const topMax = Math.max(...data.topTools.map(t=>t.count), 1);
+    topTools.innerHTML = data.topTools.map(t => `
+      <div class="tool-item">
+        <div>
+          <div>${t.name}</div>
+          <div class="tool-bar" style="width:120px"><div class="tool-bar-fill" style="width:${(t.count/topMax)*100}%"></div></div>
+        </div>
+        <div class="count">${t.count}</div>
+      </div>
+    `).join('');
+  } catch(e) {
+    console.error('Dashboard fetch error:', e);
+  }
+}
+
+// Nav
+function showPage(page) {
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  event.currentTarget.classList.add('active');
+}
+
+// Poll every 5 seconds
+fetchDashboard();
+setInterval(fetchDashboard, 5000);
+</script>
+</body>
+</html>

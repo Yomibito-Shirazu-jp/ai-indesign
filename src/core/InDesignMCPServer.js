@@ -39,8 +39,9 @@ export class InDesignMCPServer {
     constructor() {
         this.server = new Server(
             {
-                name: 'indesign-server-complete',
-                version: '1.0.0',
+                name: 'ai-indesign',
+                version: '1.2.1',
+                description: 'Adobe InDesign / Illustrator / Photoshop 自動化MCPサーバー — 200以上のDTPツールを自然言語で操作',
             },
             {
                 capabilities: {
