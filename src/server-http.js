@@ -22,7 +22,9 @@ const PORT = parseInt(process.env.PORT || '8080', 10);
 
 // ── Express app ──────────────────────────────────────────────
 const app = express();
-app.use(cors());
+app.use(cors({
+    exposedHeaders: ['mcp-session-id'],
+}));
 app.use(express.json());
 
 // ── Metrics store (in-memory) ────────────────────────────────
