@@ -60,14 +60,20 @@ export class RevisionHandlers {
         }
 
         const totalReplaced = results.reduce((sum, r) => sum + (r?.replaced || 0), 0);
-        operationLogger.log({ tool: 'apply_redline_changes', args: { changeCount: changes.length }, success: true, confirm: true });
+        const allSucceeded = results.every(r => r?.success);
+        const failedCount = results.filter(r => !r?.success).length;
+        operationLogger.log({ tool: 'apply_redline_changes', args: { changeCount: changes.length }, success: allSucceeded, confirm: true });
 
-        return formatResponse({
-            success: true,
+        const payload = {
+            success: allSucceeded,
             totalChanges: changes.length,
             totalReplaced,
+            failedCount,
             results,
-        }, '赤字反映');
+        };
+        return allSucceeded
+            ? formatResponse(payload, '赤字反映')
+            : formatErrorResponse(payload, '赤字反映');
     }
 
     /**
