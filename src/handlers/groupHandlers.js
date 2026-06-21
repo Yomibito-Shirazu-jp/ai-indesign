@@ -11,18 +11,26 @@ export class GroupHandlers {
     static async createGroup(args) {
         const { pageIndex } = args;
 
+        // Gather the items explicitly from the given page rather than relying on
+        // app.selection at execution time. The previous implementation ignored the
+        // validated pageIndex and grouped whatever happened to be selected, which is
+        // stateful and unreliable.
         const code = `
             if (app.documents.length === 0) return { success: false, error: 'No document open' };
             const doc = app.activeDocument;
             if (${pageIndex} >= doc.pages.length) return { success: false, error: 'Page index out of range' };
-            const selection = app.selection;
-            if (!selection || selection.length < 2) return { success: false, error: 'Select at least 2 items to create a group' };
+            const page = doc.pages.item(${pageIndex});
+            const items = [];
+            for (let i = 0; i < page.pageItems.length; i++) {
+                items.push(page.pageItems.item(i));
+            }
+            if (items.length < 2) return { success: false, error: 'Need at least 2 items on the page to create a group' };
             let group;
             try {
-                group = selection[0].group();
+                group = items[0].group();
             } catch(e) {
                 try {
-                    group = doc.groups.add(selection);
+                    group = doc.groups.add(items);
                 } catch(e2) {
                     return { success: false, error: 'Failed to create group: ' + e2.message };
                 }
