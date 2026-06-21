@@ -48,6 +48,19 @@ export class ExportHandlers {
 
         const formatLower = format.toLowerCase();
 
+        // Validate page-range tokens up front so non-numeric entries are reported
+        // instead of being silently dropped (parseInt -> NaN) and counted as success.
+        if (pageRange !== 'all') {
+            const tokens = String(pageRange).split(',').map(t => t.trim());
+            const invalid = tokens.filter(t => t === '' || !/^\d+$/.test(t));
+            if (invalid.length > 0) {
+                return formatErrorResponse(
+                    `Invalid page range entries: ${invalid.join(', ')}`,
+                    "Export Images"
+                );
+            }
+        }
+
         const code = `
             const { ExportFormat } = require('indesign');
             if (app.documents.length === 0) {
