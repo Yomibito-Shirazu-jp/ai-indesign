@@ -78,6 +78,21 @@ A4縦のドキュメントを作って、「こんにちは」というテキス
 
 ---
 
+## 🏷️ 命名・識別子について
+
+本プロジェクトの正式名称（プロダクト名）は **「Ai-inDesign」** です。
+配布物・ビルド・各種設定の都合上、以下のように複数の内部識別子が併存していますが、いずれも同一プロジェクトを指すものであり、不具合ではありません。
+
+| 種別 | 値 | 定義場所 |
+|------|-----|---------|
+| プロダクト名（正式名称） | `Ai-inDesign` | README / manifest |
+| npm パッケージ名 | `indesign-mcp-server` | `package.json` の `name` |
+| DXT マニフェスト名 | `ai-indesign` | `manifest.json` の `name` |
+| Electron アプリ ID | `com.yomibitoshirazujp.ai-indesign` | `package.json` の `build.appId` |
+| UXP プラグイン ID | `com.bunshodo.ai-indesign` | `plugin/manifest.json` の `id` |
+
+著者表記は `Yomibito-Shirazu-jp`（GitHub Organization）／文唱堂印刷株式会社（発行元）です。
+
 ## ⚠️ 注意事項
 
 本ソフトウェアは文唱堂印刷株式会社の社内ツールです。無断複製・再配布・販売を禁止します。
