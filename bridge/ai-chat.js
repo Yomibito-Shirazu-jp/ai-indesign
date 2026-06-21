@@ -39,7 +39,11 @@ const ALLOWED_DIRS = [
 
 function isPathAllowed(filePath) {
     const resolved = path.resolve(filePath);
-    return ALLOWED_DIRS.some(dir => resolved.startsWith(dir));
+    return ALLOWED_DIRS.some(dir => {
+        const rel = path.relative(dir, resolved);
+        // dir 自身、または dir 配下のみ許可（".." で始まる＝外側、絶対パス＝別ドライブは拒否）
+        return rel === '' || (!rel.startsWith('..') && !path.isAbsolute(rel));
+    });
 }
 
 function fsReadFile(filePath) {
