@@ -28,7 +28,19 @@ export const ruleTools = [
                     description: 'The rules configuration (notation, style, meta)',
                     properties: {
                         customerName: { type: 'string' },
-                        notation: { type: 'array' },
+                        notation: {
+                            type: 'array',
+                            description: 'Array of notation rules',
+                            items: {
+                                type: 'object',
+                                properties: {
+                                    pattern: { type: 'string', description: 'Regex pattern or precise string to match' },
+                                    replacement: { type: 'string', description: 'Replacement text' },
+                                    message: { type: 'string', description: 'Rule description' }
+                                },
+                                required: ['pattern', 'message']
+                            }
+                        },
                         style: { type: 'object' },
                         meta: { type: 'object' }
                     }
