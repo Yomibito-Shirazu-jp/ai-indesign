@@ -37,7 +37,7 @@ export const exportToolDefinitions = [
     },
     {
         name: 'export_epub',
-        description: 'Export document to EPUB',
+        description: 'EPUBとしてエクスポート',
         inputSchema: {
             type: 'object',
             properties: {
