@@ -54,16 +54,14 @@ export function formatErrorResponse(error, operation = "Operation") {
  */
 export function removeEmoticons(str) {
     if (typeof str !== 'string') return '';
-    // Remove most emoji and emoticon Unicode ranges.
-    return str
-        .replace(
-            /([\u203C-\u3299]|[\uD83C-\uDBFF\uDC00-\uDFFF]+|[\u200D\uFE0F])/g,
-            ''
-        )
-        .replace(
-            /([\u231A-\u231B]|\u23E9|\u23EA|\u23EB|\u23EC|\u23F0|\u23F3|\u25FD|\u25FE|\u2614|\u2615|\u2648-\u2653|\u267F|\u2693|\u26A1|\u26AA|\u26AB|\u26BD|\u26BE|\u26C4|\u26C5|\u26CE|\u26D4|\u26EA|\u26F2|\u26F3|\u26F5|\u26FA|\u26FD|\u2705|\u270A|\u270B|\u2728|\u274C|\u274E|\u2753-\u2755|\u2757|\u2795-\u2797|\u27B0|\u27BF|\u2B1B|\u2B1C|\u2B50|\u2B55|\u3030|\u303D|\u3297|\u3299)/g,
-            ''
-        );
+    // Remove emoji using the Unicode Extended_Pictographic property, together with
+    // any trailing variation selectors / skin-tone modifiers and ZWJ-joined
+    // sequences. This avoids the old broad range [\u203C-\u3299] which also
+    // stripped legitimate Japanese text (CJK punctuation, kana, \u301C, \u3231, \u2103, etc.).
+    return str.replace(
+        /\p{Extended_Pictographic}[\uFE0F\u{1F3FB}-\u{1F3FF}]*(\u200D\p{Extended_Pictographic}[\uFE0F\u{1F3FB}-\u{1F3FF}]*)*|[\u{1F1E6}-\u{1F1FF}]{2}/gu,
+        ''
+    );
 }
 
 /**
