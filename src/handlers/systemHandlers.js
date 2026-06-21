@@ -120,11 +120,11 @@ export class SystemHandlers {
                     const doc = app.documents.length > 0 ? app.documents[0] : app.documents.add();
                     const frame = doc.pages[0].textFrames.add();
                     frame.geometricBounds = [20, 20, 40, 120];
-                    frame.contents = "${message}";
+                    frame.contents = ${JSON.stringify(message)};
                     return "InDesign OK";
                 `;
             }
-            return `alert("${message}"); return "OK";`;
+            return `alert(${JSON.stringify(message)}); return "OK";`;
         }
 
         const apps = [
