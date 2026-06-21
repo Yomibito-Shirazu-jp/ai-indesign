@@ -274,12 +274,23 @@ export class MasterSpreadHandlers {
             removeExisting = false
         } = args;
 
+        // Parse and validate guideColor into a numeric [r, g, b] array so it can be
+        // emitted as a sanitized numeric literal instead of raw interpolated code.
+        let rgb = guideColor;
+        if (typeof rgb === 'string') {
+            try { rgb = JSON.parse(rgb); } catch (e) { rgb = null; }
+        }
+        if (!Array.isArray(rgb) || rgb.length !== 3 || !rgb.every(n => Number.isFinite(n) && n >= 0 && n <= 255)) {
+            return formatErrorResponse('guideColor must be an [r, g, b] array with values 0-255', "Create Master Guides");
+        }
+        const guideColorLiteral = `[${rgb.map(Number).join(', ')}]`;
+
         const code = `
             if (app.documents.length === 0) return { success: false, error: 'No document open' };
             const doc = app.activeDocument;
             const masterSpread = doc.masterSpreads.itemByName(${JSON.stringify(masterName)});
             if (!masterSpread.isValid) return { success: false, error: 'Master spread not found: ' + ${JSON.stringify(masterName)} };
-            masterSpread.createGuides(${numberOfRows}, ${numberOfColumns}, ${JSON.stringify(rowGutter || '')}, ${JSON.stringify(columnGutter || '')}, ${guideColor}, ${fitMargins}, ${removeExisting});
+            masterSpread.createGuides(${numberOfRows}, ${numberOfColumns}, ${JSON.stringify(rowGutter || '')}, ${JSON.stringify(columnGutter || '')}, ${guideColorLiteral}, ${fitMargins}, ${removeExisting});
             return { success: true, masterName: masterSpread.name, rows: ${numberOfRows}, columns: ${numberOfColumns} };
         `;
 
