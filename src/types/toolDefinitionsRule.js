@@ -52,7 +52,7 @@ export const ruleTools = [
                     description: 'The notation rule to add',
                     properties: {
                         pattern: { type: 'string', description: 'Regex pattern or precise string to match' },
-                        replacement: { type: 'string', description: 'Replacement text' },
+                        replacement: { type: 'string', description: 'Replacement text (optional; omit for warning-only rules with no auto-replacement)' },
                         message: { type: 'string', description: 'Rule description' }
                     },
                     required: ['pattern', 'message']
