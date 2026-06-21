@@ -190,7 +190,8 @@ export const HYOKI_YURE_PATTERNS = [
     { variants: ['＆', '&'], recommended: '＆', category: '記号' },
 
     // 漢字の異体字・旧字
-    { variants: ['斉', '齊', '斎'], recommended: '斉', category: '字体' },
+    // 斉/齊 は新旧字体の関係。斎（書斎・斎藤）は別字のため分離する。
+    { variants: ['斉', '齊'], recommended: '斉', category: '字体' },
     { variants: ['桧', '檜'], recommended: '桧', category: '字体' },
     { variants: ['鯖', '鯵'], recommended: null, category: '字体' },
 ];
