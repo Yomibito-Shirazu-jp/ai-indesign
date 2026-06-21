@@ -174,6 +174,7 @@ app.all('/mcp', async (req, res) => {
                 if (sid && transports[sid]) {
                     console.log(`[mcp] Session closed: ${sid}`);
                     delete transports[sid];
+                    delete metrics.sessionMeta[sid];
                 }
             };
 
@@ -228,6 +229,7 @@ app.get('/sse', async (req, res) => {
     res.on('close', () => {
         console.log(`[sse] Session closed: ${transport.sessionId}`);
         delete transports[transport.sessionId];
+        delete metrics.sessionMeta[transport.sessionId];
     });
 
     const server = createMCPServer();
