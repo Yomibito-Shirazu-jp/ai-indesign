@@ -259,6 +259,13 @@ const INSTRUCTION_PATTERNS = [
     },
 ];
 
+// パターンはモジュール読み込み時に一度だけコンパイルする。
+// （以前は呼び出しごと・パターンごとに new RegExp していた）
+// /g フラグ付きは lastIndex を持つため、使用前に毎回リセットすること。
+const COMPILED_PATTERNS = INSTRUCTION_PATTERNS.map(
+    (p) => new RegExp(p.pattern.source, p.pattern.flags || '')
+);
+
 /**
  * 自然文 → IR変換（解析のみ、実行しない）
  * @param {string} text - 日本語指示文
@@ -271,10 +278,12 @@ export function parseInstruction(text, context = {}) {
 
     let matched = false;
 
-    for (const pattern of INSTRUCTION_PATTERNS) {
-        const regex = new RegExp(pattern.pattern.source, pattern.pattern.flags || '');
+    for (let i = 0; i < INSTRUCTION_PATTERNS.length; i++) {
+        const pattern = INSTRUCTION_PATTERNS[i];
+        const regex = COMPILED_PATTERNS[i];
 
         if (pattern.pattern.flags?.includes('g')) {
+            regex.lastIndex = 0; // /g は状態を持つため毎回リセット
             let m;
             while ((m = regex.exec(text)) !== null) {
                 try { pattern.handler(m, builder); matched = true; }
