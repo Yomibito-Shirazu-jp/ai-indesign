@@ -69,6 +69,11 @@ function executeInDesignCode(code) {
 
 // ─── HTTP経由でInDesignコード実行 ───
 app.post('/execute', async (req, res) => {
+    // 任意の共有シークレット認証: BRIDGE_TOKEN が設定されている場合のみ検証する
+    const expectedToken = process.env.BRIDGE_TOKEN;
+    if (expectedToken && req.headers['x-bridge-token'] !== expectedToken) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
     const { code } = req.body;
     if (!code) return res.status(400).json({ error: 'code is required' });
     try {
