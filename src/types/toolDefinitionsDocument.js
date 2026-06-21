@@ -171,7 +171,7 @@ export const documentToolDefinitions = [
     },
     {
         name: 'find_text_in_document',
-        description: 'テキストを検索・置換',
+        description: 'テキストを検索（任意で置換）',
         inputSchema: {
             type: 'object',
             properties: {
