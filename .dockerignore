@@ -16,4 +16,4 @@ release
 *.md
 *.bat
 *.ccx
-*.cjs
+/test-*.cjs
