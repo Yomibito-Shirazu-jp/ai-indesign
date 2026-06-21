@@ -29,7 +29,7 @@
 
 // 日本語見出しパターン
 const HEADING_PATTERNS = [
-    { pattern: /^#{1,6}\s+(.+)$/, type: 'markdown', levelFn: (m) => m[0].indexOf(' ') },
+    { pattern: /^#{1,6}\s+(.+)$/, type: 'markdown', levelFn: (m) => m[0].match(/^#+/)[0].length },
     { pattern: /^[第一二三四五六七八九十百千]+[章節項条][\s　]+(.+)$/, type: 'numbered_ja' },
     { pattern: /^(\d+)[.．]\s*(.+)$/, type: 'numbered' },
     { pattern: /^[（(]\d+[)）]\s*(.+)$/, type: 'sub_numbered' },
