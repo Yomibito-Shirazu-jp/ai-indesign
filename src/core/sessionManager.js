@@ -288,9 +288,34 @@ export class SessionManager extends EventTarget {
     importSession(sessionString) {
         try {
             const imported = JSON.parse(sessionString);
-            if (imported.version && imported.sessionData) {
-                this.sessionData = { ...imported.sessionData };
-                if (imported.config) {
+            if (imported.version && imported.sessionData && typeof imported.sessionData === 'object') {
+                const incoming = imported.sessionData;
+
+                // Re-validate page dimensions before trusting them; drop if invalid.
+                let pageDimensions = null;
+                if (incoming.pageDimensions != null) {
+                    try {
+                        this._validateDimensions(incoming.pageDimensions);
+                        pageDimensions = { ...incoming.pageDimensions };
+                    } catch (dimError) {
+                        console.warn('Imported pageDimensions failed validation, ignoring:', dimError.message);
+                    }
+                }
+
+                // Merge onto a known-good skeleton instead of trusting arbitrary JSON.
+                this.sessionData = {
+                    pageDimensions,
+                    activeDocument: (incoming.activeDocument && typeof incoming.activeDocument === 'object')
+                        ? incoming.activeDocument : null,
+                    activePage: (incoming.activePage && typeof incoming.activePage === 'object')
+                        ? incoming.activePage : null,
+                    lastCreatedItem: (incoming.lastCreatedItem && typeof incoming.lastCreatedItem === 'object')
+                        ? incoming.lastCreatedItem : null,
+                    createdAt: typeof incoming.createdAt === 'string' ? incoming.createdAt : new Date().toISOString(),
+                    lastModified: typeof incoming.lastModified === 'string' ? incoming.lastModified : null
+                };
+
+                if (imported.config && typeof imported.config === 'object') {
                     this.config = { ...this.config, ...imported.config };
                 }
                 this.dispatchEvent(new CustomEvent('sessionImported', {
