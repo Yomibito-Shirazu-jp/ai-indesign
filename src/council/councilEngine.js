@@ -187,7 +187,8 @@ export class CouncilEngine {
                     merged[key] = { value, sources: [result.agentId] };
                 } else {
                     merged[key].sources.push(result.agentId);
-                    // 複数エージェントが同じ所見 → confidence が上がる
+                    // 複数エージェントが同じ所見を検出した場合は sources に追記する
+                    // （confidence の引き上げは未実装）
                 }
             }
         }
