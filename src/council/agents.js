@@ -12,6 +12,19 @@ import {
 } from '../japanese/proofreadingDictionary.js';
 
 // ═══════════════════════════════════════════
+// 共通ヘルパ
+// ═══════════════════════════════════════════
+
+/**
+ * 正規表現メタ文字をエスケープし、文字列をリテラルとして照合可能にする。
+ * 顧客ルールの pattern は生の文字列が既定のため、isRegex=true 以外は
+ * これを通してから RegExp に渡す。
+ */
+function escapeRegex(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+// ═══════════════════════════════════════════
 // PHASE 1 — 入口合議エージェント（原稿正規化）
 // ═══════════════════════════════════════════
 
@@ -74,7 +87,11 @@ export function createNotationAgent(customerRules = {}) {
             // 3. 顧客別ルール適用
             if (customerRules.notation) {
                 for (const rule of customerRules.notation) {
-                    const regex = new RegExp(rule.pattern, 'g');
+                    // pattern は生の文字列が既定。rule.isRegex === true の場合のみ
+                    // 正規表現として扱い、それ以外はエスケープしてリテラル照合する。
+                    // 学習ルール・人手ルールいずれも同一の表現規約で扱える。
+                    const source = rule.isRegex ? rule.pattern : escapeRegex(rule.pattern);
+                    const regex = new RegExp(source, 'g');
                     let match;
                     while ((match = regex.exec(text)) !== null) {
                         issues.push({

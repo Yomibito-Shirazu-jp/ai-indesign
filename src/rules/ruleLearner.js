@@ -15,7 +15,8 @@
 
 /**
  * @typedef {Object} LearnedRule
- * @property {string} pattern - 検出パターン
+ * @property {string} pattern - 検出パターン（生の文字列。isRegex=true の場合のみ正規表現）
+ * @property {boolean} isRegex - pattern を正規表現として扱うか（学習ルールは常に false）
  * @property {string} replacement - 置換テキスト
  * @property {string} message - ルール説明
  * @property {number} confidence - 確信度 (出現回数ベース)
@@ -67,11 +68,12 @@ export function learnRules(diffs, options = {}) {
 
         if (confidence < minConfidence) continue;
 
-        // 正規表現パターンとしてエスケープ
-        const escapedPattern = escapeRegex(entry.before);
-
+        // パターンは生の文字列（before）として保存し、isRegex=false を付与する。
+        // 人手で書く JSON ルールと表現を統一し、正規表現への変換は
+        // 利用側（agents.js）で isRegex に応じて行う。
         rules.push({
-            pattern: escapedPattern,
+            pattern: entry.before,
+            isRegex: false,
             replacement: entry.after,
             message: `${entry.before} → ${entry.after} (${entry.count}回検出)`,
             confidence,
@@ -144,10 +146,6 @@ function isKatakanaVariant(before, after) {
 function isPunctuationChange(before, after) {
     const punctuation = /^[。、．，.,:：;；!！?？]+$/;
     return punctuation.test(before) || punctuation.test(after);
-}
-
-function escapeRegex(str) {
-    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
 /**
