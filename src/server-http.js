@@ -236,6 +236,10 @@ app.get('/sse', async (req, res) => {
 
 app.post('/messages', async (req, res) => {
     const sessionId = req.query.sessionId;
+    if (typeof sessionId !== 'string' || sessionId.length === 0) {
+        res.status(400).send('Missing or invalid sessionId');
+        return;
+    }
     const existing = transports[sessionId];
     if (existing instanceof SSEServerTransport) {
         if (req.body?.method === 'tools/call') {
