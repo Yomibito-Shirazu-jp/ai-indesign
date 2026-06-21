@@ -617,7 +617,9 @@ export class DocumentHandlers {
      * Find text across the entire document
      */
     static async findTextInDocument(args) {
-        const { searchText, replaceText, caseSensitive = false, wholeWord = false, useRegex = false } = args;
+        // Standardized on findText; accept legacy searchText for backward compatibility.
+        const { findText, replaceText, caseSensitive = false, wholeWord = false, useRegex = false } = args;
+        const searchText = findText ?? args.searchText;
 
         const code = `
             if (app.documents.length === 0) {
