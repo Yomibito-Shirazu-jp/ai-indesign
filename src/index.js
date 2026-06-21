@@ -27,8 +27,10 @@ const BRIDGE_PORT = parseInt(process.env.INDESIGN_PORT || '3000', 10);
 function isBridgeRunning() {
     return new Promise((resolve) => {
         const socket = net.connect(BRIDGE_PORT, '127.0.0.1');
+        socket.setTimeout(1000);
         socket.on('connect', () => { socket.destroy(); resolve(true); });
-        socket.on('error', () => resolve(false));
+        socket.on('timeout', () => { socket.destroy(); resolve(false); });
+        socket.on('error', () => { socket.destroy(); resolve(false); });
     });
 }
 
