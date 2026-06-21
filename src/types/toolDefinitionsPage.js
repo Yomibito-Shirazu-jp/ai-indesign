@@ -102,8 +102,8 @@ export const pageToolDefinitions = [
             type: 'object',
             properties: {
                 pageIndex: { type: 'number', description: 'Page index' },
-                width: { type: 'string', description: 'Page width (e.g., "600px", "8.5in")' },
-                height: { type: 'string', description: 'Page height (e.g., "800px", "11in")' },
+                width: { type: 'string', description: 'Page width as a unit string with explicit units (e.g., "600px", "8.5in", "210mm"). Note: resize_page takes width/height as a plain number in mm instead.' },
+                height: { type: 'string', description: 'Page height as a unit string with explicit units (e.g., "800px", "11in", "297mm"). Note: resize_page takes width/height as a plain number in mm instead.' },
                 bleedInside: { type: 'string', description: 'Inside bleed (e.g., "3mm")' },
                 bleedTop: { type: 'string', description: 'Top bleed (e.g., "3mm")' },
                 bleedOutside: { type: 'string', description: 'Outside bleed (e.g., "3mm")' },
@@ -123,8 +123,8 @@ export const pageToolDefinitions = [
             type: 'object',
             properties: {
                 pageIndex: { type: 'number', description: 'Page index' },
-                width: { type: 'number', description: 'New width in mm' },
-                height: { type: 'number', description: 'New height in mm' },
+                width: { type: 'number', description: 'New width as a plain number in mm (no units). Note: adjust_page_layout takes width/height as a unit string (e.g. "600px"/"8.5in") instead.' },
+                height: { type: 'number', description: 'New height as a plain number in mm (no units). Note: adjust_page_layout takes width/height as a unit string (e.g. "800px"/"11in") instead.' },
                 resizeMethod: { type: 'string', enum: ['REPLACING_CURRENT_DIMENSIONS_WITH', 'MULTIPLYING_CURRENT_DIMENSIONS_BY', 'ADDING_CURRENT_DIMENSIONS_TO', 'RESHAPING_AREA_TO_RATIO', 'RESHAPING_BORDER_TO_RATIO'], default: 'REPLACING_CURRENT_DIMENSIONS_WITH' },
                 anchorPoint: { type: 'string', enum: ['TOP_LEFT_ANCHOR', 'TOP_CENTER_ANCHOR', 'TOP_RIGHT_ANCHOR', 'LEFT_CENTER_ANCHOR', 'CENTER_ANCHOR', 'RIGHT_CENTER_ANCHOR', 'BOTTOM_LEFT_ANCHOR', 'BOTTOM_CENTER_ANCHOR', 'BOTTOM_RIGHT_ANCHOR'], default: 'CENTER_ANCHOR' },
                 coordinateSpace: { type: 'string', enum: ['PAGE_COORDINATES', 'SPREAD_COORDINATES', 'PASTEBOARD_COORDINATES'], default: 'PAGE_COORDINATES' },
