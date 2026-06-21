@@ -12,6 +12,10 @@ export class UtilityHandlers {
     static async executeInDesignCode(args) {
         const { code } = args;
 
+        if (typeof code !== 'string' || code.trim() === '') {
+            return formatErrorResponse('code must be a non-empty string', "Execute InDesign Code");
+        }
+
         // Pass user code directly through to UXP — it runs async with app in scope
         const result = await ScriptExecutor.executeViaUXP(code);
         return formatResponse(result, "Execute InDesign Code");
