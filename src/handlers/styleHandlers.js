@@ -141,6 +141,20 @@ export class StyleHandlers {
     static async applyCharacterStyle(args) {
         const { styleName, frameIndex = 0, startIndex = 0, endIndex = -1 } = args;
 
+        // Validate range arguments in Node before building the UXP code.
+        // endIndex === -1 is a sentinel meaning "apply to the whole frame".
+        if (!Number.isInteger(frameIndex) || frameIndex < 0) {
+            return formatErrorResponse('frameIndex must be a non-negative integer', "Apply Character Style");
+        }
+        if (endIndex !== -1) {
+            if (!Number.isInteger(startIndex) || startIndex < 0) {
+                return formatErrorResponse('startIndex must be a non-negative integer', "Apply Character Style");
+            }
+            if (!Number.isInteger(endIndex) || endIndex < startIndex) {
+                return formatErrorResponse('endIndex must be an integer >= startIndex (or -1 for the whole frame)', "Apply Character Style");
+            }
+        }
+
         const code = `
             if (app.documents.length === 0) return { success: false, error: 'No document open' };
             const doc = app.activeDocument;
@@ -152,6 +166,10 @@ export class StyleHandlers {
             if (${endIndex} === -1) {
                 textFrame.texts.item(0).appliedCharacterStyle = style;
             } else {
+                const charCount = textFrame.texts.item(0).characters.length;
+                if (${startIndex} >= charCount || ${endIndex} >= charCount) {
+                    return { success: false, error: 'Character range out of bounds (text length: ' + charCount + ')' };
+                }
                 textFrame.texts.item(0).characters.itemByRange(${startIndex}, ${endIndex}).appliedCharacterStyle = style;
             }
             return { success: true, styleName: ${JSON.stringify(styleName)} };
