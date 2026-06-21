@@ -71,6 +71,17 @@ export class InDesignMCPServer {
     }
 
     async handleToolCall(name, args) {
+        // 安全確認レイヤー（後方互換・付加的）
+        // preview: true の場合は変更計画のみ返す。危険操作で confirm 未指定の場合のみ拒否し、
+        // それ以外は従来どおりディスパッチする。
+        const safety = safetyManager.checkSafety({ tool: name, args });
+        if (safety.preview === true && typeof safetyManager.buildPreviewResult === 'function') {
+            return formatResponse(safetyManager.buildPreviewResult(name, args), 'プレビュー');
+        }
+        if (safety.allowed === false) {
+            return formatErrorResponse(safety.message || safety.reason || '危険操作のため confirm が必要です。', '安全確認');
+        }
+
         // Document Management
         switch (name) {
             case 'get_document_info': return await DocumentHandlers.getDocumentInfo();
