@@ -165,9 +165,9 @@ InDesignのプラグインというものは、Adobeが作った**「とても�
 
 AIと各種アプリを繋ぐ共通規格である「MCP（Model Context Protocol）」を使っており、それぞれのアプリ向けに全く同じ裏側の仕組み（サーバー）とプラグイン構造を用意しています。
 
-- InDesignを動かす 👉 `indesign-uxp-server`（本ツール）
-- Illustratorを動かす 👉 `illustrator-uxp-server`（別で用意）
-- Photoshopを動かす 👉 `photoshop-uxp-server`（別で用意）
+- InDesignを動かす 👉 AI in Design（本ツール / MCPサーバーキー: `indesign`）
+- Illustratorを動かす 👉 Illustrator向けサーバー（別で用意 / MCPサーバーキー: `illustrator`）
+- Photoshopを動かす 👉 Photoshop向けサーバー（別で用意 / MCPサーバーキー: `photoshop`）
 
 たとえば、ClaudeなどのAIアプリにこれら3つのサーバーをすべて登録しておけば、**「Photoshopで写真を明るくして、Illustratorでイラストを描いて、それらをInDesignに配置して縦書きで冊子を作って！」** という夢のような連携作業も、AIにお願いするだけで全自動でこなしてくれるようになります。
 
