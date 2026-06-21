@@ -1,6 +1,6 @@
 import { RuleStore } from '../rules/ruleStore.js';
 import { learnRules, extractDiffs } from '../rules/ruleLearner.js';
-import { formatResponse } from '../utils/stringUtils.js';
+import { formatResponse, formatErrorResponse } from '../utils/stringUtils.js';
 
 export class RuleHandlers {
     /**
@@ -8,6 +8,9 @@ export class RuleHandlers {
      */
     static async getCustomerRules(args) {
         const { customerId } = args;
+        if (!customerId) {
+            return formatErrorResponse('customerId は必須です。', 'Get Customer Rules');
+        }
         const rules = await RuleStore.getRules(customerId);
         return formatResponse(rules, `Rules for Customer: ${customerId}`);
     }
@@ -17,6 +20,12 @@ export class RuleHandlers {
      */
     static async saveCustomerRules(args) {
         const { customerId, rules } = args;
+        if (!customerId) {
+            return formatErrorResponse('customerId は必須です。', 'Save Customer Rules');
+        }
+        if (rules === undefined || rules === null) {
+            return formatErrorResponse('rules は必須です。', 'Save Customer Rules');
+        }
         const updated = await RuleStore.saveRules(customerId, rules);
         return formatResponse(updated, `Saved Rules for Customer: ${customerId}`);
     }
@@ -26,6 +35,12 @@ export class RuleHandlers {
      */
     static async addNotationRule(args) {
         const { customerId, rule } = args;
+        if (!customerId) {
+            return formatErrorResponse('customerId は必須です。', 'Add Notation Rule');
+        }
+        if (rule === undefined || rule === null) {
+            return formatErrorResponse('rule は必須です。', 'Add Notation Rule');
+        }
         const updated = await RuleStore.addNotationRule(customerId, rule);
         return formatResponse(updated, `Added Notation Rule for Customer: ${customerId}`);
     }
