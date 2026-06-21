@@ -1584,19 +1584,31 @@ function buildClaudeConfig() {
 }
 
 function copyClaudeConfig() {
+  if (!navigator.clipboard) {
+    alert('このコンテキストではクリップボードを利用できません（HTTPS/localhostが必要です）。手動でコピーしてください。');
+    return;
+  }
   navigator.clipboard.writeText(buildClaudeConfig()).then(() => {
     const btn = event.target;
     btn.textContent = 'Copied!';
     setTimeout(() => btn.textContent = 'Copy JSON', 1500);
+  }).catch(() => {
+    alert('クリップボードへのコピーに失敗しました。手動でコピーしてください。');
   });
 }
 
 function copySetupConfig() {
   const el = document.getElementById('setup-config-json');
+  if (!navigator.clipboard) {
+    alert('このコンテキストではクリップボードを利用できません（HTTPS/localhostが必要です）。手動でコピーしてください。');
+    return;
+  }
   navigator.clipboard.writeText(el.innerText).then(() => {
     const btn = event.target;
     btn.textContent = 'Copied!';
     setTimeout(() => btn.textContent = 'Copy', 1500);
+  }).catch(() => {
+    alert('クリップボードへのコピーに失敗しました。手動でコピーしてください。');
   });
 }
 
