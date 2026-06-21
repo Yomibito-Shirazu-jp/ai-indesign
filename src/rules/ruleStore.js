@@ -6,7 +6,7 @@
  * 将来的に BigQuery 移行を想定した抽象レイヤー。
  */
 
-import { readFile, writeFile, mkdir } from 'fs/promises';
+import { readFile, writeFile, mkdir, rename } from 'fs/promises';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -105,9 +105,11 @@ export class RuleStore {
             await mkdir(RULES_DIR, { recursive: true });
         } catch (e) { /* already exists */ }
 
-        // ファイル書き込み
+        // ファイル書き込み（一時ファイルへ書いてから rename で原子的に置換）
         const filePath = join(RULES_DIR, `${customerId}.json`);
-        await writeFile(filePath, JSON.stringify(updated, null, 2), 'utf-8');
+        const tmpPath = `${filePath}.${process.pid}.${Date.now()}.tmp`;
+        await writeFile(tmpPath, JSON.stringify(updated, null, 2), 'utf-8');
+        await rename(tmpPath, filePath);
 
         // キャッシュ更新
         cache.set(customerId, updated);
