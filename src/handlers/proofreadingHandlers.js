@@ -39,11 +39,20 @@ export class ProofreadingHandlers {
             return { success: true, text: allText, pageCount: pages.length };
         `;
 
+        // 直近の失敗理由を保持し、呼び出し側が原因を区別できるようにする
+        ProofreadingHandlers._lastDocumentTextError = null;
         try {
             const result = await ScriptExecutor.executeViaUXP(code);
             if (result?.success) return result.text;
+            // ブリッジは応答したが success:false（例: ドキュメント未オープン）
+            if (result) {
+                ProofreadingHandlers._lastDocumentTextError =
+                    result.error || 'ドキュメントからテキストを取得できませんでした';
+            }
         } catch (e) {
-            // InDesign未接続 — テキスト直接指定が必要
+            // InDesign未接続 — ブリッジがオフライン
+            ProofreadingHandlers._lastDocumentTextError =
+                'InDesignに接続できません（ブリッジ未接続）';
         }
         return null;
     }
@@ -61,15 +70,21 @@ export class ProofreadingHandlers {
     }
 
     /**
+     * テキスト取得失敗時のエラー応答（原因を区別して付与）
+     */
+    static _textUnavailableError(title) {
+        const reason = ProofreadingHandlers._lastDocumentTextError;
+        const base = 'テキストが取得できません。text引数を指定するか、InDesignドキュメントを開いてください。';
+        return formatErrorResponse(reason ? `${base}（理由: ${reason}）` : base, title);
+    }
+
+    /**
      * 常用漢字チェック
      */
     static async checkJoyoKanji(args) {
         const text = await ProofreadingHandlers._resolveText(args);
         if (text === null) {
-            return formatErrorResponse(
-                'テキストが取得できません。text引数を指定するか、InDesignドキュメントを開いてください。',
-                '常用漢字チェック'
-            );
+            return ProofreadingHandlers._textUnavailableError('常用漢字チェック');
         }
 
         const result = detectNonJoyoKanji(text);
@@ -92,10 +107,7 @@ export class ProofreadingHandlers {
     static async checkHyokiYure(args) {
         const text = await ProofreadingHandlers._resolveText(args);
         if (text === null) {
-            return formatErrorResponse(
-                'テキストが取得できません。text引数を指定するか、InDesignドキュメントを開いてください。',
-                '表記揺れチェック'
-            );
+            return ProofreadingHandlers._textUnavailableError('表記揺れチェック');
         }
 
         let result = detectHyokiYure(text);
@@ -128,10 +140,7 @@ export class ProofreadingHandlers {
     static async checkSensitiveTerms(args) {
         const text = await ProofreadingHandlers._resolveText(args);
         if (text === null) {
-            return formatErrorResponse(
-                'テキストが取得できません。text引数を指定するか、InDesignドキュメントを開いてください。',
-                '不適切表現チェック'
-            );
+            return ProofreadingHandlers._textUnavailableError('不適切表現チェック');
         }
 
         let result = detectSensitiveTerms(text, { minSeverity: args?.minSeverity || 'low' });
@@ -164,10 +173,7 @@ export class ProofreadingHandlers {
     static async proofreadAll(args) {
         const text = await ProofreadingHandlers._resolveText(args);
         if (text === null) {
-            return formatErrorResponse(
-                'テキストが取得できません。text引数を指定するか、InDesignドキュメントを開いてください。',
-                '校閲総合チェック'
-            );
+            return ProofreadingHandlers._textUnavailableError('校閲総合チェック');
         }
 
         const joyoResult = detectNonJoyoKanji(text);
