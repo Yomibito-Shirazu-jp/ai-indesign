@@ -12,7 +12,7 @@ export const pageToolDefinitions = [
             type: 'object',
             properties: {
                 position: { type: 'string', enum: ['AT_END', 'AT_BEGINNING', 'BEFORE', 'AFTER'], default: 'AT_END' },
-                referencePage: { type: 'number', description: 'Reference page index (for BEFORE/AFTER positioning)' },
+                referencePage: { type: 'integer', description: 'Reference page index (for BEFORE/AFTER positioning)' },
             },
         },
     },
@@ -22,7 +22,7 @@ export const pageToolDefinitions = [
         inputSchema: {
             type: 'object',
             properties: {
-                pageIndex: { type: 'number', description: 'Index of the page to delete' },
+                pageIndex: { type: 'integer', description: 'Index of the page to delete' },
             },
             required: ['pageIndex'],
         },
@@ -33,9 +33,9 @@ export const pageToolDefinitions = [
         inputSchema: {
             type: 'object',
             properties: {
-                pageIndex: { type: 'number', description: 'Page index to duplicate' },
+                pageIndex: { type: 'integer', description: 'Page index to duplicate' },
                 position: { type: 'string', enum: ['AT_END', 'AT_BEGINNING', 'BEFORE', 'AFTER'], default: 'AT_END' },
-                referencePageIndex: { type: 'number', description: 'Reference page index (for BEFORE/AFTER positioning)' },
+                referencePageIndex: { type: 'integer', description: 'Reference page index (for BEFORE/AFTER positioning)' },
             },
             required: ['pageIndex'],
         },
@@ -46,7 +46,7 @@ export const pageToolDefinitions = [
         inputSchema: {
             type: 'object',
             properties: {
-                pageIndex: { type: 'number', description: 'Page index to navigate to' },
+                pageIndex: { type: 'integer', description: 'Page index to navigate to' },
             },
             required: ['pageIndex'],
         },
@@ -57,7 +57,7 @@ export const pageToolDefinitions = [
         inputSchema: {
             type: 'object',
             properties: {
-                pageIndex: { type: 'number', description: 'Page index (0-based)' },
+                pageIndex: { type: 'integer', description: 'Page index (0-based)' },
             },
             required: ['pageIndex'],
         },
@@ -68,9 +68,9 @@ export const pageToolDefinitions = [
         inputSchema: {
             type: 'object',
             properties: {
-                pageIndex: { type: 'number', description: 'Page index to move' },
+                pageIndex: { type: 'integer', description: 'Page index to move' },
                 position: { type: 'string', enum: ['AT_END', 'AT_BEGINNING', 'BEFORE', 'AFTER'], default: 'AT_END' },
-                referencePageIndex: { type: 'number', description: 'Reference page index (for BEFORE/AFTER positioning)' },
+                referencePageIndex: { type: 'integer', description: 'Reference page index (for BEFORE/AFTER positioning)' },
                 binding: { type: 'string', enum: ['DEFAULT_VALUE', 'LEFT_ALIGN', 'RIGHT_ALIGN'], default: 'DEFAULT_VALUE' },
             },
             required: ['pageIndex'],
@@ -84,7 +84,7 @@ export const pageToolDefinitions = [
         inputSchema: {
             type: 'object',
             properties: {
-                pageIndex: { type: 'number', description: 'Page index' },
+                pageIndex: { type: 'integer', description: 'Page index' },
                 label: { type: 'string', description: 'Page label' },
                 pageColor: { type: 'string', description: 'Page color (RGB values as comma-separated string or UI color name)' },
                 optionalPage: { type: 'boolean', description: 'Optional page for HTML5 pagination' },
@@ -101,7 +101,7 @@ export const pageToolDefinitions = [
         inputSchema: {
             type: 'object',
             properties: {
-                pageIndex: { type: 'number', description: 'Page index' },
+                pageIndex: { type: 'integer', description: 'Page index' },
                 width: { type: 'string', description: 'Page width (e.g., "600px", "8.5in")' },
                 height: { type: 'string', description: 'Page height (e.g., "800px", "11in")' },
                 bleedInside: { type: 'string', description: 'Inside bleed (e.g., "3mm")' },
@@ -122,7 +122,7 @@ export const pageToolDefinitions = [
         inputSchema: {
             type: 'object',
             properties: {
-                pageIndex: { type: 'number', description: 'Page index' },
+                pageIndex: { type: 'integer', description: 'Page index' },
                 width: { type: 'number', description: 'New width in mm' },
                 height: { type: 'number', description: 'New height in mm' },
                 resizeMethod: { type: 'string', enum: ['REPLACING_CURRENT_DIMENSIONS_WITH', 'MULTIPLYING_CURRENT_DIMENSIONS_BY', 'ADDING_CURRENT_DIMENSIONS_TO', 'RESHAPING_AREA_TO_RATIO', 'RESHAPING_BORDER_TO_RATIO'], default: 'REPLACING_CURRENT_DIMENSIONS_WITH' },
@@ -138,7 +138,7 @@ export const pageToolDefinitions = [
         inputSchema: {
             type: 'object',
             properties: {
-                pageIndex: { type: 'number', description: 'Page index' },
+                pageIndex: { type: 'integer', description: 'Page index' },
                 filePath: { type: 'string', description: 'Path to file to place' },
                 x: { type: 'number', description: 'X position in mm', default: 10 },
                 y: { type: 'number', description: 'Y position in mm', default: 10 },
@@ -155,7 +155,7 @@ export const pageToolDefinitions = [
         inputSchema: {
             type: 'object',
             properties: {
-                pageIndex: { type: 'number', description: 'Page index' },
+                pageIndex: { type: 'integer', description: 'Page index' },
                 xmlElementName: { type: 'string', description: 'XML element name to place' },
                 x: { type: 'number', description: 'X position in mm', default: 10 },
                 y: { type: 'number', description: 'Y position in mm', default: 10 },
@@ -170,7 +170,7 @@ export const pageToolDefinitions = [
         inputSchema: {
             type: 'object',
             properties: {
-                pageIndex: { type: 'number', description: 'Page index' },
+                pageIndex: { type: 'integer', description: 'Page index' },
             },
             required: ['pageIndex'],
         },
@@ -181,7 +181,7 @@ export const pageToolDefinitions = [
         inputSchema: {
             type: 'object',
             properties: {
-                pageIndex: { type: 'number', description: 'Page index' },
+                pageIndex: { type: 'integer', description: 'Page index' },
             },
             required: ['pageIndex'],
         },
@@ -192,7 +192,7 @@ export const pageToolDefinitions = [
         inputSchema: {
             type: 'object',
             properties: {
-                pageIndex: { type: 'number', description: 'Page index' },
+                pageIndex: { type: 'integer', description: 'Page index' },
             },
             required: ['pageIndex'],
         },
@@ -203,7 +203,7 @@ export const pageToolDefinitions = [
         inputSchema: {
             type: 'object',
             properties: {
-                pageIndex: { type: 'number', description: 'Page index' },
+                pageIndex: { type: 'integer', description: 'Page index' },
                 x1: { type: 'number', description: 'Top-left X coordinate in mm' },
                 y1: { type: 'number', description: 'Top-left Y coordinate in mm' },
                 x2: { type: 'number', description: 'Bottom-right X coordinate in mm' },
@@ -219,7 +219,7 @@ export const pageToolDefinitions = [
         inputSchema: {
             type: 'object',
             properties: {
-                pageIndex: { type: 'number', description: 'Page index' },
+                pageIndex: { type: 'integer', description: 'Page index' },
                 numberOfRows: { type: 'number', description: 'Number of rows', default: 0 },
                 numberOfColumns: { type: 'number', description: 'Number of columns', default: 0 },
                 rowGutter: { type: 'number', description: 'Row gutter in mm', default: 5 },
@@ -238,7 +238,7 @@ export const pageToolDefinitions = [
         inputSchema: {
             type: 'object',
             properties: {
-                pageIndex: { type: 'number', description: 'Page index' },
+                pageIndex: { type: 'integer', description: 'Page index' },
                 selectionMode: { type: 'string', enum: ['REPLACE_WITH', 'ADD_TO', 'REMOVE_FROM'], default: 'REPLACE_WITH' },
             },
             required: ['pageIndex'],
@@ -250,7 +250,7 @@ export const pageToolDefinitions = [
         inputSchema: {
             type: 'object',
             properties: {
-                pageIndex: { type: 'number', description: 'Page index' },
+                pageIndex: { type: 'integer', description: 'Page index' },
             },
             required: ['pageIndex'],
         },
@@ -261,7 +261,7 @@ export const pageToolDefinitions = [
         inputSchema: {
             type: 'object',
             properties: {
-                pageIndex: { type: 'number', description: 'Page index', default: 0 },
+                pageIndex: { type: 'integer', description: 'Page index', default: 0 },
                 backgroundColor: { type: 'string', description: 'Background color name (must be a color swatch in the document)', default: 'White' },
                 opacity: { type: 'number', description: 'Background opacity percentage (0-100)', default: 100 },
             },
