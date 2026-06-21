@@ -19,8 +19,6 @@
     "requiredPermissions": {
         "network": {
             "domains": [
-                "https://ai-indesign-mcp-pdw36wmy5q-an.a.run.app",
-                "https://mcp.b-p.co.jp",
                 "ws://127.0.0.1:*",
                 "ws://localhost:*",
                 "http://127.0.0.1:*",
