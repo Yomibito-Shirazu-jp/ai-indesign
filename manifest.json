@@ -2,7 +2,7 @@
   "dxt_version": "0.1",
   "name": "ai-indesign",
   "display_name": "Ai-inDesign — Adobe DTP自動化",
-  "version": "1.0.0",
+  "version": "1.2.1",
   "description": "InDesign・Illustrator・Photoshopを自然な日本語で操作。テキスト流し込み、校閲、組版、PDF出力など170以上のツールを提供。",
   "icon": "icon.png",
   "author": {
