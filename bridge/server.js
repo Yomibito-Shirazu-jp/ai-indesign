@@ -84,6 +84,13 @@ app.post('/execute', async (req, res) => {
 // ─── AIチャット処理 ───
 async function handleChatMessage(ws, msg) {
     const userText = msg.message;
+    if (typeof userText !== 'string' || userText.trim() === '') {
+        ws.send(JSON.stringify({
+            type: 'ai_reply',
+            message: '⚠️ メッセージが空です。内容を入力してください。'
+        }));
+        return;
+    }
     console.log(`[AI Chat] User: ${userText.slice(0, 100)}`);
 
     if (!geminiApiKey) {
