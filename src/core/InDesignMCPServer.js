@@ -65,7 +65,10 @@ export class InDesignMCPServer {
                 const result = await this.handleToolCall(name, args);
                 return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
             } catch (error) {
-                return { content: [{ type: 'text', text: `Error: ${error.message}` }] };
+                return {
+                    content: [{ type: 'text', text: `Error: ${error.message}` }],
+                    isError: true,
+                };
             }
         });
     }
