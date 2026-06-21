@@ -81,7 +81,7 @@ export const contentToolDefinitions = [
             type: 'object',
             properties: {
                 tableIndex: { type: 'number', description: 'Table index', default: 0 },
-                data: { type: 'array', description: 'Array of arrays containing table data' },
+                data: { type: 'array', description: 'Array of arrays containing table data', items: { type: 'array', items: { type: 'string' } } },
                 startRow: { type: 'number', description: 'Starting row index', default: 0 },
                 startColumn: { type: 'number', description: 'Starting column index', default: 0 },
             },
