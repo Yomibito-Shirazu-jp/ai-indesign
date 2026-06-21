@@ -924,7 +924,7 @@
         <div class="stat-card">
           <div class="stat-label">Bridge Status</div>
           <div class="stat-value stat-success" id="stat-bridge">—</div>
-          <div class="stat-sub">HTTP :3000 / WS :3001</div>
+          <div class="stat-sub">HTTP + WS :49300</div>
         </div>
         <div class="stat-card">
           <div class="stat-label">InDesign</div>
@@ -952,7 +952,7 @@
                   <div class="dot" id="sys-dot-bridge"></div>
                   <div>
                     <div style="font-weight:600;font-size:.87em;">Bridge Server</div>
-                    <div style="font-size:.75em;color:var(--text-dim)">http://localhost:3000</div>
+                    <div style="font-size:.75em;color:var(--text-dim)">http://localhost:49300</div>
                   </div>
                 </div>
                 <span class="badge badge-success" id="sys-badge-bridge">Online</span>
@@ -962,7 +962,7 @@
                   <div class="dot" id="sys-dot-ws"></div>
                   <div>
                     <div style="font-weight:600;font-size:.87em;">WebSocket</div>
-                    <div style="font-size:.75em;color:var(--text-dim)">ws://localhost:3001</div>
+                    <div style="font-size:.75em;color:var(--text-dim)">ws://localhost:49300</div>
                   </div>
                 </div>
                 <span class="badge badge-neutral" id="sys-badge-ws">—</span>
@@ -1078,12 +1078,12 @@
 
           <div class="field">
             <label class="field-label">HTTP Port</label>
-            <input type="text" value="3000" readonly>
+            <input type="text" value="49300" readonly>
             <span class="field-hint">Bridge server HTTP endpoint</span>
           </div>
           <div class="field">
             <label class="field-label">WebSocket Port</label>
-            <input type="text" value="3001" readonly>
+            <input type="text" value="49300" readonly>
             <span class="field-hint">UXP plugin WebSocket connection</span>
           </div>
           <div class="field">
@@ -1638,7 +1638,7 @@ function esc(str) {
 
   // Initial logs
   addLogLine('info', 'Dimension Hub loaded');
-  addLogLine('info', 'Bridge server: http://localhost:3000');
+  addLogLine('info', 'Bridge server: http://localhost:49300');
 
   // Initial fetch
   refreshAll().then(() => {
