@@ -192,7 +192,6 @@ export const HYOKI_YURE_PATTERNS = [
     // 漢字の異体字・旧字
     { variants: ['斉', '齊', '斎'], recommended: '斉', category: '字体' },
     { variants: ['桧', '檜'], recommended: '桧', category: '字体' },
-    { variants: ['鯖', '鯵'], recommended: null, category: '字体' },
 ];
 
 // ─────────────────────────────────────────
