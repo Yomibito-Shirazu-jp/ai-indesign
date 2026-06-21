@@ -43,10 +43,14 @@ function recordToolCall(toolName) {
     metrics.hourlyBuckets[hour]++;
 }
 
-// Reset hourly buckets at midnight
+// Reset hourly buckets once per day when the calendar day changes
+let lastResetDay = new Date().getDate();
 setInterval(() => {
-    const hour = new Date().getHours();
-    if (hour === 0) metrics.hourlyBuckets.fill(0);
+    const day = new Date().getDate();
+    if (day !== lastResetDay) {
+        metrics.hourlyBuckets.fill(0);
+        lastResetDay = day;
+    }
 }, 60_000);
 
 // ── Health check ─────────────────────────────────────────────
