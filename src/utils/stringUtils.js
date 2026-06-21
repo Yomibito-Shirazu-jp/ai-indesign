@@ -82,11 +82,11 @@ export function markdownToPlainText(markdown) {
     // Remove inline code
     text = text.replace(/`([^`]+)`/g, '$1');
 
-    // Remove images ![alt](url)
-    text = text.replace(/!\[.*?\]\(.*?\)/g, '');
+    // Remove images ![alt](url) — drop alt text entirely
+    text = text.replace(/!\[[^\]]*\]\([^)]*\)/g, '');
 
-    // Remove links [text](url)
-    text = text.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+    // Remove links [text](url) — keep the link text, allow empty/parenless URLs
+    text = text.replace(/\[([^\]]*)\]\(([^)]*)\)/g, '$1');
 
     // Remove emphasis (bold, italics, strikethrough)
     text = text.replace(/(\*\*|__)(.*?)\1/g, '$2');
@@ -99,8 +99,8 @@ export function markdownToPlainText(markdown) {
     // Remove blockquotes
     text = text.replace(/^\s*>+\s?/gm, '');
 
-    // Remove horizontal rules
-    text = text.replace(/^(-\s*?){3,}|^(_\s*?){3,}|^(\*\s*?){3,}$/gm, '');
+    // Remove horizontal rules (---, ___, *** with optional spaces), consistently anchored per line
+    text = text.replace(/^[ \t]*(?:(?:-[ \t]*){3,}|(?:_[ \t]*){3,}|(?:\*[ \t]*){3,})$/gm, '');
 
     // Remove unordered list markers
     text = text.replace(/^\s*[-*+]\s+/gm, '');
