@@ -17,8 +17,10 @@ export function parseManuscript(text) {
         const line = lines[i];
         const trimmed = line.trim();
         if (trimmed.length === 0) {
-            // 空行は段落区切り
-            if (currentSection && currentSection.type === 'body') {
+            // 空行は段落・ブロックの区切り。
+            // body に限らず list / heading 等あらゆるセクションを閉じる
+            // （空行を跨いで同種ブロックが結合されるのを防ぐ）。
+            if (currentSection) {
                 sections.push(currentSection);
                 currentSection = null;
             }
