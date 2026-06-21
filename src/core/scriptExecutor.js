@@ -10,11 +10,20 @@ export class ScriptExecutor {
      * @returns {any} The serialized result
      */
     static async executeViaUXP(code) {
-        const response = await fetch(`${BRIDGE_URL}/execute`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ code }),
-        });
+        let response;
+        try {
+            response = await fetch(`${BRIDGE_URL}/execute`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ code }),
+                signal: AbortSignal.timeout(60000),
+            });
+        } catch (err) {
+            if (err.name === 'TimeoutError' || err.name === 'AbortError') {
+                throw new Error('Bridge request timed out after 60s');
+            }
+            throw err;
+        }
 
         const data = await response.json();
 
