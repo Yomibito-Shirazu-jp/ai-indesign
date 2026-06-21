@@ -7,7 +7,6 @@
   "scripts": {
     "start": "node src/index.js",
     "start:cloud": "node src/server-http.js",
-    "demo": "node test-broadcast.js",
     "app": "cross-env ELECTRON_RUN_AS_NODE= electron .",
     "dev:backend": "node --inspect src/index.js",
     "dev:ui": "cd mcpui && npm run dev",
