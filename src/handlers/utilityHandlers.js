@@ -14,7 +14,9 @@ export class UtilityHandlers {
 
         // Pass user code directly through to UXP — it runs async with app in scope
         const result = await ScriptExecutor.executeViaUXP(code);
-        return formatResponse(result, "Execute InDesign Code");
+        return result?.success === false
+            ? formatErrorResponse(result?.error || 'Failed to execute InDesign code', "Execute InDesign Code")
+            : formatResponse(result, "Execute InDesign Code");
     }
 
     /**
