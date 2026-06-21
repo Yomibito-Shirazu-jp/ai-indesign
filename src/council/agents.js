@@ -61,13 +61,25 @@ export function createNotationAgent(customerRules = {}) {
 
             // 2. 常用漢字チェック
             const joyoResult = detectNonJoyoKanji(text);
-            for (const kanji of joyoResult.nonJoyoKanji.slice(0, 50)) {
+            const NON_JOYO_REPORT_LIMIT = 50;
+            for (const kanji of joyoResult.nonJoyoKanji.slice(0, NON_JOYO_REPORT_LIMIT)) {
                 issues.push({
                     type: 'non_joyo',
                     severity: 'info',
                     message: `常用漢字外: ${kanji.char}`,
                     position: kanji.position,
                     context: kanji.context,
+                });
+            }
+            // 報告件数が上限を超えて切り詰められた場合は省略件数を明示する
+            if (joyoResult.nonJoyoKanji.length > NON_JOYO_REPORT_LIMIT) {
+                const omittedCount = joyoResult.nonJoyoKanji.length - NON_JOYO_REPORT_LIMIT;
+                issues.push({
+                    type: 'non_joyo_truncated',
+                    severity: 'info',
+                    message: `常用漢字外の報告を${NON_JOYO_REPORT_LIMIT}件に制限しました（残り${omittedCount}件は省略）`,
+                    truncated: true,
+                    omittedCount,
                 });
             }
 
