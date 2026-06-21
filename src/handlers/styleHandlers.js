@@ -76,6 +76,13 @@ export class StyleHandlers {
             underline = false
         } = args;
 
+        // Map bold/italic combinations to the appropriate font style name (computed in Node).
+        // Previously `italic` was destructured but never applied.
+        let fontStyleName = 'Regular';
+        if (bold && italic) fontStyleName = 'Bold Italic';
+        else if (bold) fontStyleName = 'Bold';
+        else if (italic) fontStyleName = 'Italic';
+
         const code = `
             if (app.documents.length === 0) return { success: false, error: 'No document open' };
             const doc = app.activeDocument;
@@ -92,7 +99,12 @@ export class StyleHandlers {
                     if (color.isValid) style.fillColor = color;
                 } catch (e) {}
             }
-            style.fontStyle = ${JSON.stringify(bold ? 'Bold' : 'Regular')};
+            try {
+                style.fontStyle = ${JSON.stringify(fontStyleName)};
+            } catch (e) {
+                // Requested combination unsupported by the font; fall back to Regular.
+                try { style.fontStyle = 'Regular'; } catch (e2) {}
+            }
             style.underline = ${underline};
             style.underlineOffset = ${underline ? 1 : 0};
             style.underlineWeight = ${underline ? 1 : 0};
