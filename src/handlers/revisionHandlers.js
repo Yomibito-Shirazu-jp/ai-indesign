@@ -7,6 +7,14 @@ import { ScriptExecutor } from '../core/scriptExecutor.js';
 import { formatResponse, formatErrorResponse } from '../utils/stringUtils.js';
 import { operationLogger } from '../core/operationLogger.js';
 
+/**
+ * GREPの特殊文字をエスケープし、文字列をリテラルとして扱えるようにする。
+ * 赤字のfind文字列はリテラル一致を意図しているため必須。
+ */
+function escapeGrep(str) {
+    return String(str).replace(/[\\^$.*+?()\[\]{}|]/g, '\\$&');
+}
+
 export class RevisionHandlers {
 
     /**
@@ -43,7 +51,7 @@ export class RevisionHandlers {
                 try {
                     app.findGrepPreferences = null;
                     app.changeGrepPreferences = null;
-                    app.findGrepPreferences.findWhat = ${JSON.stringify(change.find)};
+                    app.findGrepPreferences.findWhat = ${JSON.stringify(escapeGrep(change.find))};
                     app.changeGrepPreferences.changeTo = ${JSON.stringify(change.replace)};
                     const changed = doc.changeGrep();
                     app.findGrepPreferences = null;
