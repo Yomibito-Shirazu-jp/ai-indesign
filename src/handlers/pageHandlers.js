@@ -224,7 +224,14 @@ export class PageHandlers {
             const doc = app.activeDocument;
             if (${pageIndex} >= doc.pages.length) return { success: false, error: 'Page index out of range' };
             const page = doc.pages.item(${pageIndex});
-            ${width !== undefined ? `page.resize(CoordinateSpaces.pasteboardCoordinates, AnchorPoint.centerAnchor, ResizeMethods.replacingCurrentDimensionsWith, ${width}, ${height !== undefined ? height : width});` : ''}
+            ${(width !== undefined || height !== undefined) ? `{
+                const pb = page.bounds;
+                const curWidth = pb[3] - pb[1];
+                const curHeight = pb[2] - pb[0];
+                const newWidth = ${width !== undefined ? width : 'curWidth'};
+                const newHeight = ${height !== undefined ? height : 'curHeight'};
+                page.resize(CoordinateSpaces.pasteboardCoordinates, AnchorPoint.centerAnchor, ResizeMethods.replacingCurrentDimensionsWith, newWidth, newHeight);
+            }` : ''}
             ${leftMargin !== undefined ? `page.marginPreferences.left = ${leftMargin};` : ''}
             ${topMargin !== undefined ? `page.marginPreferences.top = ${topMargin};` : ''}
             ${rightMargin !== undefined ? `page.marginPreferences.right = ${rightMargin};` : ''}
