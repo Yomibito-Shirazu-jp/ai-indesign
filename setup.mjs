@@ -247,6 +247,7 @@ try {
     ]);
 
     const pluginPath = path.join(desktopPath, 'Ai-inDesign-Tools.plugin');
+    console.log(`\n📝 プロジェクト外のデスクトップにファイルを書き出します: ${pluginPath}`);
     fs.writeFileSync(pluginPath, zipBuffer);
     console.log(`\n🎁 Claude for Work (Cowork) 向けカスタムコネクタを生成しました！`);
     console.log(`📁 ファイル: ${pluginPath}`);
