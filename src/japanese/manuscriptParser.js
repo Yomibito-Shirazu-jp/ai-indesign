@@ -63,7 +63,7 @@ export function parseManuscript(text) {
  */
 function classifyLine(line, index, allLines) {
     // 見出し判定（短い行で行末に句読点がない）
-    if (line.length <= 30 && !line.match(/[。、.，]$/) && !line.match(/^[・●■□▪▶►▸→\-\*\d]/)) {
+    if (line.length <= 30 && !line.match(/[。、.，]$/) && !line.match(/^[・●■□▪▶►▸→\-\*]/) && !line.match(/^\d+[.．）)]/)) {
         if (index === 0 || (index > 0 && allLines[index - 1].trim() === '')) {
             if (line.length <= 15) {
                 return { type: 'heading', confidence: 0.8, suggestedStyle: '見出し' };
