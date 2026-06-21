@@ -48,7 +48,16 @@ async function ensureBridge() {
     if (!running) {
         console.error('[MCP] Bridge not running — starting it now...');
         startBridge();
-        await new Promise(r => setTimeout(r, 500));
+        // 起動完了をポーリングで待つ（最大約10秒）
+        const deadline = Date.now() + 10000;
+        while (Date.now() < deadline) {
+            await new Promise(r => setTimeout(r, 200));
+            if (await isBridgeRunning()) {
+                console.error('[MCP] Bridge is now running on port ' + BRIDGE_PORT);
+                return;
+            }
+        }
+        console.error('[MCP] Bridge did not become ready within timeout — proceeding anyway');
     } else {
         console.error('[MCP] Bridge already running on port ' + BRIDGE_PORT);
     }
