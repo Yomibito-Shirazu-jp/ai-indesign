@@ -354,14 +354,27 @@ export class GraphicsHandlers {
             }
             const doc = app.activeDocument;
 
+            // The InDesign None swatch (NoneColor) is a truthy object, so a simple
+            // truthiness check never yields the None label. Resolve the swatch name
+            // and treat invalid or empty-name swatches as None explicitly.
+            function colorName(color) {
+                try {
+                    if (!color || !color.isValid) return 'None';
+                    const n = color.name;
+                    return (n === undefined || n === null || n === '') ? 'None' : n;
+                } catch (e) {
+                    return 'None';
+                }
+            }
+
             const styles = [];
             for (let i = 0; i < doc.objectStyles.length; i++) {
                 const style = doc.objectStyles.item(i);
                 if (style.isValid) {
                     styles.push({
                         name: style.name,
-                        fillColor: style.fillColor ? style.fillColor.name : 'None',
-                        strokeColor: style.strokeColor ? style.strokeColor.name : 'None',
+                        fillColor: colorName(style.fillColor),
+                        strokeColor: colorName(style.strokeColor),
                         strokeWeight: style.strokeWeight,
                         cornerRadius: style.cornerRadius
                     });
