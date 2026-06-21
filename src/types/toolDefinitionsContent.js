@@ -71,7 +71,7 @@ export const contentToolDefinitions = [
                 headerRows: { type: 'number', description: 'Number of header rows', default: 1 },
                 headerColumns: { type: 'number', description: 'Number of header columns', default: 0 },
             },
-            required: ['rows', 'columns'],
+            required: [],
         },
     },
     {
