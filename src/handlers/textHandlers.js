@@ -334,8 +334,8 @@ export class TextHandlers {
                 app.changeGrepPreferences = null;
 
                 app.findGrepPreferences.findWhat = ${JSON.stringify(findText)};
-                app.findGrepPreferences.caseSensitive = ${caseSensitive};
-                app.findGrepPreferences.wholeWord = ${wholeWord};
+                app.findGrepPreferences.caseSensitive = ${caseSensitive ? 'true' : 'false'};
+                app.findGrepPreferences.wholeWord = ${wholeWord ? 'true' : 'false'};
 
                 app.changeGrepPreferences.changeTo = ${JSON.stringify(replaceText)};
 
