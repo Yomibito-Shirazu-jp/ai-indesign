@@ -18,6 +18,7 @@
   "requiredPermissions": {
     "network": {
       "domains": ["ws://127.0.0.1:49301", "ws://localhost:49301", "ws://127.0.0.1:*", "ws://localhost:*"]
-    }
+    },
+    "allowCodeGenerationFromStrings": true
   }
 }
