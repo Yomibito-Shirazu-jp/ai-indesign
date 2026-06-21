@@ -155,8 +155,9 @@ export class CouncilEngine {
 
         // 多数決
         const yesCount = approvals.filter(a => a).length;
-        if (yesCount > results.length / 2) return 'majority';
-        if (yesCount < results.length / 2) return 'majority';
+        const half = results.length / 2;
+        if (yesCount > half) return 'majority';
+        if (yesCount < half) return 'minority';
 
         return 'split';
     }
