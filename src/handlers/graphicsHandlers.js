@@ -2,7 +2,7 @@
  * Graphics management handlers
  */
 import { ScriptExecutor } from '../core/scriptExecutor.js';
-import { formatResponse, formatErrorResponse, escapeJsxString } from '../utils/stringUtils.js';
+import { formatResponse, formatErrorResponse } from '../utils/stringUtils.js';
 import { sessionManager } from '../core/sessionManager.js';
 
 export class GraphicsHandlers {
