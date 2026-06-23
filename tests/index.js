@@ -201,6 +201,20 @@ const TEST_SUITES = [
         ],
         required: false,
         category: 'content'
+    },
+    // --- InDesign非依存のスタンドアロンスイート（InDesign接続不要） ---
+    {
+        name: 'AutoDTP Engines (InDesign-free)',
+        description: 'Tests council engine, rule store, proofreading, normalizer, and instruction parser (no InDesign required)',
+        tests: [
+            'test-council-engine.js',
+            'test-rule-store.js',
+            'test-proofreading.js',
+            'test-normalizer.js',
+            'test-instruction-parser.js'
+        ],
+        required: false,
+        category: 'unit'
     }
 ];
 
