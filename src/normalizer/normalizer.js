@@ -170,7 +170,12 @@ export async function normalize(text, options = {}) {
     if (!options.skipCouncil) {
         const engine = new CouncilEngine({ timeout: 10000 });
         const agents = createInputCouncilAgents(customerRules);
-        councilVerdict = await engine.deliberate(agents, normalized);
+        try {
+            councilVerdict = await engine.deliberate(agents, normalized);
+        } catch (error) {
+            // 合議の失敗で正規化済みテキストを破棄しない。エラーを記録して継続する。
+            councilVerdict = { error: error?.message || String(error) };
+        }
     }
 
     // ── 4. dryRunの場合は元テキストを返す ──
