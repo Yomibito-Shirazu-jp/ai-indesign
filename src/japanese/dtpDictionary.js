@@ -234,7 +234,7 @@ export function resolveFontCategory(categoryName) {
 export function resolveAmbiguousValue(text, context = 'margin') {
     for (const [key, values] of Object.entries(AMBIGUOUS_VALUES)) {
         if (text.includes(key)) {
-            return values[context] || values.margin || null;
+            return context in values ? values[context] : (values.margin ?? null);
         }
     }
 
