@@ -154,7 +154,8 @@ function createMCPServer() {
 
 const handleMcp = async (req, res) => {
     try {
-        const sessionId = req.headers['mcp-session-id'];
+        const rawSessionId = req.headers['mcp-session-id'];
+        const sessionId = Array.isArray(rawSessionId) ? rawSessionId[0] : rawSessionId;
         let transport;
 
         if (sessionId && transports[sessionId]) {
