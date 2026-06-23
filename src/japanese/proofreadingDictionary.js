@@ -328,6 +328,14 @@ export function detectHyokiYure(text) {
  * @param {string} [options.minSeverity='low'] - 最低検出レベル ('low'|'medium'|'high')
  * @returns {{ issues: Array<{term: string, suggestion: string, category: string, severity: string, positions: number[]}>, count: number }}
  */
+// 用語が他の語の一部として現れた場合は不適切表現ではない（過剰検出を防ぐ）。
+// term → その用語を内部に含む良性複合語のリスト
+const SENSITIVE_TERM_ALLOWLIST = {
+    '主人': ['主人公'],
+    '嫁': ['花嫁', '許嫁', '兄嫁', '弟嫁', '嫁入り'],
+    '老人': ['老人ホーム', '老人会', '老人福祉'],
+};
+
 export function detectSensitiveTerms(text, options = {}) {
     const { minSeverity = 'low' } = options;
     const severityOrder = { low: 0, medium: 1, high: 2 };
@@ -337,10 +345,19 @@ export function detectSensitiveTerms(text, options = {}) {
     for (const entry of SENSITIVE_TERMS) {
         if (severityOrder[entry.severity] < minLevel) continue;
 
+        const allowCompounds = SENSITIVE_TERM_ALLOWLIST[entry.term] || [];
+
         const positions = [];
         let idx = text.indexOf(entry.term);
         while (idx !== -1) {
-            positions.push(idx);
+            // この出現位置が良性複合語の一部であれば検出しない
+            const isBenign = allowCompounds.some((compound) => {
+                const offset = compound.indexOf(entry.term);
+                if (offset === -1) return false;
+                const start = idx - offset;
+                return start >= 0 && text.substr(start, compound.length) === compound;
+            });
+            if (!isBenign) positions.push(idx);
             idx = text.indexOf(entry.term, idx + 1);
         }
 
