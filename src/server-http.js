@@ -123,7 +123,7 @@ app.get('/api/dashboard', (_req, res) => {
         activeSessions,
         totalCalls: metrics.totalCalls,
         toolCount,
-        avgLatency: Math.floor(Math.random() * 40 + 80), // TODO: real latency tracking
+        avgLatency: 0, // 実レイテンシ計測は未実装のため 0 を返す（捏造値を避ける）
         sessions,
         topTools,
         hourlyUsage: metrics.hourlyBuckets,
