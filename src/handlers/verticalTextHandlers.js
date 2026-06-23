@@ -217,10 +217,10 @@ export class VerticalTextHandlers {
                     try { isVertical = (story.storyPreferences.storyOrientation === 1986359924); } catch(e) {}
                     if (!isVertical) continue;
 
-                    // GREP検索で数字を縦中横に
+                    // GREP検索で数字（applyToAlpha時は英字も）を縦中横に
                     app.findGrepPreferences = null;
                     app.changeGrepPreferences = null;
-                    app.findGrepPreferences.findWhat = '[0-9]{1,${maxDigits}}';
+                    app.findGrepPreferences.findWhat = '[0-9${applyToAlpha ? 'A-Za-z' : ''}]{1,${maxDigits}}';
                     app.changeGrepPreferences.tatechuyoko = true;
                     const changed = frame.changeGrep();
                     applied += changed ? changed.length : 0;
