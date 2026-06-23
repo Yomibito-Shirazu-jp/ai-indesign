@@ -177,27 +177,40 @@ export class PreflightHandlers {
             const doc = app.activeDocument;
             const issues = [];
 
+            // ターゲット比較は一度だけ評価する
+            const target = ${JSON.stringify(target)};
+            const isCMYKTarget = (target === 'CMYK');
+
+            // ColorSpace 列挙値
+            const CS_CMYK = 1129142603; // ColorSpace.CMYK
+            const CS_NONE = 1852796517; // ColorSpace.NoAlternateColor / None
+            const CM_SPOT = 1936289139; // ColorModel.SPOT
+
             // ドキュメントの意図をチェック
             try {
                 const intent = doc.documentPreferences.intent;
                 // 1885432944 = PrintMedia
-                if (intent !== 1885432944 && ${JSON.stringify(target)} === 'CMYK') {
+                if (intent !== 1885432944 && isCMYKTarget) {
                     issues.push({ type: 'document_intent', message: 'ドキュメントの出力先が印刷用に設定されていません' });
                 }
             } catch(e) {}
 
-            // RGB カラースウォッチ検出
-            for (let i = 0; i < doc.colors.length; i++) {
-                try {
-                    const color = doc.colors.item(i);
-                    // ColorSpace.RGB = 1666336578
-                    if (color.space === 1666336578 && ${JSON.stringify(target)} === 'CMYK') {
-                        issues.push({ type: 'rgb_swatch', name: color.name });
-                    }
-                } catch(e) {}
+            // CMYK 以外のカラースウォッチ検出（None・特色は除外）
+            if (isCMYKTarget) {
+                for (let i = 0; i < doc.colors.length; i++) {
+                    try {
+                        const color = doc.colors.item(i);
+                        const space = color.space;
+                        if (space === CS_CMYK || space === CS_NONE) continue;
+                        let isSpot = false;
+                        try { isSpot = (color.model === CM_SPOT); } catch(e) {}
+                        if (isSpot) continue;
+                        issues.push({ type: 'non_cmyk_swatch', name: color.name, space: space });
+                    } catch(e) {}
+                }
             }
 
-            return { success: true, target: ${JSON.stringify(target)}, issues };
+            return { success: true, target: target, issues };
         `;
         const result = await ScriptExecutor.executeViaUXP(code);
         operationLogger.log({ tool: 'check_color_space', args, success: result?.success });
