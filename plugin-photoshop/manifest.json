@@ -2,7 +2,7 @@
   "manifestVersion": 6,
   "id": "com.yomibitoshirazujp.ai-photoshop",
   "name": "Ai-inDesign for Photoshop",
-  "version": "1.0.0",
+  "version": "1.2.1",
   "main": "index.html",
   "host": {
     "app": "PS",
