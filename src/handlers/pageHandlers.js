@@ -504,6 +504,12 @@ export class PageHandlers {
     static async setPageBackground(args) {
         const { pageIndex = 0, backgroundColor = 'White', opacity = 100 } = args;
 
+        // Validate and clamp opacity to the valid 0-100 range before interpolation.
+        const opacityNum = Number(opacity);
+        const safeOpacity = Number.isFinite(opacityNum)
+            ? Math.min(100, Math.max(0, opacityNum))
+            : 100;
+
         const code = `
             if (app.documents.length === 0) return { success: false, error: 'No document open' };
             const doc = app.activeDocument;
@@ -525,9 +531,9 @@ export class PageHandlers {
             } else {
                 backgroundRect.fillColor = doc.colors.itemByName('White');
             }
-            backgroundRect.transparencySettings.blendingSettings.opacity = ${opacity};
+            try { backgroundRect.transparencySettings.blendingSettings.opacity = ${safeOpacity}; } catch (e) {}
             backgroundRect.sendToBack();
-            return { success: true, backgroundColor: colorName, opacity: ${opacity} };
+            return { success: true, backgroundColor: colorName, opacity: ${safeOpacity} };
         `;
 
         const result = await ScriptExecutor.executeViaUXP(code);
