@@ -23,7 +23,7 @@ const code = [
 
 const data = JSON.stringify({ code });
 const req = http.request({
-  hostname: '127.0.0.1', port: 49300, path: '/execute', method: 'POST',
+  hostname: '127.0.0.1', port: process.env.BRIDGE_PORT ? Number(process.env.BRIDGE_PORT) : 49300, path: '/execute', method: 'POST',
   headers: { 'Content-Type': 'application/json' }
 }, (res) => {
   let body = '';
