@@ -175,13 +175,13 @@ export const documentToolDefinitions = [
         inputSchema: {
             type: 'object',
             properties: {
-                searchText: { type: 'string', description: 'Text to search for' },
+                findText: { type: 'string', description: 'Text to find' },
                 replaceText: { type: 'string', description: 'Text to replace with (optional)' },
                 caseSensitive: { type: 'boolean', description: 'Case sensitive search', default: false },
                 wholeWord: { type: 'boolean', description: 'Whole word search', default: false },
                 useRegex: { type: 'boolean', description: 'Use regular expressions', default: false },
             },
-            required: ['searchText'],
+            required: ['findText'],
         },
     },
 
