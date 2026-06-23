@@ -10,6 +10,7 @@ import { WebSocket } from 'ws';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { readFileSync, existsSync } from 'fs';
+import { formatResponse, formatErrorResponse } from '../utils/stringUtils.js';
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const ROOT = join(__dirname, '..', '..');
@@ -50,19 +51,22 @@ export class SystemHandlers {
         ]);
         const connected = results.filter(r => r.ok).map(r => r.app);
         const offline   = results.filter(r => !r.ok).map(r => r.app);
-        return {
+        const payload = {
             summary: connected.length > 0 ? `✅ ${connected.join(', ')} が接続済み` : '❌ 全アプリ未接続',
             connected,
             offline,
             details: results,
         };
+        return connected.length > 0
+            ? formatResponse(payload, 'ブリッジ状態確認')
+            : formatErrorResponse(payload, 'ブリッジ状態確認');
     }
 
     /** InDesignブリッジを起動 */
     static async startBridge() {
         const ports = loadPorts();
         const already = await checkPort(ports.INDESIGN_PORT);
-        if (already) return { success: true, message: `ブリッジは既に起動中 (port ${ports.INDESIGN_PORT})` };
+        if (already) return formatResponse(`ブリッジは既に起動中 (port ${ports.INDESIGN_PORT})`, 'ブリッジ起動');
 
         // 古いプロセスをkill
         try {
@@ -84,13 +88,9 @@ export class SystemHandlers {
             // 3秒待って確認
             setTimeout(async () => {
                 const ok = await checkPort(ports.INDESIGN_PORT);
-                resolve({
-                    success: ok,
-                    message: ok
-                        ? `✅ ブリッジ起動完了 (port ${ports.INDESIGN_PORT})`
-                        : '❌ ブリッジ起動に失敗。port競合またはnode_modulesの問題の可能性',
-                    pid: bridgeProcess?.pid,
-                });
+                resolve(ok
+                    ? formatResponse({ message: `✅ ブリッジ起動完了 (port ${ports.INDESIGN_PORT})`, pid: bridgeProcess?.pid }, 'ブリッジ起動')
+                    : formatErrorResponse({ message: '❌ ブリッジ起動に失敗。port競合またはnode_modulesの問題の可能性', pid: bridgeProcess?.pid }, 'ブリッジ起動'));
             }, 3000);
         });
     }
@@ -105,7 +105,7 @@ export class SystemHandlers {
                 }
             }
         } catch {}
-        return { success: true, message: 'ブリッジサーバーを停止しました' };
+        return formatResponse('ブリッジサーバーを停止しました', 'ブリッジ停止');
     }
 
     /** トラトラトラ — 全アプリへデモ送信 */
@@ -151,13 +151,16 @@ export class SystemHandlers {
         const ok = results.filter(r => r.ok).map(r => r.name);
         const ng = results.filter(r => !r.ok).map(r => `${r.name}: ${r.reason}`);
 
-        return {
+        const payload = {
             message,
             summary: ok.length > 0 ? `✅ ${ok.join(', ')} に送信成功` : '❌ 全アプリ未接続',
-            success: ok,
+            sent: ok,
             failed: ng,
             details: results,
         };
+        return ok.length > 0
+            ? formatResponse(payload, 'デモ送信')
+            : formatErrorResponse(payload, 'デモ送信');
     }
 
     /** セットアップ全自動（ブリッジ起動 → デモ送信） */
@@ -188,12 +191,14 @@ export class SystemHandlers {
         }
 
         const allOk = steps.every(s => s.success);
-        return {
-            success: allOk,
+        const payload = {
             summary: allOk
                 ? '✅ セットアップ完了！Claude Desktopから操作できます'
                 : '⚠️ 一部の手順が失敗しました。詳細を確認してください',
             steps,
         };
+        return allOk
+            ? formatResponse(payload, 'セットアップ')
+            : formatErrorResponse(payload, 'セットアップ');
     }
 }
