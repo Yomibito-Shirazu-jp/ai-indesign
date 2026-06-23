@@ -157,21 +157,68 @@ function escapeRegex(str) {
  * @returns {DiffPair[]}
  */
 export function extractDiffs(original, revised) {
-    const origWords = original.split(/(\s+)/);
-    const revWords = revised.split(/(\s+)/);
-    const diffs = [];
+    // 文字単位 LCS（日本語はスペース区切りがないため文字レベルで差分を取る）
+    const a = Array.from(original);
+    const b = Array.from(revised);
+    const n = a.length;
+    const m = b.length;
 
-    // シンプルな word-level diff
-    const maxLen = Math.max(origWords.length, revWords.length);
-    for (let i = 0; i < maxLen; i++) {
-        const o = origWords[i] || '';
-        const r = revWords[i] || '';
-        if (o !== r && o.trim() && r.trim()) {
-            diffs.push({
-                before: o.trim(),
-                after: r.trim(),
-                context: `position ${i}`,
-            });
+    // LCS 長テーブル
+    const lcs = Array.from({ length: n + 1 }, () => new Array(m + 1).fill(0));
+    for (let i = n - 1; i >= 0; i--) {
+        for (let j = m - 1; j >= 0; j--) {
+            lcs[i][j] = a[i] === b[j]
+                ? lcs[i + 1][j + 1] + 1
+                : Math.max(lcs[i + 1][j], lcs[i][j + 1]);
+        }
+    }
+
+    // バックトラックして edit script を生成（'=' 共通 / '-' 削除 / '+' 挿入）
+    const ops = [];
+    let i = 0;
+    let j = 0;
+    while (i < n && j < m) {
+        if (a[i] === b[j]) {
+            ops.push({ type: '=' });
+            i++;
+            j++;
+        } else if (lcs[i + 1][j] >= lcs[i][j + 1]) {
+            ops.push({ type: '-', ch: a[i] });
+            i++;
+        } else {
+            ops.push({ type: '+', ch: b[j] });
+            j++;
+        }
+    }
+    while (i < n) ops.push({ type: '-', ch: a[i++] });
+    while (j < m) ops.push({ type: '+', ch: b[j++] });
+
+    // 連続する削除＋挿入ランを1つの差分ペアにまとめる
+    const diffs = [];
+    let pos = 0;
+    let k = 0;
+    while (k < ops.length) {
+        if (ops[k].type === '=') {
+            pos++;
+            k++;
+            continue;
+        }
+        const startPos = pos;
+        let before = '';
+        let after = '';
+        while (k < ops.length && ops[k].type !== '=') {
+            if (ops[k].type === '-') {
+                before += ops[k].ch;
+                pos++;
+            } else {
+                after += ops[k].ch;
+            }
+            k++;
+        }
+        before = before.trim();
+        after = after.trim();
+        if (before || after) {
+            diffs.push({ before, after, context: `position ${startPos}` });
         }
     }
 
