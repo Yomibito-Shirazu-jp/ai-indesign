@@ -61,6 +61,8 @@ Add to your MCP client configuration (e.g., `claude_desktop_config.json`):
 }
 ```
 
+> **Note**: The `indesign` key under `mcpServers` is an arbitrary label you choose to reference this server in your MCP client — it is not tied to the package name. Use any name you like (e.g. `ai-in-design`); just keep it consistent across your configuration.
+
 The MCP server will automatically start the bridge server on port 3001. No separate manual startup is required.
 
 ## Available Tools (179 total)
