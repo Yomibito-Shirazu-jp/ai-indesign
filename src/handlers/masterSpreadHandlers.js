@@ -16,9 +16,8 @@ export class MasterSpreadHandlers {
             const doc = app.activeDocument;
             const masterSpread = doc.masterSpreads.add();
             masterSpread.showMasterItems = ${showMasterItems};
-            if (${JSON.stringify(name)} !== undefined) masterSpread.baseName = ${JSON.stringify(name)};
+            if (${JSON.stringify(baseName ?? name)} !== undefined) masterSpread.baseName = ${JSON.stringify(baseName ?? name)};
             if (${JSON.stringify(namePrefix)} !== undefined) masterSpread.namePrefix = ${JSON.stringify(namePrefix)};
-            if (${JSON.stringify(baseName)} !== undefined) masterSpread.baseName = ${JSON.stringify(baseName)};
             return {
                 success: true,
                 name: masterSpread.name,
