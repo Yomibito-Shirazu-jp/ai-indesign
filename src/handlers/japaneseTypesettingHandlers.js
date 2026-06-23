@@ -185,10 +185,31 @@ export class JapaneseTypesettingHandlers {
                 const original = content;
 
                 if (norms.includes('halfToFull')) {
-                    // 半角カナ→全角カナ
-                    content = content.replace(/[ｦ-ﾟ]/g, function(s) {
-                        return String.fromCharCode(s.charCodeAt(0) + 0xFEE0);
-                    });
+                    // 半角カナ→全角カナ（濁点・半濁点は合成して1文字に）
+                    var HK_BASE = {
+                        'ｦ':'ヲ','ｧ':'ァ','ｨ':'ィ','ｩ':'ゥ','ｪ':'ェ','ｫ':'ォ','ｬ':'ャ','ｭ':'ュ','ｮ':'ョ','ｯ':'ッ','ｰ':'ー',
+                        'ｱ':'ア','ｲ':'イ','ｳ':'ウ','ｴ':'エ','ｵ':'オ','ｶ':'カ','ｷ':'キ','ｸ':'ク','ｹ':'ケ','ｺ':'コ',
+                        'ｻ':'サ','ｼ':'シ','ｽ':'ス','ｾ':'セ','ｿ':'ソ','ﾀ':'タ','ﾁ':'チ','ﾂ':'ツ','ﾃ':'テ','ﾄ':'ト',
+                        'ﾅ':'ナ','ﾆ':'ニ','ﾇ':'ヌ','ﾈ':'ネ','ﾉ':'ノ','ﾊ':'ハ','ﾋ':'ヒ','ﾌ':'フ','ﾍ':'ヘ','ﾎ':'ホ',
+                        'ﾏ':'マ','ﾐ':'ミ','ﾑ':'ム','ﾒ':'メ','ﾓ':'モ','ﾔ':'ヤ','ﾕ':'ユ','ﾖ':'ヨ',
+                        'ﾗ':'ラ','ﾘ':'リ','ﾙ':'ル','ﾚ':'レ','ﾛ':'ロ','ﾜ':'ワ','ﾝ':'ン','ﾞ':'゛','ﾟ':'゜','｡':'。','｢':'「','｣':'」','､':'、','･':'・'
+                    };
+                    // 濁点（ﾞ）合成: カ行サ行タ行ハ行＋ウ → 濁音
+                    var HK_DAKU = { 'カ':'ガ','キ':'ギ','ク':'グ','ケ':'ゲ','コ':'ゴ','サ':'ザ','シ':'ジ','ス':'ズ','セ':'ゼ','ソ':'ゾ','タ':'ダ','チ':'ヂ','ツ':'ヅ','テ':'デ','ト':'ド','ハ':'バ','ヒ':'ビ','フ':'ブ','ヘ':'ベ','ホ':'ボ','ウ':'ヴ' };
+                    // 半濁点（ﾟ）合成: ハ行 → 半濁音
+                    var HK_HANDAKU = { 'ハ':'パ','ヒ':'ピ','フ':'プ','ヘ':'ペ','ホ':'ポ' };
+                    var out = '';
+                    for (var ci = 0; ci < content.length; ci++) {
+                        var ch = content.charAt(ci);
+                        var base = HK_BASE.hasOwnProperty(ch) ? HK_BASE[ch] : null;
+                        if (base === null) { out += ch; continue; }
+                        // 次の半角文字が濁点／半濁点なら合成を試みる
+                        var next = content.charAt(ci + 1);
+                        if (next === 'ﾞ' && HK_DAKU.hasOwnProperty(base)) { out += HK_DAKU[base]; ci++; }
+                        else if (next === 'ﾟ' && HK_HANDAKU.hasOwnProperty(base)) { out += HK_HANDAKU[base]; ci++; }
+                        else { out += base; }
+                    }
+                    content = out;
                 }
 
                 if (norms.includes('numbers')) {
