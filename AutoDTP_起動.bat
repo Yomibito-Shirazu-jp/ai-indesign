@@ -26,16 +26,17 @@ for /f "tokens=5" %%p in ('netstat -ano 2^>nul ^| findstr ":49300 " ^| findstr "
 timeout /t 2 /nobreak >nul
 echo         OK
 
-REM npm install
+REM npm install (bridge only)
+REM NOTE: Root deps are installed by setup.mjs (step 3) via `npm install`,
+REM so we intentionally do NOT install root deps here to avoid a redundant
+REM double install. Bridge deps are not handled by setup.mjs, so install them
+REM here, and only when missing.
 echo  [2/4] Package check ...
 if not exist "bridge\node_modules" (
     echo         Installing ...
     pushd bridge
     call npm install --no-fund --no-audit >nul 2>&1
     popd
-)
-if not exist "node_modules" (
-    call npm install --no-fund --no-audit >nul 2>&1
 )
 echo         OK
 
