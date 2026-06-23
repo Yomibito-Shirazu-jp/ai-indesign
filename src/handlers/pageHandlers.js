@@ -316,8 +316,9 @@ export class PageHandlers {
             if (${pageIndex} >= doc.pages.length) return { success: false, error: 'Page index out of range' };
             const page = doc.pages.item(${pageIndex});
             const xmlElement = doc.xmlElements.itemByName(${JSON.stringify(xmlElementName)});
-            const placedItem = page.place(xmlElement, [${x}, ${y}], false, ${autoflowing});
-            return { success: true };
+            if (!xmlElement.isValid) return { success: false, error: 'XML element not found: ' + ${JSON.stringify(xmlElementName)} };
+            const placedItems = page.place(xmlElement, [${x}, ${y}], false, ${autoflowing});
+            return { success: true, itemCount: placedItems ? placedItems.length : 1 };
         `;
 
         const result = await ScriptExecutor.executeViaUXP(code);
