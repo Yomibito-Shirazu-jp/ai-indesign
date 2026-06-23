@@ -126,7 +126,7 @@ export const contentToolDefinitions = [
                 category: {
                     type: 'string',
                     description: 'Category of tools to list (optional)',
-                    enum: ['document', 'page', 'text', 'graphics', 'styles', 'layout', 'export', 'all'],
+                    enum: ['document', 'page', 'spread', 'text', 'graphics', 'styles', 'layout', 'layer', 'master', 'book', 'japanese', 'preflight', 'export', 'rule', 'all'],
                     default: 'all'
                 },
                 format: {
