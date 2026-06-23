@@ -87,7 +87,7 @@ export const japaneseTypesettingTools = [
             type: 'object',
             properties: {
                 pageIndex: { type: 'number', default: 0 },
-                checks: { type: 'array', items: { type: 'string' }, description: 'チェック種別: kinsoku, overset, spacing, consistency' },
+                checks: { type: 'array', items: { type: 'string', enum: ['kinsoku', 'overset', 'spacing', 'consistency'] }, description: 'チェック種別: kinsoku, overset, spacing, consistency' },
             }
         }
     },
