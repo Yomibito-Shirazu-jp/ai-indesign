@@ -110,7 +110,7 @@ export class GroupHandlers {
             const item = page.allPageItems[${groupIndex}];
             let isGroup = false;
             try {
-                isGroup = typeof item.pageItems !== 'undefined' || item.constructor?.name === 'Group';
+                isGroup = item.constructor?.name === 'Group';
             } catch(e) {}
             if (!isGroup) return { success: false, error: 'Selected item is not a group' };
             let itemCount = 0;
@@ -144,7 +144,7 @@ export class GroupHandlers {
             const item = page.allPageItems[${groupIndex}];
             let isGroup = false;
             try {
-                isGroup = typeof item.pageItems !== 'undefined' || item.constructor?.name === 'Group';
+                isGroup = item.constructor?.name === 'Group';
             } catch(e) {}
             if (!isGroup) return { success: false, error: 'Selected item is not a group' };
             const contents = [];
@@ -189,7 +189,7 @@ export class GroupHandlers {
             const group = page.allPageItems[${groupIndex}];
             let isGroup = false;
             try {
-                isGroup = typeof group.pageItems !== 'undefined' || group.constructor?.name === 'Group';
+                isGroup = group.constructor?.name === 'Group';
             } catch(e) {}
             if (!isGroup) return { success: false, error: 'Selected item is not a group' };
             if (${itemIndex} >= page.allPageItems.length) return { success: false, error: 'Item index out of range' };
@@ -223,7 +223,7 @@ export class GroupHandlers {
             const group = page.allPageItems[${groupIndex}];
             let isGroup = false;
             try {
-                isGroup = typeof group.pageItems !== 'undefined' || group.constructor?.name === 'Group';
+                isGroup = group.constructor?.name === 'Group';
             } catch(e) {}
             if (!isGroup) return { success: false, error: 'Selected item is not a group' };
             let groupItems;
@@ -261,7 +261,7 @@ export class GroupHandlers {
                 const item = page.allPageItems[i];
                 let isGroup = false;
                 try {
-                    isGroup = typeof item.pageItems !== 'undefined' || item.constructor?.name === 'Group';
+                    isGroup = item.constructor?.name === 'Group';
                 } catch(e) {}
                 if (isGroup) {
                     let itemCount = 0;
@@ -301,7 +301,7 @@ export class GroupHandlers {
             const group = page.allPageItems[${groupIndex}];
             let isGroup = false;
             try {
-                isGroup = typeof group.pageItems !== 'undefined' || group.constructor?.name === 'Group';
+                isGroup = group.constructor?.name === 'Group';
             } catch(e) {}
             if (!isGroup) return { success: false, error: 'Selected item is not a group' };
             if (${visible} !== null && ${visible} !== undefined) group.visible = ${visible};
