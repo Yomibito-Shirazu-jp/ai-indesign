@@ -2,11 +2,11 @@
 
 This directory contains comprehensive tests for the InDesign MCP Server, organized by functionality and complexity.
 
-## 📊 **Coverage Status: 100% Complete**
+## 📊 **Coverage Status: Partial**
 
-- ✅ **All 13 handlers** properly tested
-- ✅ **All 135 tools** covered by tests
-- ✅ **Session management** fully integrated and tested
+- ⚠️ **11 handlers** tracked in the test coverage map (`tests/index.js`), out of the broader handler set in `src/handlers/`
+- ⚠️ **Core tool subset** covered by tests — the project now ships ~179 tools, so coverage is partial, not exhaustive
+- ✅ **Session management** integrated and tested
 - ✅ **Real-time progress bar** with visual feedback
 - ✅ **Comprehensive error handling** and reporting
 
@@ -128,7 +128,7 @@ The master test suite provides detailed results including:
 - **Real-time Progress Bar**: Visual progress tracking with timing
 - **Overall Status**: Complete success, partial success, or critical failure
 - **Suite Results**: Individual test suite pass/fail status with categories
-- **Handler Coverage**: Detailed coverage analysis for all 13 handlers
+- **Handler Coverage**: Detailed coverage analysis for the 11 tracked handlers
 - **Test Details**: Specific test file results
 - **Error Information**: Detailed error messages and output
 - **Duration**: Total test execution time
@@ -193,9 +193,9 @@ NODE_DEBUG=* node tests/test-document-preferences.js
 
 # InDesign MCP Server - Test Coverage Analysis
 
-## 📊 **Comprehensive Coverage Overview**
+## 📊 **Coverage Overview**
 
-This document provides a detailed analysis of test coverage for all handlers, tools, and functionality in the InDesign MCP Server.
+This document provides an analysis of test coverage for the handlers and tools tracked in the test suite. Note that the project ships ~179 tools across a larger set of handlers (see `src/handlers/`); the coverage map below tracks 11 of those handlers, so coverage is partial.
 
 ## 🎯 **Handler Coverage Summary**
 
@@ -213,7 +213,7 @@ This document provides a detailed analysis of test coverage for all handlers, to
 | **ExportHandlers**       | ✅ Covered | 3     | `test-advanced-features.js`                                                            | 100%     |
 | **UtilityHandlers**      | ✅ Covered | 4     | `test-enhanced-functionality.js`, `test-advanced-features.js`                          | 100%     |
 
-**Total Coverage: 100% (13/13 handlers)**
+**Tracked handlers: 11** (of the larger handler set in `src/handlers/`)
 
 ## 🧪 **Test Suite Breakdown**
 
@@ -522,9 +522,8 @@ This document provides a detailed analysis of test coverage for all handlers, to
 
 ### **Overall Coverage**
 
-- **Total Handlers**: 11
-- **Covered Handlers**: 11 (100%)
-- **Total Tools**: 135
+- **Tracked Handlers**: 11 (of the larger handler set in `src/handlers/`)
+- **Total Tools in Project**: ~179 (only a core subset is exercised by these tests)
 - **Test Files**: 10
 - **Test Suites**: 10
 
@@ -547,7 +546,7 @@ This document provides a detailed analysis of test coverage for all handlers, to
 
 ### **Test Quality Metrics**
 
-- **Comprehensive Coverage**: All 135 tools tested
+- **Core Coverage**: A core subset of the ~179 tools is tested
 - **Real-time Progress**: Visual progress bar with timing
 - **Detailed Reporting**: Handler-by-handler coverage analysis
 - **Error Handling**: Comprehensive error capture and reporting
@@ -563,13 +562,13 @@ This document provides a detailed analysis of test coverage for all handlers, to
 
 ## 🎉 **Conclusion**
 
-The InDesign MCP Server test suite provides **100% coverage** of all handlers and tools, with comprehensive testing of:
+The InDesign MCP Server test suite provides **partial coverage**, focused on a core subset of functionality:
 
-- ✅ **All 11 handlers** properly tested
-- ✅ **All 135 tools** covered by tests
-- ✅ **Session management** fully integrated and tested
+- ✅ **11 handlers** tracked and tested (of the larger handler set in `src/handlers/`)
+- ⚠️ **Core tool subset** covered — the project ships ~179 tools, so coverage is not exhaustive
+- ✅ **Session management** integrated and tested
 - ✅ **Smart positioning** functionality verified
 - ✅ **Real-time progress tracking** with visual feedback
-- ✅ **Comprehensive error handling** and reporting
+- ✅ **Error handling** and reporting
 
-The test suite is production-ready and provides confidence that all functionality works correctly across different scenarios and use cases.
+The test suite provides confidence in the covered core functionality. Expanding coverage to the remaining tools is ongoing work.
