@@ -46,7 +46,10 @@ export class ExportHandlers {
             pageRange = 'all'
         } = args;
 
-        const formatLower = format.toLowerCase();
+        // Normalize the format to a canonical upper-case token so the ExtendScript
+        // format and the file extension are always derived consistently.
+        const formatUpper = String(format).toUpperCase();
+        const formatLower = formatUpper.toLowerCase();
 
         // Validate page-range tokens up front so non-numeric entries are reported
         // instead of being silently dropped (parseInt -> NaN) and counted as success.
@@ -70,7 +73,7 @@ export class ExportHandlers {
             const folder = ${JSON.stringify(folderPath)};
 
             try {
-                const formatStr = ${JSON.stringify(format)};
+                const formatStr = ${JSON.stringify(formatUpper)};
                 let exportFormat;
                 if (formatStr === 'JPEG') {
                     exportFormat = ExportFormat.jpegType;
