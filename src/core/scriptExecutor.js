@@ -1,7 +1,7 @@
 /**
  * Core script execution functionality
  */
-const BRIDGE_URL = 'http://127.0.0.1:3000';
+const BRIDGE_URL = `http://127.0.0.1:${process.env.INDESIGN_PORT || 3000}`;
 
 export class ScriptExecutor {
     /**
