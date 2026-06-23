@@ -306,36 +306,14 @@ export class JapaneseTypesettingHandlers {
             return formatResponse({ preview: true, cjkSpacing, punctuationWidth }, '和欧混植調整 プレビュー');
         }
 
-        const code = `
-            if (app.documents.length === 0) return { success: false, error: 'ドキュメントが開かれていません' };
-            const doc = app.activeDocument;
-            const page = doc.pages.item(${pageIndex});
-            let applied = 0;
-
-            for (let i = 0; i < page.textFrames.length; i++) {
-                try {
-                    const frame = page.textFrames.item(i);
-                    const paras = frame.paragraphs;
-                    for (let p = 0; p < paras.length; p++) {
-                        try {
-                            const para = paras.item(p);
-                            // 和欧間は InDesign の mojikumi 設定に依存
-                            // UXP APIでのアクセスパスを使用
-                            applied++;
-                        } catch(e) {}
-                    }
-                } catch(e) {}
-            }
-
-            return { success: true, applied, cjkSpacing: ${JSON.stringify(cjkSpacing)} };
-        `;
-
-        const result = await ScriptExecutor.executeViaUXP(code);
-        operationLogger.log({ tool: 'adjust_kumihan', args, success: result?.success, targetPage: pageIndex });
-
-        return result?.success
-            ? formatResponse(result, '和欧混植調整')
-            : formatErrorResponse(result?.error || '和欧混植調整に失敗', '和欧混植調整');
+        // 和欧間のスペーシングは mojikumi 設定への割り当てが必要だが未実装。
+        // 段落をループして applied を加算するだけの実態のない処理が成功扱いされていたため、
+        // 偽の成功件数を返さず「未実装」を明示する。
+        operationLogger.log({ tool: 'adjust_kumihan', args, success: false, targetPage: pageIndex });
+        return formatErrorResponse(
+            '和欧混植調整（mojikumi 割り当て）は未実装です。現時点では文字組み設定の自動適用は行われません。',
+            '和欧混植調整'
+        );
     }
 
     /**
