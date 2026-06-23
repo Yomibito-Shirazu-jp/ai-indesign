@@ -197,9 +197,12 @@ export class VerticalTextHandlers {
     static async fixTatechuyoko(args) {
         const { pageIndex = 0, maxDigits = 2, applyToAlpha = false, preview = false } = args;
 
+        // maxDigits を GREP パターンに埋め込む前に数値へ強制変換（不正値でのパターン破損を防止）
+        const n = Math.max(1, parseInt(maxDigits, 10) || 2);
+
         if (preview) {
             return formatResponse({
-                preview: true, plannedChanges: `縦中横設定: ${maxDigits}桁まで, 英字${applyToAlpha ? '対象' : '非対象'}`,
+                preview: true, plannedChanges: `縦中横設定: ${n}桁まで, 英字${applyToAlpha ? '対象' : '非対象'}`,
             }, '縦中横設定 プレビュー');
         }
 
@@ -220,7 +223,7 @@ export class VerticalTextHandlers {
                     // GREP検索で数字を縦中横に
                     app.findGrepPreferences = null;
                     app.changeGrepPreferences = null;
-                    app.findGrepPreferences.findWhat = '[0-9]{1,${maxDigits}}';
+                    app.findGrepPreferences.findWhat = '[0-9]{1,${n}}';
                     app.changeGrepPreferences.tatechuyoko = true;
                     const changed = frame.changeGrep();
                     applied += changed ? changed.length : 0;
@@ -230,7 +233,7 @@ export class VerticalTextHandlers {
                 } catch(e) {}
             }
 
-            return { success: true, applied, maxDigits: ${maxDigits} };
+            return { success: true, applied, maxDigits: ${n} };
         `;
 
         const result = await ScriptExecutor.executeViaUXP(code);
