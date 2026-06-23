@@ -1109,7 +1109,7 @@
             <textarea id="cfg-claude-json" readonly></textarea>
             <span class="field-hint">Copy this into your Claude Desktop config file</span>
           </div>
-          <button class="btn btn-secondary" style="align-self:flex-start;" onclick="copyClaudeConfig()">Copy JSON</button>
+          <button class="btn btn-secondary" style="align-self:flex-start;" onclick="copyClaudeConfig(event)">Copy JSON</button>
 
           <div class="config-section-title" style="margin-top:8px;">Recommended MCP Stack</div>
           <div style="font-size:.82em;color:var(--text-muted);line-height:1.8;">
@@ -1188,7 +1188,7 @@
               <br>Configタブの「Claude Desktop Config」からもコピーできます。
             </p>
             <div class="code-block">
-              <button class="copy-btn" onclick="copySetupConfig()">Copy</button>
+              <button class="copy-btn" onclick="copySetupConfig(event)">Copy</button>
               <pre id="setup-config-json">{
   "mcpServers": {
     "ai-indesign": {
@@ -1583,7 +1583,7 @@ function buildClaudeConfig() {
   }, null, 2);
 }
 
-function copyClaudeConfig() {
+function copyClaudeConfig(event) {
   navigator.clipboard.writeText(buildClaudeConfig()).then(() => {
     const btn = event.target;
     btn.textContent = 'Copied!';
@@ -1591,7 +1591,7 @@ function copyClaudeConfig() {
   });
 }
 
-function copySetupConfig() {
+function copySetupConfig(event) {
   const el = document.getElementById('setup-config-json');
   navigator.clipboard.writeText(el.innerText).then(() => {
     const btn = event.target;
