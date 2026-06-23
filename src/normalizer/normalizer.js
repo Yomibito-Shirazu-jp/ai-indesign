@@ -143,6 +143,12 @@ export async function normalize(text, options = {}) {
         if (issue.recommended) {
             for (const variant of issue.variants) {
                 if (variant !== issue.recommended) {
+                    // 単一文字の漢字バリアントは複合語の一部に誤マッチして
+                    // 語を破壊する（例: 事→こと で「仕事」→「仕こと」）。
+                    // 境界判定ができないため、曖昧な単一漢字は自動置換せず報告のみとする。
+                    if (variant.length === 1 && /[一-鿿㐀-䶿]/.test(variant)) {
+                        continue;
+                    }
                     const before = normalized;
                     normalized = normalized.split(variant).join(issue.recommended);
                     if (normalized !== before) {
