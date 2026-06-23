@@ -109,11 +109,23 @@ export class OperationLogger {
     }
 
     exportLogs() {
-        // ファイルからフル読み出し
+        // ファイルからフル読み出し（1行ずつ解析し、壊れた行は読み飛ばす）
         try {
             if (fs.existsSync(LOG_FILE)) {
                 const lines = fs.readFileSync(LOG_FILE, 'utf-8').split('\n').filter(Boolean);
-                return lines.map(line => JSON.parse(line));
+                const parsed = [];
+                let skipped = 0;
+                for (const line of lines) {
+                    try {
+                        parsed.push(JSON.parse(line));
+                    } catch {
+                        skipped++;
+                    }
+                }
+                if (skipped > 0) {
+                    console.warn(`[operationLogger] exportLogs: 不正な行を${skipped}件スキップしました`);
+                }
+                return parsed;
             }
         } catch { /* fall through */ }
         return [...this.logs];
