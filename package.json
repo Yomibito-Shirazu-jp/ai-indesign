@@ -51,6 +51,7 @@
     "layout-automation"
   ],
   "author": "Yomibito-Shirazu-jp",
+  "license": "UNLICENSED",
   "private": true,
   "dependencies": {
     "@google/genai": "^1.45.0",
