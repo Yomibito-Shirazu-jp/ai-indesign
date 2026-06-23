@@ -6,10 +6,28 @@ import { formatResponse, formatErrorResponse } from '../utils/stringUtils.js';
 
 export class PageItemHandlers {
     /**
+     * Validate pageIndex/itemIndex in Node before building UXP code.
+     * The UXP guards only check `>= length`; negative or non-integer indices
+     * slip through and cause invalid access. Returns an error response string
+     * when invalid, or null when both indices are valid non-negative integers.
+     */
+    static _validateIndices(pageIndex, itemIndex, title) {
+        if (!Number.isInteger(pageIndex) || pageIndex < 0) {
+            return formatErrorResponse('pageIndex must be a non-negative integer', title);
+        }
+        if (!Number.isInteger(itemIndex) || itemIndex < 0) {
+            return formatErrorResponse('itemIndex must be a non-negative integer', title);
+        }
+        return null;
+    }
+
+    /**
      * Get information about a page item
      */
     static async getPageItemInfo(args) {
         const { pageIndex, itemIndex } = args;
+        const invalid = this._validateIndices(pageIndex, itemIndex, "Get Page Item Info");
+        if (invalid) return invalid;
 
         const code = `
             if (app.documents.length === 0) return { success: false, error: 'No document open' };
@@ -51,6 +69,8 @@ export class PageItemHandlers {
      */
     static async selectPageItem(args) {
         const { pageIndex, itemIndex, existingSelection = 'REPLACE_WITH' } = args;
+        const invalid = this._validateIndices(pageIndex, itemIndex, "Select Page Item");
+        if (invalid) return invalid;
 
         const selectionMap = {
             REPLACE_WITH: 'replaceWith',
@@ -81,6 +101,8 @@ export class PageItemHandlers {
      */
     static async movePageItem(args) {
         const { pageIndex, itemIndex, x, y } = args;
+        const invalid = this._validateIndices(pageIndex, itemIndex, "Move Page Item");
+        if (invalid) return invalid;
 
         const code = `
             if (app.documents.length === 0) return { success: false, error: 'No document open' };
@@ -104,6 +126,8 @@ export class PageItemHandlers {
      */
     static async resizePageItem(args) {
         const { pageIndex, itemIndex, width, height, anchorPoint = 'CENTER_ANCHOR' } = args;
+        const invalid = this._validateIndices(pageIndex, itemIndex, "Resize Page Item");
+        if (invalid) return invalid;
 
         const anchorMap = {
             CENTER_ANCHOR: 'centerAnchor',
@@ -141,6 +165,8 @@ export class PageItemHandlers {
      */
     static async setPageItemProperties(args) {
         const { pageIndex, itemIndex, fillColor, strokeColor, strokeWeight, visible, locked } = args;
+        const invalid = this._validateIndices(pageIndex, itemIndex, "Set Page Item Properties");
+        if (invalid) return invalid;
 
         const code = `
             if (app.documents.length === 0) return { success: false, error: 'No document open' };
@@ -178,6 +204,8 @@ export class PageItemHandlers {
      */
     static async duplicatePageItem(args) {
         const { pageIndex, itemIndex, x, y } = args;
+        const invalid = this._validateIndices(pageIndex, itemIndex, "Duplicate Page Item");
+        if (invalid) return invalid;
 
         const code = `
             if (app.documents.length === 0) return { success: false, error: 'No document open' };
@@ -202,6 +230,8 @@ export class PageItemHandlers {
      */
     static async deletePageItem(args) {
         const { pageIndex, itemIndex } = args;
+        const invalid = this._validateIndices(pageIndex, itemIndex, "Delete Page Item");
+        if (invalid) return invalid;
 
         const code = `
             if (app.documents.length === 0) return { success: false, error: 'No document open' };
@@ -226,6 +256,9 @@ export class PageItemHandlers {
      */
     static async listPageItems(args) {
         const { pageIndex } = args;
+        if (!Number.isInteger(pageIndex) || pageIndex < 0) {
+            return formatErrorResponse('pageIndex must be a non-negative integer', "List Page Items");
+        }
 
         const code = `
             if (app.documents.length === 0) return { success: false, error: 'No document open' };
