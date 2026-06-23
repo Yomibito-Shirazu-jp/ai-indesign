@@ -90,7 +90,11 @@ app.get('/api/plugins/:app', (req, res) => {
     const file = plugins[req.params.app];
     if (!file) return res.status(404).json({ error: 'Plugin not found' });
     const filePath = join(__dirname, '..', file);
-    res.download(filePath, file);
+    res.download(filePath, file, (err) => {
+        if (err && !res.headersSent) {
+            res.status(404).json({ error: 'Plugin file not found' });
+        }
+    });
 });
 
 app.get('/api/dashboard', (_req, res) => {
