@@ -72,7 +72,7 @@ window.sendTest = function() {
 
 function connect() {
     setStatus("connecting");
-    ws = new WebSocket("ws://localhost:49300");
+    ws = new WebSocket("ws://127.0.0.1:49300");
 
     ws.onopen = () => setStatus("connected");
 
