@@ -153,11 +153,8 @@ export const HYOKI_YURE_PATTERNS = [
     { variants: ['致します', 'いたします'], recommended: 'いたします', category: '漢字/かな' },
     { variants: ['頂く', 'いただく'], recommended: 'いただく', category: '漢字/かな' },
     { variants: ['出来る', 'できる'], recommended: 'できる', category: '漢字/かな' },
-    { variants: ['事', 'こと'], recommended: 'こと', category: '漢字/かな' },
-    { variants: ['物', 'もの'], recommended: 'もの', category: '漢字/かな' },
-    { variants: ['時', 'とき'], recommended: 'とき', category: '漢字/かな' },
-    { variants: ['所', 'ところ'], recommended: 'ところ', category: '漢字/かな' },
-    { variants: ['為', 'ため'], recommended: 'ため', category: '漢字/かな' },
+    // 注: 事/物/時/所/為 の単一漢字エントリは、複合語（仕事・事件・物事・
+    // 時間・場所・行為 等）に誤マッチして語を破壊するため削除した。
     { variants: ['是非', 'ぜひ'], recommended: 'ぜひ', category: '漢字/かな' },
     { variants: ['有難う', 'ありがとう'], recommended: 'ありがとう', category: '漢字/かな' },
     { variants: ['宜しく', 'よろしく'], recommended: 'よろしく', category: '漢字/かな' },
