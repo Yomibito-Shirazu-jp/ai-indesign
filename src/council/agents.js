@@ -74,7 +74,13 @@ export function createNotationAgent(customerRules = {}) {
             // 3. 顧客別ルール適用
             if (customerRules.notation) {
                 for (const rule of customerRules.notation) {
-                    const regex = new RegExp(rule.pattern, 'g');
+                    let regex;
+                    try {
+                        regex = new RegExp(rule.pattern, 'g');
+                    } catch (e) {
+                        // 不正な正規表現は無視（ストア由来の信頼できない値の可能性）
+                        continue;
+                    }
                     let match;
                     while ((match = regex.exec(text)) !== null) {
                         issues.push({
@@ -90,6 +96,10 @@ export function createNotationAgent(customerRules = {}) {
                                 to: rule.replacement,
                                 reason: `顧客ルール: ${rule.message}`,
                             };
+                        }
+                        // ゼロ幅マッチで無限ループしないよう lastIndex を前進
+                        if (match.index === regex.lastIndex) {
+                            regex.lastIndex++;
                         }
                     }
                 }
