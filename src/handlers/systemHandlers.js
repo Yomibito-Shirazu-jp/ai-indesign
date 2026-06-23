@@ -6,7 +6,6 @@
  */
 
 import { spawn, execSync } from 'child_process';
-import { createConnection } from 'net';
 import { WebSocket } from 'ws';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
