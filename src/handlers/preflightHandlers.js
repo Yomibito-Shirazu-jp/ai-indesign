@@ -339,8 +339,20 @@ export class PreflightHandlers {
                         for (let t = 0; t < texts.length; t++) {
                             const text = texts.item(t);
                             const color = text.fillColor;
-                            // Black、かつオーバープリントがオフの場合
-                            if (color && color.name === 'Black' && !text.overprintFill) {
+                            // K100%（CMYK で [0,0,0,100]）判定。スウォッチ名に依存しない。
+                            let isK100 = false;
+                            try {
+                                // ColorSpace.CMYK = 1129142603
+                                if (color && color.space === 1129142603) {
+                                    const cv = color.colorValue;
+                                    if (cv && cv.length === 4 &&
+                                        cv[0] === 0 && cv[1] === 0 && cv[2] === 0 && cv[3] === 100) {
+                                        isK100 = true;
+                                    }
+                                }
+                            } catch(e) {}
+                            // K100%、かつオーバープリントがオフの場合
+                            if (isK100 && !text.overprintFill) {
                                 if (${autoCorrect}) {
                                     text.overprintFill = true;
                                     corrected++;
