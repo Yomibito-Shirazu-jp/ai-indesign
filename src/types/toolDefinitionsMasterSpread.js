@@ -133,7 +133,7 @@ export const masterSpreadToolDefinitions = [
     },
     {
         name: 'detach_master_items',
-        description: 'Detach master page items from a page',
+        description: 'ページからマスターアイテムを分離',
         inputSchema: {
             type: 'object',
             properties: {
@@ -145,7 +145,7 @@ export const masterSpreadToolDefinitions = [
     },
     {
         name: 'remove_master_override',
-        description: 'Remove override from a master page item',
+        description: 'マスターアイテムのオーバーライドを解除',
         inputSchema: {
             type: 'object',
             properties: {
