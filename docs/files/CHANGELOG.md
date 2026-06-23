@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.0.0] - 2026-03-06
 
 ### 🚀 Added
+- **Council Deliberation Engine (三者合議)**: Multi-agent deliberation engine (`src/council/*`) that cross-checks typesetting/proofreading decisions among multiple agents before applying them
+- **Customer Rule Store & Rule Learning**: Persistent customer-specific rule store with rule learning (`src/rules/*`), so the system can capture and reapply per-customer DTP conventions
 - **Japanese Typesetting System**: Full Japanese DTP support including kinsoku, kumihan, ruby, and typesetting presets (書籍/冊子/チラシ/広報紙/POP)
 - **Vertical Text Engine**: Vertical text frames, tate-chu-yoko, vertical punctuation correction, right-binding auto-fix
 - **Proofreading System**: Hyoki-yure (表記揺れ) detection, joyo kanji check, sensitive term detection with alternatives
