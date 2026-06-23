@@ -385,19 +385,9 @@ export class GraphicsHandlers {
         `;
 
         const result = await ScriptExecutor.executeViaUXP(code);
-        if (result?.success) {
-            const lines = ['=== OBJECT STYLES ==='];
-            for (const s of (result.styles || [])) {
-                lines.push(`Name: ${s.name}`);
-                lines.push(`  Fill Color: ${s.fillColor}`);
-                lines.push(`  Stroke Color: ${s.strokeColor}`);
-                lines.push(`  Stroke Weight: ${s.strokeWeight}`);
-                lines.push(`  Corner Radius: ${s.cornerRadius}`);
-                lines.push('');
-            }
-            return formatResponse(lines.join('\n'), "List Object Styles");
-        }
-        return formatErrorResponse(result?.error || 'Failed to list object styles', "List Object Styles");
+        return result?.success
+            ? formatResponse(result, "List Object Styles")
+            : formatErrorResponse(result?.error || 'Failed to list object styles', "List Object Styles");
     }
 
     /**
@@ -505,21 +495,8 @@ export class GraphicsHandlers {
         `;
 
         const result = await ScriptExecutor.executeViaUXP(code);
-        if (result?.success) {
-            const lines = [
-                '=== IMAGE INFORMATION ===',
-                `Image ${result.index}:`,
-                `  File Path: ${result.filePath}`,
-                `  File Name: ${result.fileName}`,
-                `  Link Status: ${result.linkStatus}`,
-                `  Image Type: ${result.imageTypeName}`,
-                `  Actual PPI: ${Array.isArray(result.actualPpi) ? result.actualPpi.join(', ') : result.actualPpi}`,
-                `  Effective PPI: ${Array.isArray(result.effectivePpi) ? result.effectivePpi.join(', ') : result.effectivePpi}`,
-                `  Geometric Bounds: ${Array.isArray(result.geometricBounds) ? result.geometricBounds.join(', ') : result.geometricBounds}`,
-                `  Visible Bounds: ${Array.isArray(result.visibleBounds) ? result.visibleBounds.join(', ') : result.visibleBounds}`
-            ];
-            return formatResponse(lines.join('\n'), "Get Image Info");
-        }
-        return formatErrorResponse(result?.error || 'Failed to get image info', "Get Image Info");
+        return result?.success
+            ? formatResponse(result, "Get Image Info")
+            : formatErrorResponse(result?.error || 'Failed to get image info', "Get Image Info");
     }
 } 
