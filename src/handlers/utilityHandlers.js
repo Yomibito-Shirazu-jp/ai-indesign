@@ -29,10 +29,10 @@ export class UtilityHandlers {
             if (app.documents.length === 0) return { success: false, error: 'No document open' };
             const doc = app.activeDocument;
             let zoom = null;
-            let viewMode = null;
+            let overprintPreview = null;
             try {
                 zoom = app.activeWindow.zoomPercentage;
-                viewMode = app.activeWindow.displaySettings?.overprintPreview ?? null;
+                overprintPreview = app.activeWindow.displaySettings?.overprintPreview ?? null;
             } catch(e) {}
             let activePageName = null;
             try { activePageName = doc.activePage ? doc.activePage.name : null; } catch(e) {}
@@ -63,7 +63,7 @@ export class UtilityHandlers {
                 pages: pageCount,
                 activePage: activePageName,
                 zoom,
-                viewMode,
+                overprintPreview,
                 firstPage
             };
         `;
