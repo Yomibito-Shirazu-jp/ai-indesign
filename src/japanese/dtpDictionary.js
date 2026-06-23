@@ -181,7 +181,16 @@ export function lookupTerm(text) {
 export function parsePageSize(text) {
     const normalized = text.toUpperCase().replace(/\s/g, '');
 
-    for (const [name, dims] of Object.entries(PAGE_SIZES)) {
+    // 名刺・はがき等は DOCUMENT_TYPES（用途）と名称が重複する。
+    // これらは「名刺を作って」のような用途指示として解釈すべきであり、
+    // 判型（用紙サイズ）解析の対象から除外する。
+    // また、短い名称が長い名称を先取りしないよう、最長一致を優先する
+    // （例: 「A4」が「A」より優先される）。
+    const candidates = Object.entries(PAGE_SIZES)
+        .filter(([name]) => !(name in DOCUMENT_TYPES))
+        .sort(([a], [b]) => b.length - a.length);
+
+    for (const [name, dims] of candidates) {
         if (normalized.includes(name.toUpperCase())) {
             let orientation = 'portrait';
             for (const [key, val] of Object.entries(ORIENTATIONS)) {
