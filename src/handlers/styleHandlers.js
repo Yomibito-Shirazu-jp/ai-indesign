@@ -115,12 +115,13 @@ export class StyleHandlers {
      * Apply a paragraph style to text
      */
     static async applyParagraphStyle(args) {
-        const { styleName, frameIndex = 0 } = args;
+        const { styleName, frameIndex = 0, pageIndex = 0 } = args;
 
         const code = `
             if (app.documents.length === 0) return { success: false, error: 'No document open' };
             const doc = app.activeDocument;
-            const page = doc.pages.item(0);
+            if (${pageIndex} >= doc.pages.length) return { success: false, error: 'Page index out of range' };
+            const page = doc.pages.item(${pageIndex});
             if (${frameIndex} >= page.textFrames.length) return { success: false, error: 'Text frame index out of range' };
             const textFrame = page.textFrames.item(${frameIndex});
             const style = doc.paragraphStyles.itemByName(${JSON.stringify(styleName)});
@@ -139,12 +140,13 @@ export class StyleHandlers {
      * Apply a character style to text
      */
     static async applyCharacterStyle(args) {
-        const { styleName, frameIndex = 0, startIndex = 0, endIndex = -1 } = args;
+        const { styleName, frameIndex = 0, startIndex = 0, endIndex = -1, pageIndex = 0 } = args;
 
         const code = `
             if (app.documents.length === 0) return { success: false, error: 'No document open' };
             const doc = app.activeDocument;
-            const page = doc.pages.item(0);
+            if (${pageIndex} >= doc.pages.length) return { success: false, error: 'Page index out of range' };
+            const page = doc.pages.item(${pageIndex});
             if (${frameIndex} >= page.textFrames.length) return { success: false, error: 'Text frame index out of range' };
             const textFrame = page.textFrames.item(${frameIndex});
             const style = doc.characterStyles.itemByName(${JSON.stringify(styleName)});
@@ -307,12 +309,13 @@ export class StyleHandlers {
      * Apply a color to text or graphics
      */
     static async applyColor(args) {
-        const { colorName, targetType = 'text', frameIndex = 0 } = args;
+        const { colorName, targetType = 'text', frameIndex = 0, pageIndex = 0 } = args;
 
         const code = `
             if (app.documents.length === 0) return { success: false, error: 'No document open' };
             const doc = app.activeDocument;
-            const page = doc.pages.item(0);
+            if (${pageIndex} >= doc.pages.length) return { success: false, error: 'Page index out of range' };
+            const page = doc.pages.item(${pageIndex});
             const color = doc.colors.itemByName(${JSON.stringify(colorName)});
             if (!color.isValid) return { success: false, error: 'Color not found: ' + ${JSON.stringify(colorName)} };
             const target = ${JSON.stringify(targetType)};
