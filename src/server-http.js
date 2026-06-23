@@ -31,7 +31,7 @@ app.use(express.json());
 const metrics = {
     startedAt: Date.now(),
     totalCalls: 0,
-    hourlyBuckets: new Array(24).fill(0),   // rolling 24h
+    hourlyBuckets: new Array(24).fill(0),   // hour-of-day histogram: index = wall-clock hour (0-23)
     toolCallCounts: {},                       // { toolName: count }
     sessionMeta: {},                          // { sid: { connectedAt, transport, callCount } }
 };
