@@ -288,10 +288,16 @@ export class InDesignMCPServer {
 
             // 日本語自然文解釈 (Interpretation & Logging)
             case 'parse_instruction': {
+                if (typeof args?.text !== 'string' || args.text.length === 0) {
+                    throw new Error('parse_instruction には text（文字列）が必要です');
+                }
                 const ir = parseMultipleInstructions(args.text);
                 return formatResponse(ir, '自然文解釈結果');
             }
             case 'confirm_instruction': {
+                if (typeof args?.approve !== 'boolean') {
+                    throw new Error('confirm_instruction には approve（真偽値）が必要です');
+                }
                 if (!this._confirmationMode) this._confirmationMode = new ConfirmationMode();
                 if (args.approve) {
                     const pending = this._confirmationMode.approve();
