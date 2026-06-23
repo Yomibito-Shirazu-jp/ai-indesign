@@ -55,14 +55,16 @@ export class BookHandlers {
         const { bookPath, documentPath } = args;
 
         const code = `
+            let book;
             try {
-                const book = app.open(${JSON.stringify(bookPath)});
+                book = app.open(${JSON.stringify(bookPath)});
                 book.bookContents.add(${JSON.stringify(documentPath)});
                 book.save();
-                book.close();
                 return { success: true, message: 'Document added to book successfully' };
             } catch(e) {
                 return { success: false, error: 'Error adding document to book: ' + e.message };
+            } finally {
+                if (book) { try { book.close(); } catch(e) {} }
             }
         `;
 
@@ -79,14 +81,16 @@ export class BookHandlers {
         const { bookPath } = args;
 
         const code = `
+            let book;
             try {
-                const book = app.open(${JSON.stringify(bookPath)});
+                book = app.open(${JSON.stringify(bookPath)});
                 book.synchronize();
                 book.save();
-                book.close();
                 return { success: true, message: 'Book synchronized successfully' };
             } catch(e) {
                 return { success: false, error: 'Error synchronizing book: ' + e.message };
+            } finally {
+                if (book) { try { book.close(); } catch(e) {} }
             }
         `;
 
@@ -104,8 +108,9 @@ export class BookHandlers {
 
         const code = `
             const { ExportFormat } = require('indesign');
+            let book;
             try {
-                const book = app.open(${JSON.stringify(bookPath)});
+                book = app.open(${JSON.stringify(bookPath)});
                 const fmt = ${JSON.stringify(format)};
                 let exportFormat;
                 if (fmt === 'PDF') {
@@ -115,14 +120,14 @@ export class BookHandlers {
                 } else if (fmt === 'HTML') {
                     exportFormat = ExportFormat.html;
                 } else {
-                    book.close();
                     return { success: false, error: 'Unsupported format: ' + fmt };
                 }
                 book.exportFile(exportFormat, ${JSON.stringify(outputPath)});
-                book.close();
                 return { success: true, message: 'Book exported successfully' };
             } catch(e) {
                 return { success: false, error: 'Error exporting book: ' + e.message };
+            } finally {
+                if (book) { try { book.close(); } catch(e) {} }
             }
         `;
 
@@ -151,8 +156,9 @@ export class BookHandlers {
         } = args;
 
         const code = `
+            let book;
             try {
-                const book = app.open(${JSON.stringify(bookPath)});
+                book = app.open(${JSON.stringify(bookPath)});
                 book.packageForPrint(
                     ${JSON.stringify(outputPath)},
                     ${copyingFonts},
@@ -165,10 +171,11 @@ export class BookHandlers {
                     ${includeIdml},
                     ${includePdf}
                 );
-                book.close();
                 return { success: true, message: 'Book packaged successfully' };
             } catch(e) {
                 return { success: false, error: 'Error packaging book: ' + e.message };
+            } finally {
+                if (book) { try { book.close(); } catch(e) {} }
             }
         `;
 
@@ -185,8 +192,9 @@ export class BookHandlers {
         const { bookPath } = args;
 
         const code = `
+            let book;
             try {
-                const book = app.open(${JSON.stringify(bookPath)});
+                book = app.open(${JSON.stringify(bookPath)});
                 const contents = [];
                 for (let i = 0; i < book.bookContents.length; i++) {
                     const item = book.bookContents.item(i);
@@ -204,10 +212,11 @@ export class BookHandlers {
                     documentCount: book.bookContents.length,
                     contents: contents
                 };
-                book.close();
                 return { success: true, info: info };
             } catch(e) {
                 return { success: false, error: 'Error getting book info: ' + e.message };
+            } finally {
+                if (book) { try { book.close(); } catch(e) {} }
             }
         `;
 
@@ -271,14 +280,16 @@ export class BookHandlers {
         const { bookPath } = args;
 
         const code = `
+            let book;
             try {
-                const book = app.open(${JSON.stringify(bookPath)});
+                book = app.open(${JSON.stringify(bookPath)});
                 book.repaginate();
                 book.save();
-                book.close();
                 return { success: true, message: 'Book repaginated successfully' };
             } catch(e) {
                 return { success: false, error: 'Error repaginating book: ' + e.message };
+            } finally {
+                if (book) { try { book.close(); } catch(e) {} }
             }
         `;
 
@@ -295,14 +306,16 @@ export class BookHandlers {
         const { bookPath } = args;
 
         const code = `
+            let book;
             try {
-                const book = app.open(${JSON.stringify(bookPath)});
+                book = app.open(${JSON.stringify(bookPath)});
                 book.updateAllCrossReferences();
                 book.save();
-                book.close();
                 return { success: true, message: 'All cross references updated successfully' };
             } catch(e) {
                 return { success: false, error: 'Error updating cross references: ' + e.message };
+            } finally {
+                if (book) { try { book.close(); } catch(e) {} }
             }
         `;
 
@@ -319,14 +332,16 @@ export class BookHandlers {
         const { bookPath } = args;
 
         const code = `
+            let book;
             try {
-                const book = app.open(${JSON.stringify(bookPath)});
+                book = app.open(${JSON.stringify(bookPath)});
                 book.updateAllNumbers();
                 book.save();
-                book.close();
                 return { success: true, message: 'All numbers updated successfully' };
             } catch(e) {
                 return { success: false, error: 'Error updating numbers: ' + e.message };
+            } finally {
+                if (book) { try { book.close(); } catch(e) {} }
             }
         `;
 
@@ -343,14 +358,16 @@ export class BookHandlers {
         const { bookPath } = args;
 
         const code = `
+            let book;
             try {
-                const book = app.open(${JSON.stringify(bookPath)});
+                book = app.open(${JSON.stringify(bookPath)});
                 book.updateChapterAndParagraphNumbers();
                 book.save();
-                book.close();
                 return { success: true, message: 'Chapter and paragraph numbers updated successfully' };
             } catch(e) {
                 return { success: false, error: 'Error updating chapter/paragraph numbers: ' + e.message };
+            } finally {
+                if (book) { try { book.close(); } catch(e) {} }
             }
         `;
 
@@ -367,16 +384,18 @@ export class BookHandlers {
         const { bookPath, outputPath, autoOpen = false } = args;
 
         const code = `
+            let book;
             try {
-                const book = app.open(${JSON.stringify(bookPath)});
+                book = app.open(${JSON.stringify(bookPath)});
                 ${outputPath
                     ? `book.preflight(${JSON.stringify(outputPath)}, ${autoOpen});`
                     : `book.preflight();`
                 }
-                book.close();
                 return { success: true, message: 'Book preflighted successfully' };
             } catch(e) {
                 return { success: false, error: 'Error preflighting book: ' + e.message };
+            } finally {
+                if (book) { try { book.close(); } catch(e) {} }
             }
         `;
 
@@ -394,13 +413,15 @@ export class BookHandlers {
 
         const code = `
             const { PrinterPresetTypes } = require('indesign');
+            let book;
             try {
-                const book = app.open(${JSON.stringify(bookPath)});
+                book = app.open(${JSON.stringify(bookPath)});
                 book.print(${printDialog}, PrinterPresetTypes.${printerPreset});
-                book.close();
                 return { success: true, message: 'Book print job sent successfully' };
             } catch(e) {
                 return { success: false, error: 'Error printing book: ' + e.message };
+            } finally {
+                if (book) { try { book.close(); } catch(e) {} }
             }
         `;
 
