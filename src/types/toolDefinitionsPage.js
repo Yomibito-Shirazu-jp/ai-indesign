@@ -239,7 +239,7 @@ export const pageToolDefinitions = [
             type: 'object',
             properties: {
                 pageIndex: { type: 'number', description: 'Page index' },
-                selectionMode: { type: 'string', enum: ['REPLACE_WITH', 'ADD_TO', 'REMOVE_FROM'], default: 'REPLACE_WITH' },
+                selectionMode: { type: 'string', enum: ['REPLACE_WITH', 'ADD_TO', 'REMOVE_FROM', 'SET_KEY'], default: 'REPLACE_WITH' },
             },
             required: ['pageIndex'],
         },
