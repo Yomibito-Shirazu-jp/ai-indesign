@@ -17,8 +17,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
     const lines = fs.readFileSync(envPath, 'utf8').split('\n');
     for (const line of lines) {
         const trimmed = line.replace(/#.*$/, '').trim();
-        const m = trimmed.match(/^([A-Z_]+)\s*=\s*(\d+)/);
-        if (m) process.env[m[1]] = m[2];
+        const m = trimmed.match(/^([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$/);
+        if (m) process.env[m[1]] = m[2].trim();
     }
 })();
 
