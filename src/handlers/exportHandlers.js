@@ -129,14 +129,19 @@ export class ExportHandlers {
             const doc = app.activeDocument;
 
             try {
+                // packageForPrint(to, copyingFonts, copyingLinkedGraphics, copyingProfiles,
+                //                 updatingGraphics, includingHiddenLayers, ignorePreflightErrors, ...)
+                const updatingGraphics = false;       // do not relink/update placed graphics
+                const includingHiddenLayers = false;  // skip hidden layers when packaging
+                const ignorePreflightErrors = true;   // proceed even if preflight reports errors
                 doc.packageForPrint(
                     ${JSON.stringify(folderPath)},
                     ${includeFonts},
                     ${includeLinks},
                     ${includeProfiles},
-                    false,
-                    false,
-                    true
+                    updatingGraphics,
+                    includingHiddenLayers,
+                    ignorePreflightErrors
                 );
                 return { success: true };
             } catch(e) {
