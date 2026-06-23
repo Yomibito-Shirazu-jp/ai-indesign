@@ -17,6 +17,7 @@ export class OperationLogger {
         this.maxMemoryLogs = config.maxMemoryLogs || 200;
         this.logs = [];
         this.sessionId = `session_${Date.now()}`;
+        this.writeFailures = 0;
         this._ensureLogDir();
     }
 
@@ -56,10 +57,12 @@ export class OperationLogger {
             this.logs = this.logs.slice(-this.maxMemoryLogs);
         }
 
-        // JSONL ファイル出力
-        try {
-            fs.appendFileSync(LOG_FILE, JSON.stringify(logEntry) + '\n');
-        } catch { /* non-critical */ }
+        // JSONL ファイル出力（非同期・イベントループをブロックしない）
+        fs.promises.appendFile(LOG_FILE, JSON.stringify(logEntry) + '\n')
+            .catch((err) => {
+                this.writeFailures++;
+                console.error(`[operationLogger] ログ書き込み失敗 (累計${this.writeFailures}件):`, err.message);
+            });
 
         return logEntry;
     }
