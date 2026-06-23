@@ -62,7 +62,12 @@ export class InDesignMCPServer {
             const { name, arguments: args } = request.params;
 
             try {
-                const result = await this.handleToolCall(name, args);
+                // 操作ログ記録（結果には影響しない付加的なラッパー）
+                const result = await operationLogger.trackExecution(
+                    name,
+                    args,
+                    () => this.handleToolCall(name, args)
+                );
                 return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
             } catch (error) {
                 return { content: [{ type: 'text', text: `Error: ${error.message}` }] };
