@@ -111,9 +111,10 @@ export class CouncilEngine {
      * 単一エージェントをタイムアウト付きで実行
      */
     async _executeWithTimeout(agent, input, context) {
-        const timeoutPromise = new Promise((_, reject) =>
-            setTimeout(() => reject(new Error(`Agent ${agent.id} timed out`)), this.timeout)
-        );
+        let timeoutId;
+        const timeoutPromise = new Promise((_, reject) => {
+            timeoutId = setTimeout(() => reject(new Error(`Agent ${agent.id} timed out`)), this.timeout);
+        });
 
         try {
             const result = await Promise.race([
@@ -138,6 +139,8 @@ export class CouncilEngine {
                 fixes: {},
                 confidence: 0,
             };
+        } finally {
+            clearTimeout(timeoutId);
         }
     }
 
