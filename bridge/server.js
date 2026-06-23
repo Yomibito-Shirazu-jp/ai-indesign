@@ -67,20 +67,6 @@ function executeInDesignCode(code) {
     });
 }
 
-// ─── HTTP経由でInDesignコード実行 ───
-app.post('/execute', async (req, res) => {
-    const { code } = req.body;
-    if (!code) return res.status(400).json({ error: 'code is required' });
-    try {
-        const result = await executeInDesignCode(code);
-        res.json({ result });
-    } catch (e) {
-        console.error('[Bridge] Execute error:', e.message);
-        res.json({ error: e.message });
-    }
-});
-
-
 // ─── AIチャット処理 ───
 async function handleChatMessage(ws, msg) {
     const userText = msg.message;
