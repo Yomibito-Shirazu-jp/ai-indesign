@@ -25,7 +25,16 @@ export class ScriptExecutor {
             throw err;
         }
 
-        const data = await response.json();
+        const text = await response.text();
+        let data;
+        try {
+            data = JSON.parse(text);
+        } catch {
+            if (!response.ok) {
+                throw new Error(`Bridge error: ${response.status} ${response.statusText}`);
+            }
+            throw new Error('Bridge returned a non-JSON response');
+        }
 
         if (!response.ok) {
             throw new Error(data.error || `Bridge error: ${response.status}`);
