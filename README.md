@@ -18,7 +18,7 @@
 | 🎨 グラフィック | 図形・画像配置・スタイル管理 |
 | 📡 ブリッジ管理 | Illustrator・Photoshopへのコマンド送信 |
 
-**合計170以上のツール**
+**合計189のツール**
 
 ---
 
@@ -44,6 +44,28 @@
 > 注: 配布用の `.zip` / `.ccx` / `.dxt` はリポジトリには含まれません（`.gitignore` 対象）。
 > 現時点で GitHub Releases の配布物は用意していないため、上記の「GitHubから同期」または
 > ローカルクローンでの導入を推奨します。
+
+---
+
+## 🌐 リモートHTTPサーバとして接続（Claude Code / Custom MCP）
+
+ホスト型サーバが稼働しているため、HTTP接続のMCPクライアント（Claude Code 等）は、
+プラグインのローカル導入なしに以下を設定するだけで利用できます。
+
+```json
+{
+  "mcpServers": {
+    "indesign": {
+      "type": "http",
+      "url": "https://mcp.b-p.co.jp/mcp"
+    }
+  }
+}
+```
+
+- MCPエンドポイントは **`/mcp`**（Streamable HTTP）。ルート **`/`** に向けても接続できます（`/` への通常のブラウザGETは従来どおりヘルスチェックJSONを返します）。
+- 実際に操作するには **InDesign 2023+ を起動し、UXPプラグインを接続**しておく必要があります。未接続だと `https://mcp.b-p.co.jp/` の `status` が `indesign_disconnected` になり、ツールは呼べてもエラーになります（接続中は `running`）。
+- 設定変更後はMCPクライアント（Claude Desktop / Claude Code）を**再起動**してください。
 
 ---
 

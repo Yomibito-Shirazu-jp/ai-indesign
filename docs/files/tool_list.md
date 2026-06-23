@@ -1,9 +1,9 @@
 # 全ツール（機能）一覧表 / Complete Tool List
 
-AI in Design（旧称: indesign-uxp-server）に搭載されている、全 **179種類** の操作ツール一覧です。
+AI in Design（旧称: indesign-uxp-server）に搭載されている、全 **189種類** の操作ツール一覧です。
 AIはこれらを組み合わせてInDesignを自動操作します。
 
-All 179 tools available in AI in Design. The AI combines these tools to automate InDesign operations.
+All 189 tools available in AI in Design. The AI combines these tools to automate InDesign operations.
 
 ---
 

@@ -2,8 +2,13 @@
  * HTTP entry point for Cloud Run deployment.
  *
  * Exposes the MCP server over Streamable HTTP + SSE (backwards-compatible)
- * so that remote clients (Claude Desktop "Custom MCP", Cursor, etc.) can
- * connect via URL: https://<service>.run.app/mcp
+ * so that remote clients (Claude Desktop "Custom MCP", Claude Code, Cursor,
+ * etc.) can connect via URL.
+ *
+ * MCP endpoint: POST/GET/DELETE /mcp  (e.g. https://mcp.b-p.co.jp/mcp).
+ * The root path / also accepts MCP requests for clients configured with the
+ * bare host URL; a plain browser GET / returns the health-check JSON instead.
+ * Tools require InDesign running with the UXP plugin connected.
  */
 
 import { randomUUID } from 'node:crypto';

@@ -65,9 +65,26 @@ Add to your MCP client configuration (e.g., `claude_desktop_config.json`):
 
 The MCP server will automatically start the bridge server on port 3001. No separate manual startup is required.
 
-## Available Tools (179 total)
+#### Connecting over HTTP (hosted server / Claude Code)
 
-For the complete list of all 179 tools with descriptions, see [`tool_list.md`](tool_list.md).
+Instead of running the server locally, you can connect to the hosted server over Streamable HTTP. Use this for clients that take an HTTP MCP URL (e.g. Claude Code, Custom MCP):
+
+```json
+{
+  "mcpServers": {
+    "indesign": {
+      "type": "http",
+      "url": "https://mcp.b-p.co.jp/mcp"
+    }
+  }
+}
+```
+
+The MCP endpoint is **`/mcp`**. The root URL **`/`** also accepts MCP requests (a plain browser `GET /` still returns the health-check JSON). The hosted server only executes tools while **InDesign 2023+ is running with the UXP plugin connected** — otherwise `GET /` reports `"status": "indesign_disconnected"`. Restart your MCP client after changing the configuration.
+
+## Available Tools (189 total)
+
+For the complete list of all 189 tools with descriptions, see [`tool_list.md`](tool_list.md).
 For AI-facing usage instructions and patterns, see [`LLM_PROMPT.md`](LLM_PROMPT.md).
 
 ### Tool Categories
@@ -146,7 +163,7 @@ For AI-facing usage instructions and patterns, see [`LLM_PROMPT.md`](LLM_PROMPT.
 ### Documentation
 - [README.md](README.md) — Project overview and usage guide (Japanese)
 - [LLM_PROMPT.md](LLM_PROMPT.md) — AI-facing tool usage instructions
-- [tool_list.md](tool_list.md) — Complete list of all 179 tools
+- [tool_list.md](tool_list.md) — Complete list of all 189 tools
 - [CONTRIBUTING.md](CONTRIBUTING.md) — How to contribute
 - [CHANGELOG.md](CHANGELOG.md) — Version history
 
