@@ -10,6 +10,7 @@ import { randomUUID } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { InDesignMCPServer } from './core/InDesignMCPServer.js';
+import { allToolDefinitions } from './types/index.js';
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js';
 import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import { isInitializeRequest } from '@modelcontextprotocol/sdk/types.js';
@@ -119,13 +120,8 @@ app.get('/api/dashboard', (_req, res) => {
         .slice(0, 9)
         .map(([name, count]) => ({ name, count }));
 
-    // Get tool count from a temp server instance
-    let toolCount = 200;
-    try {
-        const tmp = new InDesignMCPServer();
-        // We already know it's ~200 from earlier test
-        toolCount = 200;
-    } catch { /* ignore */ }
+    // Tool count from the imported tool definitions
+    const toolCount = allToolDefinitions.length;
 
     res.json({
         activeSessions,
