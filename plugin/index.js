@@ -86,7 +86,10 @@ function connect() {
         }
     };
 
-    ws.onerror = () => {};
+    ws.onerror = (event) => {
+        // エラーをログに出力する。再接続は onclose に集約し、二重スケジュールを避ける
+        console.error("[Plugin] WebSocket error:", (event && event.message) || event);
+    };
     ws.onclose = () => {
         setStatus("disconnected");
         setTimeout(connect, 3000);
