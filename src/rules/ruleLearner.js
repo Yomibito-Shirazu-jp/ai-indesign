@@ -127,14 +127,23 @@ function isHalfWidthToFullWidth(before, after) {
 
 function isOkuriganaVariant(before, after) {
     // 例: 申し込み ↔ 申込
+    // 漢字を含まないケース（カタカナ語の長音差等）はここで捕捉しない。
+    // 漢字が無いと、長音差のカタカナ語まで「送り仮名」と誤判定されるため。
+    if (!/[一-鿿]/.test(before) || !/[一-鿿]/.test(after)) {
+        return false;
+    }
     const kanjiBefore = before.replace(/[\u3040-\u309F]/g, ''); // ひらがな除去
     const kanjiAfter = after.replace(/[\u3040-\u309F]/g, '');
     return kanjiBefore === kanjiAfter && before !== after;
 }
 
 function isChouonVariant(before, after) {
-    // 例: サーバー ↔ サーバ
-    return (before + 'ー' === after) || (before === after + 'ー');
+    // 例: サーバー ↔ サーバ、コンピューター ↔ コンピュータ
+    // 末尾だけでなく語中の長音差も検出するため、両者から
+    // 全ての長音記号を除いて比較する。
+    if (before === after) return false;
+    const stripChouon = (s) => s.replace(/ー/g, '');
+    return stripChouon(before) === stripChouon(after);
 }
 
 function isKatakanaVariant(before, after) {
