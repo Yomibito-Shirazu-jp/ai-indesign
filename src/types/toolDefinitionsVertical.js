@@ -72,6 +72,7 @@ export const verticalTextTools = [
             type: 'object',
             properties: {
                 pageIndex: { type: 'number', default: 0 },
+                preview: { type: 'boolean' },
             }
         }
     },
