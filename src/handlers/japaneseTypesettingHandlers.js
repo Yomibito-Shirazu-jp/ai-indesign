@@ -5,7 +5,6 @@
 import { ScriptExecutor } from '../core/scriptExecutor.js';
 import { formatResponse, formatErrorResponse } from '../utils/stringUtils.js';
 import { operationLogger } from '../core/operationLogger.js';
-import { safetyManager } from '../core/safetyManager.js';
 
 // 和文組版プリセット定義
 const TYPESETTING_PRESETS = {
