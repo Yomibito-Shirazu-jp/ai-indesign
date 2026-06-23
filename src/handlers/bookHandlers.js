@@ -482,12 +482,21 @@ export class BookHandlers {
             try {
                 const book = app.open(${JSON.stringify(bookPath)});
                 const props = ${JSON.stringify(props)};
+                const applied = [];
+                const failed = [];
                 for (const key of Object.keys(props)) {
-                    try { book[key] = props[key]; } catch(e) {}
+                    try { book[key] = props[key]; applied.push(key); } catch(e) { failed.push(key); }
                 }
                 book.save();
                 book.close();
-                return { success: true, message: 'Book properties updated successfully' };
+                return {
+                    success: true,
+                    message: 'Book properties updated: ' + applied.length + ' applied, ' + failed.length + ' failed',
+                    appliedCount: applied.length,
+                    applied: applied,
+                    failedCount: failed.length,
+                    failed: failed
+                };
             } catch(e) {
                 return { success: false, error: 'Error updating book properties: ' + e.message };
             }
@@ -495,7 +504,7 @@ export class BookHandlers {
 
         const result = await ScriptExecutor.executeViaUXP(code);
         return result?.success ?
-            formatResponse(result.message, "Set Book Properties") :
+            formatResponse(result, "Set Book Properties") :
             formatErrorResponse(result?.error || 'Failed to set book properties', "Set Book Properties");
     }
 }
