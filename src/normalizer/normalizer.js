@@ -122,7 +122,7 @@ export async function normalize(text, options = {}) {
         const before = normalized;
 
         if (period === '。') {
-            normalized = normalized.replace(/．(?![0-9])/g, '。');
+            normalized = normalized.replace(/(?<![0-9])．(?![0-9])/g, '。');
         } else if (period === '．') {
             normalized = normalized.replace(/。/g, '．');
         }
