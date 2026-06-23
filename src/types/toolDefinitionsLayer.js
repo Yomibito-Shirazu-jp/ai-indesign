@@ -7,7 +7,7 @@ export const layerToolDefinitions = [
     // =================== LAYERS MANAGEMENT ===================
     {
         name: 'create_layer',
-        description: 'Create a new layer',
+        description: 'レイヤーを新規作成',
         inputSchema: {
             type: 'object',
             properties: {
@@ -21,7 +21,7 @@ export const layerToolDefinitions = [
     },
     {
         name: 'set_active_layer',
-        description: 'Set the active layer',
+        description: 'アクティブレイヤーを設定',
         inputSchema: {
             type: 'object',
             properties: {
@@ -32,7 +32,7 @@ export const layerToolDefinitions = [
     },
     {
         name: 'list_layers',
-        description: 'List all layers in the document',
+        description: 'ドキュメント内のレイヤー一覧を取得',
         inputSchema: { type: 'object', properties: {} },
     },
 ]; 
