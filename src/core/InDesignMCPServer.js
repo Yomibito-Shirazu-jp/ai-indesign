@@ -70,7 +70,10 @@ export class InDesignMCPServer {
                 );
                 return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
             } catch (error) {
-                return { content: [{ type: 'text', text: `Error: ${error.message}` }] };
+                return {
+                    content: [{ type: 'text', text: `Error: ${error.message}` }],
+                    isError: true,
+                };
             }
         });
     }
