@@ -90,6 +90,13 @@ export class MasterSpreadHandlers {
     static async duplicateMasterSpread(args) {
         const { masterIndex, position = 'AT_END', referenceMaster } = args;
 
+        if (!Number.isInteger(masterIndex)) {
+            return formatErrorResponse('masterIndex must be an integer', "Duplicate Master Spread");
+        }
+        if (referenceMaster !== undefined && !Number.isInteger(referenceMaster)) {
+            return formatErrorResponse('referenceMaster must be an integer', "Duplicate Master Spread");
+        }
+
         const code = `
             if (app.documents.length === 0) return { success: false, error: 'No document open' };
             const doc = app.activeDocument;
