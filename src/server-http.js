@@ -50,7 +50,13 @@ setInterval(() => {
 }, 60_000);
 
 // ── Health check ─────────────────────────────────────────────
-app.get('/', (_req, res) => {
+app.get('/', (req, res) => {
+    // MCP clients sometimes point at the root URL instead of /mcp and
+    // open a streamable-http event-stream. Delegate those to the MCP
+    // handler; plain browser requests still get the health JSON.
+    if (String(req.headers.accept || '').includes('text/event-stream')) {
+        return handleMcp(req, res);
+    }
     res.json({
         name: 'Ai-inDesign MCP Server',
         version: '1.2.1',
@@ -138,7 +144,7 @@ function createMCPServer() {
 // Streamable HTTP transport  (protocol 2025-11-25)
 // ═════════════════════════════════════════════════════════════
 
-app.all('/mcp', async (req, res) => {
+const handleMcp = async (req, res) => {
     try {
         const sessionId = req.headers['mcp-session-id'];
         let transport;
@@ -209,7 +215,14 @@ app.all('/mcp', async (req, res) => {
             });
         }
     }
-});
+};
+
+app.all('/mcp', handleMcp);
+// Some clients are configured with the root URL instead of /mcp.
+// Delegate root POST/DELETE (and event-stream GET, handled in the
+// health check above) to the MCP handler so they connect anyway.
+app.post('/', handleMcp);
+app.delete('/', handleMcp);
 
 // ═════════════════════════════════════════════════════════════
 // Deprecated SSE transport  (protocol 2024-11-05)
