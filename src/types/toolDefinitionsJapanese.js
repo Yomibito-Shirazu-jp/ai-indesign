@@ -47,8 +47,8 @@ export const japaneseTypesettingTools = [
             type: 'object',
             properties: {
                 pageIndex: { type: 'number', default: 0 },
-                cjkSpacing: { type: 'string', description: '和欧間スペース: quarter, half, none' },
-                punctuationWidth: { type: 'string', description: '約物幅: full, half' },
+                cjkSpacing: { type: 'string', enum: ['quarter', 'half', 'none'], description: '和欧間スペース: quarter, half, none' },
+                punctuationWidth: { type: 'string', enum: ['full', 'half'], description: '約物幅: full, half' },
                 preview: { type: 'boolean' },
             }
         }
