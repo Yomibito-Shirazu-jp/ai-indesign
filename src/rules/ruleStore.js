@@ -62,9 +62,9 @@ export class RuleStore {
     static async getRules(customerId) {
         if (!customerId) return { ...DEFAULT_RULES };
 
-        // キャッシュチェック
+        // キャッシュチェック（共有キャッシュを汚さないようディープコピーを返す）
         if (cache.has(customerId)) {
-            return cache.get(customerId);
+            return structuredClone(cache.get(customerId));
         }
 
         // ファイルから読み込み
@@ -74,10 +74,10 @@ export class RuleStore {
             const rules = JSON.parse(content);
             const merged = RuleStore.mergeWithDefaults(rules);
             cache.set(customerId, merged);
-            return merged;
+            return structuredClone(merged);
         } catch (e) {
-            // ファイルなし → デフォルト
-            return { ...DEFAULT_RULES, customerId };
+            // ファイルなし → デフォルト（共有 DEFAULT_RULES を汚さないようディープコピー）
+            return { ...structuredClone(DEFAULT_RULES), customerId };
         }
     }
 
