@@ -74,13 +74,12 @@ export async function normalize(text, options = {}) {
     // 2a. スペース正規化
     if (rules.normalizeSpaces) {
         const beforeSpaces = normalized;
-        // 全角スペース連続 → 1つに
-        normalized = normalized.replace(/[\s　]{2,}/g, (match) => {
-            if (match.includes('\n')) return '\n'; // 改行は維持
-            return '　';
-        });
+        // 水平方向の空白（半角/全角スペース・タブ）の連続 → 1つに（改行は対象外）
+        normalized = normalized.replace(/[ \t　]{2,}/g, '　');
         // 行末の空白除去
         normalized = normalized.replace(/[ \t　]+$/gm, '');
+        // 連続する空行は1行までに抑制（段落区切りは保持）
+        normalized = normalized.replace(/\n{3,}/g, '\n\n');
         if (normalized !== beforeSpaces) {
             appliedFixes.push({ type: 'spaces', description: 'スペース正規化', rule: 'normalizeSpaces' });
         }
