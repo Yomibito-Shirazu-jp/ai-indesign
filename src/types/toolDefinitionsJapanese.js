@@ -8,8 +8,8 @@ export const japaneseTypesettingTools = [
         inputSchema: {
             type: 'object',
             properties: {
-                preset: { type: 'string', description: 'プリセット名: book, booklet, flyer, newsletter, pop', enum: ['book', 'booklet', 'flyer', 'newsletter', 'pop'] },
-                pageIndex: { type: 'number', description: '対象ページ (0始まり)' },
+                preset: { type: 'string', description: 'プリセット名', enum: ['book', 'booklet', 'flyer', 'newsletter', 'pop'] },
+                pageIndex: { type: 'number', description: '対象ページ (0始まり)', default: 0 },
                 frameIndex: { type: 'number', description: '対象フレーム (省略時: 全フレーム)' },
                 preview: { type: 'boolean', description: 'trueで変更プレビューのみ' },
             }
