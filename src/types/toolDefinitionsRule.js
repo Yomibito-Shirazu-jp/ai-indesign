@@ -97,11 +97,13 @@ export const ruleTools = [
                 },
                 minOccurrences: {
                     type: 'number',
-                    description: 'Minimum times a change must appear to become a rule (default 2)'
+                    description: 'Minimum times a change must appear to become a rule (default 2)',
+                    default: 2
                 },
                 minConfidence: {
                     type: 'number',
-                    description: 'Minimum confidence score (0.0 to 1.0) (default 0.5)'
+                    description: 'Minimum confidence score (0.0 to 1.0) (default 0.5)',
+                    default: 0.5
                 }
             },
             required: ['beforeText', 'afterText']
