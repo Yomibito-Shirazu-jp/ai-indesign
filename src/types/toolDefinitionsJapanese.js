@@ -23,7 +23,7 @@ export const japaneseTypesettingTools = [
             properties: {
                 pageIndex: { type: 'number', description: '対象ページ (0始まり)', default: 0 },
                 frameIndex: { type: 'number', description: '対象フレーム' },
-                normalizations: { type: 'array', items: { type: 'string' }, description: '正規化種別: halfToFull, numbers, spaces' },
+                normalizations: { type: 'array', items: { type: 'string', enum: ['halfToFull', 'numbers', 'spaces'] }, description: '正規化種別: halfToFull, numbers, spaces' },
                 preview: { type: 'boolean' },
             }
         }
