@@ -261,10 +261,11 @@ export const pageToolDefinitions = [
         inputSchema: {
             type: 'object',
             properties: {
-                pageIndex: { type: 'number', description: 'Page index', default: 0 },
+                pageIndex: { type: 'number', description: 'Page index' },
                 backgroundColor: { type: 'string', description: 'Background color name (must be a color swatch in the document)', default: 'White' },
                 opacity: { type: 'number', description: 'Background opacity percentage (0-100)', default: 100 },
             },
+            required: ['pageIndex'],
         },
     },
 ]; 
