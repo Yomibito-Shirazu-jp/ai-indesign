@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 let markdown = `# 全ツール（機能）一覧表\n\n`;
-markdown += `AIアシスタント（indesign-uxp-server）に搭載されている、全 ${allToolDefinitions.length} 種類の操作ツール一覧です。AIはこれらを組み合わせてInDesignを自動操作します。\n\n`;
+markdown += `AIアシスタント（indesign-mcp-server）に搭載されている、全 ${allToolDefinitions.length} 種類の操作ツール一覧です。AIはこれらを組み合わせてInDesignを自動操作します。\n\n`;
 markdown += `| ツール名（システム名） | 説明（何ができるか） |\n`;
 markdown += `| --- | --- |\n`;
 
