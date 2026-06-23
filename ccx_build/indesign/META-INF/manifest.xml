@@ -1,6 +1,0 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
-<manifest xmlns="urn:adobe:ccx:manifest:1.0">
-  <plugin id="com.bunshodo.ai-indesign" name="Ai-inDesign" version="1.2.1">
-    <host app="IDSN" minVersion="18.0" />
-  </plugin>
-</manifest>
