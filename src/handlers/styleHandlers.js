@@ -240,6 +240,15 @@ export class StyleHandlers {
             blue
         } = args;
 
+        // Validate RGB components in Node before building the UXP code.
+        // Without this, undefined/non-numeric values yield NaN and produce invalid colors.
+        const isValidComponent = (v) => Number.isInteger(v) && v >= 0 && v <= 255;
+        if (!isValidComponent(red) || !isValidComponent(green) || !isValidComponent(blue)) {
+            return formatErrorResponse('red, green and blue must be integers between 0 and 255', "Create Color Swatch");
+        }
+
+        const colorModel = colorType === 'SPOT' ? 'spot' : 'process';
+
         // Convert RGB to CMYK using proper formula (done in Node.js, values embedded in UXP code)
         const r = red / 255;
         const g = green / 255;
@@ -259,7 +268,9 @@ export class StyleHandlers {
         const code = `
             if (app.documents.length === 0) return { success: false, error: 'No document open' };
             const doc = app.activeDocument;
+            const { ColorModel } = require('indesign');
             const color = doc.colors.add({ name: ${JSON.stringify(name)} });
+            color.model = ${colorModel === 'spot' ? 'ColorModel.spot' : 'ColorModel.process'};
             color.colorValue = [${cyan}, ${magenta}, ${yellow}, ${black}];
             const actualValues = color.colorValue;
             return {
