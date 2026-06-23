@@ -233,35 +233,57 @@ app.delete('/', handleMcp);
 // ═════════════════════════════════════════════════════════════
 
 app.get('/sse', async (req, res) => {
-    console.log('[sse] New SSE connection');
-    const transport = new SSEServerTransport('/messages', res);
-    transports[transport.sessionId] = transport;
-    metrics.sessionMeta[transport.sessionId] = {
-        connectedAt: new Date().toISOString(),
-        transport: 'SSE (Legacy)',
-        callCount: 0,
-    };
+    try {
+        console.log('[sse] New SSE connection');
+        const transport = new SSEServerTransport('/messages', res);
+        transports[transport.sessionId] = transport;
+        metrics.sessionMeta[transport.sessionId] = {
+            connectedAt: new Date().toISOString(),
+            transport: 'SSE (Legacy)',
+            callCount: 0,
+        };
 
-    res.on('close', () => {
-        console.log(`[sse] Session closed: ${transport.sessionId}`);
-        delete transports[transport.sessionId];
-    });
+        res.on('close', () => {
+            console.log(`[sse] Session closed: ${transport.sessionId}`);
+            delete transports[transport.sessionId];
+        });
 
-    const server = createMCPServer();
-    await server.connect(transport);
+        const server = createMCPServer();
+        await server.connect(transport);
+    } catch (error) {
+        console.error('[sse] Error:', error);
+        if (!res.headersSent) {
+            res.status(500).json({
+                jsonrpc: '2.0',
+                error: { code: -32603, message: 'Internal server error' },
+                id: null,
+            });
+        }
+    }
 });
 
 app.post('/messages', async (req, res) => {
-    const sessionId = req.query.sessionId;
-    const existing = transports[sessionId];
-    if (existing instanceof SSEServerTransport) {
-        if (req.body?.method === 'tools/call') {
-            recordToolCall(req.body?.params?.name || 'unknown');
-            if (metrics.sessionMeta[sessionId]) metrics.sessionMeta[sessionId].callCount++;
+    try {
+        const sessionId = req.query.sessionId;
+        const existing = transports[sessionId];
+        if (existing instanceof SSEServerTransport) {
+            if (req.body?.method === 'tools/call') {
+                recordToolCall(req.body?.params?.name || 'unknown');
+                if (metrics.sessionMeta[sessionId]) metrics.sessionMeta[sessionId].callCount++;
+            }
+            await existing.handlePostMessage(req, res, req.body);
+        } else {
+            res.status(400).send('No SSE transport for sessionId');
         }
-        await existing.handlePostMessage(req, res, req.body);
-    } else {
-        res.status(400).send('No SSE transport for sessionId');
+    } catch (error) {
+        console.error('[messages] Error:', error);
+        if (!res.headersSent) {
+            res.status(500).json({
+                jsonrpc: '2.0',
+                error: { code: -32603, message: 'Internal server error' },
+                id: null,
+            });
+        }
     }
 });
 
