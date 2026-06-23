@@ -115,11 +115,13 @@ export class TextFlowHandlers {
                 frame.contents = content;
 
                 let pagesAdded = 0;
+                const MAX_PAGES = 50;
+                let lastFrame = frame;
 
                 // オーバーセット時にページ自動追加
                 if (${autoAddPages}) {
                     let currentFrame = frame;
-                    while (currentFrame.overflows && pagesAdded < 50) {
+                    while (currentFrame.overflows && pagesAdded < MAX_PAGES) {
                         const newPage = doc.pages.add();
                         const newFrame = newPage.textFrames.add();
                         const newBounds = newPage.bounds;
@@ -133,13 +135,23 @@ export class TextFlowHandlers {
                         currentFrame = newFrame;
                         pagesAdded++;
                     }
+                    lastFrame = currentFrame;
                 }
+
+                // 上限に達してもまだオーバーセットなら打ち切り（サイレント切り捨て防止）
+                const stillOverflows = lastFrame.overflows;
+                const capped = ${autoAddPages} && stillOverflows && pagesAdded >= MAX_PAGES;
 
                 return {
                     success: true,
                     pagesAdded,
                     totalPages: doc.pages.length,
-                    overflows: frame.overflows
+                    overflows: stillOverflows,
+                    capped: capped,
+                    maxPages: MAX_PAGES,
+                    warning: capped
+                        ? 'ページ追加が上限(' + MAX_PAGES + ')に達しましたが、まだオーバーセットのテキストが残っています。'
+                        : null
                 };
             } catch(e) {
                 return { success: false, error: e.message };
