@@ -182,7 +182,7 @@ export class SystemHandlers {
         steps.push({ step: 'start_bridge', ...bridge });
 
         if (bridge.success) {
-            // Step 2: デモ送信
+            // Step 3: デモ送信
             const demo = await SystemHandlers.runDemoBroadcast();
             steps.push({ step: 'demo_broadcast', ...demo });
         }
