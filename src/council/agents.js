@@ -12,6 +12,30 @@ import {
 } from '../japanese/proofreadingDictionary.js';
 
 // ═══════════════════════════════════════════
+// 共通ヘルパ
+// ═══════════════════════════════════════════
+
+/**
+ * 空入力（空文字・空白のみ）に対する結果
+ *
+ * 校正対象が存在しないことは「問題なし（confidence 1.0）」とは異なる。
+ * 高確信度で一律承認すると校正パイプラインの偽陰性になるため、
+ * 警告イシューと低確信度を返し、承認判定が通らないようにする。
+ */
+function emptyInputResult() {
+    return {
+        findings: { emptyInput: true },
+        issues: [{
+            type: 'empty_input',
+            severity: 'warning',
+            message: '入力が空（または空白のみ）です。校正対象がありません。',
+        }],
+        fixes: {},
+        confidence: 0.1,
+    };
+}
+
+// ═══════════════════════════════════════════
 // PHASE 1 — 入口合議エージェント（原稿正規化）
 // ═══════════════════════════════════════════
 
@@ -25,8 +49,8 @@ export function createNotationAgent(customerRules = {}) {
         weight: 1.0,
         async fn(input, context) {
             const text = typeof input === 'string' ? input : input.text || '';
-            if (!text) {
-                return { findings: {}, issues: [], fixes: {}, confidence: 1.0 };
+            if (!text.trim()) {
+                return emptyInputResult();
             }
 
             const issues = [];
@@ -141,8 +165,8 @@ export function createStructureAgent() {
         weight: 0.9,
         async fn(input, _context) {
             const text = typeof input === 'string' ? input : input.text || '';
-            if (!text) {
-                return { findings: {}, issues: [], fixes: {}, confidence: 1.0 };
+            if (!text.trim()) {
+                return emptyInputResult();
             }
 
             const lines = text.split('\n').filter(l => l.trim());
@@ -242,8 +266,8 @@ export function createSemanticAgent() {
         weight: 0.8,
         async fn(input, _context) {
             const text = typeof input === 'string' ? input : input.text || '';
-            if (!text) {
-                return { findings: {}, issues: [], fixes: {}, confidence: 1.0 };
+            if (!text.trim()) {
+                return emptyInputResult();
             }
 
             const issues = [];
