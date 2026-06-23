@@ -132,6 +132,16 @@ export class TextHandlers {
             alignment
         } = args;
 
+        // Validate numeric inputs in Node before interpolating them into the UXP code.
+        // Without this, an undefined frameIndex produces `if (undefined >= ...)` and a
+        // non-numeric fontSize can yield malformed/invalid JSX.
+        if (!Number.isInteger(frameIndex) || frameIndex < 0) {
+            return formatErrorResponse('frameIndex must be a non-negative integer', "Edit Text Frame");
+        }
+        if (fontSize !== undefined && (typeof fontSize !== 'number' || !isFinite(fontSize) || fontSize <= 0)) {
+            return formatErrorResponse('fontSize must be a positive number', "Edit Text Frame");
+        }
+
         const code = `
             if (app.documents.length === 0) {
                 return { success: false, error: 'No document open' };
