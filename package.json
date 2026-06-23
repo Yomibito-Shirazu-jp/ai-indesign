@@ -24,7 +24,6 @@
       "output": "release"
     },
     "files": [
-      "app/**/*",
       "src/**/*",
       "bridge/**/*",
       "plugin/**/*"
