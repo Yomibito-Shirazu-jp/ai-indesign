@@ -333,6 +333,10 @@ export class TextHandlers {
             wholeWord = false
         } = args;
 
+        // Use literal text find/replace (findTextPreferences) rather than GREP so the
+        // user's text is matched literally and GREP metacharacters are not interpreted.
+        // findTextPreferences supports caseSensitive and wholeWord; the previous GREP
+        // path interpreted metacharacters and `wholeWord` is not a valid GREP property.
         const code = `
             if (app.documents.length === 0) {
                 return { success: false, error: 'No document open' };
@@ -340,20 +344,20 @@ export class TextHandlers {
             const doc = app.activeDocument;
 
             try {
-                app.findGrepPreferences = null;
-                app.changeGrepPreferences = null;
+                app.findTextPreferences = null;
+                app.changeTextPreferences = null;
 
-                app.findGrepPreferences.findWhat = ${JSON.stringify(findText)};
-                app.findGrepPreferences.caseSensitive = ${caseSensitive};
-                app.findGrepPreferences.wholeWord = ${wholeWord};
+                app.findTextPreferences.findWhat = ${JSON.stringify(findText)};
+                app.findTextPreferences.caseSensitive = ${caseSensitive};
+                app.findTextPreferences.wholeWord = ${wholeWord};
 
-                app.changeGrepPreferences.changeTo = ${JSON.stringify(replaceText)};
+                app.changeTextPreferences.changeTo = ${JSON.stringify(replaceText)};
 
-                const changed = doc.changeGrep();
+                const changed = doc.changeText();
                 const count = changed ? changed.length : 0;
 
-                app.findGrepPreferences = null;
-                app.changeGrepPreferences = null;
+                app.findTextPreferences = null;
+                app.changeTextPreferences = null;
 
                 return { success: true, count: count };
             } catch(e) {
