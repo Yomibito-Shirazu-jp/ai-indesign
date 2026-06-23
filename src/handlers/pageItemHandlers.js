@@ -175,21 +175,11 @@ export class PageItemHandlers {
             const page = doc.pages.item(${pageIndex});
             if (${itemIndex} >= page.allPageItems.length) return { success: false, error: 'Page item index out of range' };
             const item = page.allPageItems[${itemIndex}];
-            if (${JSON.stringify(fillColor)} !== null && ${JSON.stringify(fillColor)} !== undefined) {
-                try { item.fillColor = doc.colors.itemByName(${JSON.stringify(fillColor)}); } catch(e) {}
-            }
-            if (${JSON.stringify(strokeColor)} !== null && ${JSON.stringify(strokeColor)} !== undefined) {
-                try { item.strokeColor = doc.colors.itemByName(${JSON.stringify(strokeColor)}); } catch(e) {}
-            }
-            if (${strokeWeight} !== null && ${strokeWeight} !== undefined) {
-                item.strokeWeight = ${strokeWeight};
-            }
-            if (${visible} !== null && ${visible} !== undefined) {
-                item.visible = ${visible};
-            }
-            if (${locked} !== null && ${locked} !== undefined) {
-                item.locked = ${locked};
-            }
+            ${fillColor !== null && fillColor !== undefined ? `try { item.fillColor = doc.colors.itemByName(${JSON.stringify(fillColor)}); } catch(e) {}` : ''}
+            ${strokeColor !== null && strokeColor !== undefined ? `try { item.strokeColor = doc.colors.itemByName(${JSON.stringify(strokeColor)}); } catch(e) {}` : ''}
+            ${strokeWeight !== null && strokeWeight !== undefined ? `item.strokeWeight = ${JSON.stringify(strokeWeight)};` : ''}
+            ${visible !== null && visible !== undefined ? `item.visible = ${JSON.stringify(visible)};` : ''}
+            ${locked !== null && locked !== undefined ? `item.locked = ${JSON.stringify(locked)};` : ''}
             return { success: true, id: item.id };
         `;
 
